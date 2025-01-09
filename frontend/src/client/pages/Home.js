@@ -1,7 +1,7 @@
 import React from "react";
 import { Button, Box, AppBar } from "@mui/material";
 import { useState } from "react";
-import Navbar from "../components/Navbar";
+import Nav from "../components/navbar";
 // import axios from "axios";
 
 // axios.defaults.baseURL =
@@ -10,7 +10,7 @@ import Navbar from "../components/Navbar";
 export default function Home() {
   return (
     <div>
-      <Navbar></Navbar>
+      <Nav></Nav>
       <div>
         <h1>Hello</h1>
         <Button variant="contained">Hello world</Button>
