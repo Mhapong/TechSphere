@@ -1,0 +1,39 @@
+# name: Techsphere-containers
+
+services:
+
+  app_mysql:
+
+    container_name:  Techsphere
+
+    image: mysql
+
+    environment:
+
+      - MYSQL_DATABASE=Techsphere
+
+      - MYSQL_ROOT_PASSWORD=admin
+
+      - MYSQL_ROOT_HOST=%
+
+    ports:
+
+      - 3306:3306
+
+    volumes:
+
+      - Techsphere_data:/var/lib/mysql
+
+    networks:
+
+      - my_app
+
+      
+
+volumes:
+
+  Techsphere_data:
+
+networks:
+
+  my_app:
