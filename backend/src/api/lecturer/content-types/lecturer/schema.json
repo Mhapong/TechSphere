@@ -1,0 +1,29 @@
+{
+  "kind": "collectionType",
+  "collectionName": "lecturers",
+  "info": {
+    "singularName": "lecturer",
+    "pluralName": "lecturers",
+    "displayName": "lecturer"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "first_name": {
+      "type": "string",
+      "required": true
+    },
+    "last_name": {
+      "type": "string",
+      "required": true
+    },
+    "lecturer_id": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::course.course",
+      "mappedBy": "owner_lecturer_id"
+    }
+  }
+}

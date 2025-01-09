@@ -3,13 +3,20 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@chakra-ui/react": "^3.2.5",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
+    "@headlessui/react": "^2.2.0",
+    "@heroicons/react": "^2.2.0",
+    "@material-tailwind/react": "^2.1.10",
     "@mui/material": "^6.3.1",
     "cra-template": "1.2.0",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
-    "react-scripts": "5.0.1"
+    "html-webpack-plugin": "^5.5.0",
+    "lucide-react": "^0.469.0",
+    "react": "^18",
+    "react-dom": "^18",
+    "react-router-dom": "^6.28.1",
+    "react-scripts": "^5.0.1"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -36,6 +43,15 @@
     ]
   },
   "devDependencies": {
+    "tailwindcss": "^3.4.17",
     "web-vitals": "^4.2.4"
+  },
+  "peerDependencies": {
+    "react": "^18",
+    "react-dom": "^18"
+  },
+  "overrides": {
+    "nth-check": "2.1.1",
+    "postcss": "8.4.49"
   }
 }

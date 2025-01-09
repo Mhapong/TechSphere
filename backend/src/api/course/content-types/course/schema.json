@@ -1,0 +1,41 @@
+{
+  "kind": "collectionType",
+  "collectionName": "courses",
+  "info": {
+    "singularName": "course",
+    "pluralName": "courses",
+    "displayName": "Course",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "detail": {
+      "type": "text",
+      "unique": false
+    },
+    "hour": {
+      "type": "integer",
+      "required": true,
+      "min": 1
+    },
+    "price": {
+      "type": "integer",
+      "required": true,
+      "min": 0
+    },
+    "owner_lecturer_id": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::lecturer.lecturer",
+      "inversedBy": "lecturer_id"
+    }
+  }
+}
