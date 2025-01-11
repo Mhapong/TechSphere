@@ -4,7 +4,8 @@
   "info": {
     "singularName": "lecturer",
     "pluralName": "lecturers",
-    "displayName": "lecturer"
+    "displayName": "lecturer",
+    "description": ""
   },
   "options": {
     "draftAndPublish": false
@@ -19,11 +20,23 @@
       "type": "string",
       "required": true
     },
+    "email": {
+      "type": "string",
+      "required": true
+    },
+    "username": {
+      "type": "string",
+      "required": false
+    },
+    "password": {
+      "type": "password",
+      "required": true
+    },
     "lecturer_id": {
       "type": "relation",
       "relation": "oneToMany",
       "target": "api::course.course",
-      "mappedBy": "owner_lecturer_id"
+      "mappedBy": "lecturer_owned"
     }
   }
 }

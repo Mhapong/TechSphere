@@ -384,15 +384,11 @@ export interface ApiCourseCourse extends Struct.CollectionTypeSchema {
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-    detail: Schema.Attribute.Text;
-    hour: Schema.Attribute.Integer &
-      Schema.Attribute.Required &
-      Schema.Attribute.SetMinMax<
-        {
-          min: 1;
-        },
-        number
-      >;
+    description: Schema.Attribute.Text;
+    lecturer_owned: Schema.Attribute.Relation<
+      'manyToOne',
+      'api::lecturer.lecturer'
+    >;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
@@ -402,10 +398,6 @@ export interface ApiCourseCourse extends Struct.CollectionTypeSchema {
     name: Schema.Attribute.String &
       Schema.Attribute.Required &
       Schema.Attribute.Unique;
-    owner_lecturer_id: Schema.Attribute.Relation<
-      'manyToOne',
-      'api::lecturer.lecturer'
-    >;
     price: Schema.Attribute.Integer &
       Schema.Attribute.Required &
       Schema.Attribute.SetMinMax<
@@ -415,6 +407,15 @@ export interface ApiCourseCourse extends Struct.CollectionTypeSchema {
         number
       >;
     publishedAt: Schema.Attribute.DateTime;
+    time_usage: Schema.Attribute.Integer &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetMinMax<
+        {
+          min: 1;
+        },
+        number
+      >;
+    topic_count: Schema.Attribute.String;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -424,6 +425,7 @@ export interface ApiCourseCourse extends Struct.CollectionTypeSchema {
 export interface ApiLecturerLecturer extends Struct.CollectionTypeSchema {
   collectionName: 'lecturers';
   info: {
+    description: '';
     displayName: 'lecturer';
     pluralName: 'lecturers';
     singularName: 'lecturer';
@@ -435,6 +437,7 @@ export interface ApiLecturerLecturer extends Struct.CollectionTypeSchema {
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    email: Schema.Attribute.String & Schema.Attribute.Required;
     first_name: Schema.Attribute.String & Schema.Attribute.Required;
     last_name: Schema.Attribute.String & Schema.Attribute.Required;
     lecturer_id: Schema.Attribute.Relation<'oneToMany', 'api::course.course'>;
@@ -444,10 +447,12 @@ export interface ApiLecturerLecturer extends Struct.CollectionTypeSchema {
       'api::lecturer.lecturer'
     > &
       Schema.Attribute.Private;
+    password: Schema.Attribute.Password & Schema.Attribute.Required;
     publishedAt: Schema.Attribute.DateTime;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    username: Schema.Attribute.String;
   };
 }
 
