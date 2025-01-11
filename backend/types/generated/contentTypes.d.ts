@@ -381,6 +381,7 @@ export interface ApiCourseCourse extends Struct.CollectionTypeSchema {
     draftAndPublish: false;
   };
   attributes: {
+    admin_user: Schema.Attribute.Relation<'oneToOne', 'admin::user'>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -449,6 +450,10 @@ export interface ApiLecturerLecturer extends Struct.CollectionTypeSchema {
       Schema.Attribute.Private;
     password: Schema.Attribute.Password & Schema.Attribute.Required;
     publishedAt: Schema.Attribute.DateTime;
+    role: Schema.Attribute.Relation<
+      'manyToOne',
+      'plugin::users-permissions.user'
+    >;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -911,7 +916,6 @@ export interface PluginUsersPermissionsUser
   };
   options: {
     draftAndPublish: false;
-    timestamps: true;
   };
   attributes: {
     blocked: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
@@ -925,6 +929,7 @@ export interface PluginUsersPermissionsUser
       Schema.Attribute.SetMinMaxLength<{
         minLength: 6;
       }>;
+    lecturers: Schema.Attribute.Relation<'oneToMany', 'api::lecturer.lecturer'>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
