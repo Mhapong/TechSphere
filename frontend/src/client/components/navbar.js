@@ -4,8 +4,8 @@ import { Disclosure, DisclosureButton, DisclosurePanel, Menu, MenuButton, MenuIt
 import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline'
 
 const navigation = [
-    { name: "Login", href: "/Login", current: true },
-    { name: "SignUp", href: "/SignUp", current: true },
+    { name: "Sign in", href: "/sign-in", current: true },
+    { name: "Sign up", href: "/sign-up", current: true },
 
 ]
 
@@ -15,7 +15,7 @@ function classNames(...classes) {
 
 export default function Nav() {
     return (
-        <Disclosure as="nav" className="bg-gray-800">
+        <Disclosure as="nav" className="bg-blue">
             <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
                 <div className="relative flex h-16 items-center justify-between">
                     <div className="absolute inset-y-0 left-0 flex items-center sm:hidden">

@@ -6,22 +6,24 @@ import SignUp from './client/pages/SignUp';
 
 
 function App() {
-  <BrowserRouter>
-    <Routes>
-      <Route
-        path="/Home"
-        element={<Home />}
-      />
-      <Route
-        path="/Login"
-        element={<Login />}
-      />
-      <Route
-        path="/SignUp"
-        element={<SignUp />}
-      />
-    </Routes>
-  </BrowserRouter>
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route
+          path="/"
+          element={<Home />}
+        />
+        <Route
+          path="/sign-in"
+          element={<Login />}
+        />
+        <Route
+          path="/sign-up"
+          element={<SignUp />}
+        />
+      </Routes>
+    </BrowserRouter>
+  );
 };
 
 export default App;
