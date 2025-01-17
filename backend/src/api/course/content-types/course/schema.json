@@ -17,11 +17,11 @@
       "required": true,
       "unique": true
     },
-    "detail": {
+    "description": {
       "type": "text",
       "unique": false
     },
-    "hour": {
+    "time_usage": {
       "type": "integer",
       "required": true,
       "min": 1
@@ -31,11 +31,19 @@
       "required": true,
       "min": 0
     },
-    "owner_lecturer_id": {
+    "lecturer_owned": {
       "type": "relation",
       "relation": "manyToOne",
       "target": "api::lecturer.lecturer",
       "inversedBy": "lecturer_id"
+    },
+    "topic_count": {
+      "type": "string"
+    },
+    "admin_user": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "admin::user"
     }
   }
 }
