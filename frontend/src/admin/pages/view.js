@@ -62,7 +62,6 @@ export default function Example() {
 
   return (
     <div className="bg-white">
-      <Nav></Nav>
       <div className="pt-6">
         <nav aria-label="Breadcrumb">
           <ol

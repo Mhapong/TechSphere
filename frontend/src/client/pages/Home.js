@@ -10,7 +10,6 @@ import Nav from "../components/navbar";
 export default function Home() {
   return (
     <div>
-      <Nav></Nav>
       <div>
         <h1>Hello</h1>
         <Button variant="contained">Hello world</Button>
