@@ -68,30 +68,30 @@ export default function SignUp(props) {
                             <h1 class="text-gray-800 font-bold text-2xl mb-1">Hello new user let's create your account</h1>
                             <p class="text-sm font-normal text-gray-600 mb-8">Welcome to our community</p>
                             <div class="flex items-center border-2 mb-5 py-2 px-3 rounded-2xl">
-                                <input id="first_name" class=" focus:ring-indigo-500 focus:outline-none focus:ring-2 focus:border-indigo-500 focus:invalid:ring-red-800 focus:ring-3 pl-2 w-f focus:invalid:ring-red-800ull outline-none border-none" type="first_name" name="first_name" placeholder="First Name" required />
+                                <input id="first_name" class="  pl-2 w-f outline-none border-none" type="first_name" name="first_name" placeholder="First Name" required />
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <text stroke="grey" font-size="200">|</text>
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" />
                                 </svg>
-                                <input id="last_name" class=" focus:ring-indigo-500 focus:outline-none focus:ring-2 focus:border-indigo-500 focus:invalid:ring-red-800 focus:ring-3 pl-2 w-f focus:invalid:ring-red-800ull outline-none border-none" type="last_name" name="last_name" placeholder="Last Name" required />
+                                <input id="last_name" class="  pl-2 w-f outline-none border-none" type="last_name" name="last_name" placeholder="Last Name" required />
                             </div>
                             <div class="flex items-center border-2 mb-5 py-2 px-3 rounded-2xl">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" />
                                 </svg>
-                                <input id="email" class=" focus:ring-indigo-500 focus:outline-none focus:ring-2 focus:border-indigo-500 focus:invalid:ring-red-800 focus:ring-3 pl-2 w-f focus:invalid:ring-red-800ull outline-none border-none" type="email" name="email" placeholder="Email Address" required />
+                                <input id="email" class="  pl-2 w-f outline-none border-none" type="email" name="email" placeholder="Email Address" required />
                             </div>
                             <div class="flex items-center border-2 mb-5 py-2 px-3 rounded-2xl">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" >
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4" strokeWidth="2"></circle>
                                 </svg>
-                                <input id="username" class=" focus:ring-indigo-500 focus:outline-none focus:ring-2 focus:border-indigo-500 focus:invalid:ring-red-800 focus:ring-3 pl-2 w-f focus:invalid:ring-red-800ull outline-none border-none" type="username" name="username" placeholder="Username" required />
+                                <input id="username" class="  pl-2 w-f outline-none border-none" type="username" name="username" placeholder="Username" required />
                             </div>
                             <div class="flex items-center border-2 mb-12 py-2 px-3 rounded-2xl ">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
                                     <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
                                 </svg>
-                                <input class="focus:ring-indigo-500 focus:outline-none focus:ring-2 focus:border-indigo-500 focus:invalid:ring-red-800 focus:ring-3 pl-2 w-f focus:invalid:ring-red-800ull outline-none border-none" type="password" name="password" id="password" placeholder="Password" required />
+                                <input class=" pl-2 w-f outline-none border-none" type="password" name="password" id="password" placeholder="Password" required />
 
                             </div>
                             <button type="submit" class="block w-full bg-red-400 mt-5 py-2 rounded-2xl hover:bg-red-500 hover:text-white-100 hover:-translate-y-1 transition-all duration-500 text-white-100 font-semibold mb-2">Sign up</button>

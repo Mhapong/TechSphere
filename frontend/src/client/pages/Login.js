@@ -6,7 +6,6 @@ import Nav from "../components/navbar";
 export default function Login() {
     return (
         <div>
-            <Nav />
             <div class="h-screen flex">
                 <div class="hidden lg:flex w-full lg:w-1/2 login_img_section
           justify-around items-center">
