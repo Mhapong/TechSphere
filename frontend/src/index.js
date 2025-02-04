@@ -4,13 +4,15 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import Nav from './client/components/navbar';
-
+import { ContextProvider } from './client/context/Auth.context';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <Nav />
-    <App />
+    <ContextProvider>
+      <Nav />
+      <App />
+    </ContextProvider>
   </React.StrictMode>
 );
 
