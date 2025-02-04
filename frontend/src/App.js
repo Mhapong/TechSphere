@@ -1,4 +1,3 @@
-
 import {
   Link,
   Navigate,
@@ -8,7 +7,7 @@ import {
   BrowserRouter,
 } from "react-router-dom";
 import React, { useContext } from "react";
-import { AuthContext } from "./client/context/Auth.context"
+import { AuthContext } from "./context/Auth.context";
 
 import Home from "./client/pages/Home";
 import Login from "./client/pages/Login";
@@ -18,15 +17,18 @@ import Cart from "./client/pages/Cart";
 
 function App() {
   const { state } = useContext(AuthContext);
+  console.log(state.user);
 
-  if (!state.isLoggedIn) return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/sign-up" element={<SignUp />} />
-      </Routes>
-    </BrowserRouter>);
+  if (!state.isLoggedIn)
+    return (
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/sign-up" element={<SignUp />} />
+        </Routes>
+      </BrowserRouter>
+    );
   else
     return (
       <BrowserRouter>
