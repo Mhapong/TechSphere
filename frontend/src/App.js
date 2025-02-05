@@ -16,6 +16,7 @@ import View from "./admin/pages/view";
 import Cart from "./client/pages/Cart";
 import { Navbar } from "@material-tailwind/react";
 import Nav from "./client/components/navbar";
+import NavAdmin from "./admin/components/navbar-admin";
 
 function App() {
   const { state } = useContext(AuthContext);
@@ -37,7 +38,7 @@ function App() {
   else {
     console.log(state.user.userRole);
     const userRole = state.user?.userRole;
-    if (userRole === "user") {
+    if (userRole === "User") {
       return (
         <>
           <Nav />
@@ -50,7 +51,7 @@ function App() {
           </BrowserRouter>
         </>
       );
-    } else if (userRole === "lecturer") {
+    } else if (userRole === "Lecturer") {
       return (
         <>
           <Nav />
@@ -61,13 +62,19 @@ function App() {
           </BrowserRouter>
         </>
       );
-    } else if (userRole === "admin") {
+    } else if (userRole === "Admin") {
       return (
         <>
-          <Nav />
+          <NavAdmin />
           <BrowserRouter>
             <Routes>
               <Route path="/" element={<Home />} />
+              <Route path="/create" element={<Home />} />
+              <Route path="/view" element={<Home />} />
+              <Route path="/lecturer" element={<Home />} />
+              <Route path="/student" element={<Home />} />
+              <Route path="/finance" element={<Home />} />
+              <Route path="/user" element={<Home />} />
             </Routes>
           </BrowserRouter>
         </>

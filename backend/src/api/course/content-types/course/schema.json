@@ -31,12 +31,6 @@
       "required": true,
       "min": 0
     },
-    "lecturer_owned": {
-      "type": "relation",
-      "relation": "manyToOne",
-      "target": "api::lecturer.lecturer",
-      "inversedBy": "lecturer_id"
-    },
     "topic_count": {
       "type": "string"
     },
