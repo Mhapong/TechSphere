@@ -5,12 +5,12 @@ import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import Nav from "./client/components/navbar";
 import { ContextProvider } from "./context/Auth.context.js";
+import { Navbar } from "@material-tailwind/react";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
     <ContextProvider>
-      <Nav />
       <App />
     </ContextProvider>
   </React.StrictMode>
