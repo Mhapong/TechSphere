@@ -65,12 +65,6 @@
       "inversedBy": "users",
       "configurable": false
     },
-    "lecturers": {
-      "type": "relation",
-      "relation": "oneToMany",
-      "target": "api::lecturer.lecturer",
-      "mappedBy": "role"
-    },
     "first_name": {
       "type": "string",
       "required": true,
