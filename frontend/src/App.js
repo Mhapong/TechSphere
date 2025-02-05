@@ -43,8 +43,9 @@ function App() {
           <Nav />
           <BrowserRouter>
             <Routes>
-              <Route path="/login" element={<Login />} />
               <Route path="/" element={<Home />} />
+              <Route path="/cart" element={<Cart />} />
+
             </Routes>
           </BrowserRouter>
         </>
@@ -55,7 +56,6 @@ function App() {
           <Nav />
           <BrowserRouter>
             <Routes>
-              <Route path="/login" element={<Login />} />
               <Route path="/" element={<Home />} />
             </Routes>
           </BrowserRouter>
@@ -67,7 +67,6 @@ function App() {
           <Nav />
           <BrowserRouter>
             <Routes>
-              <Route path="/login" element={<Login />} />
               <Route path="/" element={<Home />} />
             </Routes>
           </BrowserRouter>
