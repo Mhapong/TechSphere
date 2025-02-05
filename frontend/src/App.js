@@ -22,32 +22,58 @@ function App() {
   console.log(state.user);
 
   if (!state.isLoggedIn)
-    return (<>
-      <Nav />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/sign-up" element={<SignUp />} />
-        </Routes>
-      </BrowserRouter>
-    </>
+    return (
+      <>
+        <Nav />
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/sign-up" element={<SignUp />} />
+          </Routes>
+        </BrowserRouter>
+      </>
     );
-  else
-    return (<>
-
-      <Nav />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/sign-up" element={<SignUp />} />
-          <Route path="/view" element={<View />} />
-          <Route path="/cart" element={<Cart />} />
-        </Routes>
-      </BrowserRouter>
-    </>
-    );
+  else {
+    console.log(state.user.userRole);
+    const userRole = state.user?.userRole;
+    if (userRole === "user") {
+      return (
+        <>
+          <Nav />
+          <BrowserRouter>
+            <Routes>
+              <Route path="/login" element={<Login />} />
+              <Route path="/" element={<Home />} />
+            </Routes>
+          </BrowserRouter>
+        </>
+      );
+    } else if (userRole === "lecturer") {
+      return (
+        <>
+          <Nav />
+          <BrowserRouter>
+            <Routes>
+              <Route path="/login" element={<Login />} />
+              <Route path="/" element={<Home />} />
+            </Routes>
+          </BrowserRouter>
+        </>
+      );
+    } else if (userRole === "admin") {
+      return (
+        <>
+          <Nav />
+          <BrowserRouter>
+            <Routes>
+              <Route path="/login" element={<Login />} />
+              <Route path="/" element={<Home />} />
+            </Routes>
+          </BrowserRouter>
+        </>
+      );
+    }
+  }
 }
-
 export default App;
