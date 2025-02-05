@@ -70,6 +70,18 @@
       "relation": "oneToMany",
       "target": "api::lecturer.lecturer",
       "mappedBy": "role"
+    },
+    "first_name": {
+      "type": "string",
+      "required": true,
+      "minLength": 1,
+      "maxLength": 50
+    },
+    "last_name": {
+      "type": "string",
+      "required": true,
+      "maxLength": 50,
+      "minLength": 1
     }
   }
 }
