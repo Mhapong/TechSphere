@@ -2,6 +2,7 @@ import React, { useContext } from "react";
 import { useSetState } from "react-use";
 import Nav from "../components/navbar";
 import { AuthContext } from "../../context/Auth.context.js";
+import { useNavigate } from "react-router";
 
 const initialState = {
   username: "admin",
@@ -12,11 +13,11 @@ export default function Login() {
   const { state: ContextState, login } = useContext(AuthContext);
   const { isLoginPending, isLoggedIn, loginError } = ContextState;
   const [state, setState] = useSetState(initialState);
-
+  const Navigate = useNavigate();
   const onSubmit = (e) => {
     e.preventDefault();
     const { username, password } = state;
-    login(username, password);
+    login(username, password, Navigate);
     setState({
       username: "",
       password: "",
@@ -37,16 +38,16 @@ export default function Login() {
                   z-0"
           ></div>
           <div class="w-full mx-auto px-20 flex-col items-center space-y-6">
-            <h1 class="text-white font-bold text-4xl font-sans">Simple App</h1>
-            <p class="text-white mt-1">The simplest app to use</p>
-            <div class="flex justify-center lg:justify-start mt-6">
+            <h1 class="text-black font-bold text-4xl font-sans">TECHSPHERE</h1>
+            <p class="text-black mt-1">ศูนย์กลางความรู้ด้านเทคโนโลยี</p>
+            {/* <div class="flex justify-center lg:justify-start mt-6">
               <a
                 href="#"
                 class="hover:bg-indigo-700 hover:text-white hover:-translate-y-1 transition-all duration-500 bg-white text-indigo-800 mt-4 px-4 py-2 rounded-2xl font-bold mb-2"
               >
                 Get Started
               </a>
-            </div>
+            </div> */}
           </div>
         </div>
         <div class="flex w-full lg:w-1/2 justify-center items-center bg-white space-y-8">

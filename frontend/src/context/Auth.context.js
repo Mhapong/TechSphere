@@ -47,12 +47,12 @@ export const ContextProvider = (props) => {
     loadPersistedJwt(handleLoginResult);
   }, []);
 
-  const login = (username, password) => {
+  const login = (username, password, Navigate) => {
     setLoginPending(true);
     setLoginSuccess(false);
     setLoginError(null);
 
-    fetchLogin(username, password, handleLoginResult);
+    fetchLogin(username, password, handleLoginResult, Navigate);
   };
 
   const logout = () => {
@@ -88,7 +88,7 @@ const fetchRole = async (jwt) => {
   }
 };
 
-const fetchLogin = async (username, password, callback) => {
+const fetchLogin = async (username, password, callback, Navigate) => {
   try {
     const response = await ax.post(conf.loginEndpoint, {
       identifier: username,
@@ -96,6 +96,7 @@ const fetchLogin = async (username, password, callback) => {
     });
     if (response.data.jwt && response.data.user.id > 0) {
       callback(null, response.data);
+      Navigate("/");
     } else {
       callback(new Error("Invalid username and password"));
     }
