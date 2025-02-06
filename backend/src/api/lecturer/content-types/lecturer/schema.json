@@ -18,12 +18,6 @@
     "last_name": {
       "type": "string",
       "required": true
-    },
-    "lecturer_id": {
-      "type": "relation",
-      "relation": "oneToMany",
-      "target": "api::course.course",
-      "mappedBy": "owner_lecturer_id"
     }
   }
 }

@@ -1,0 +1,21 @@
+{
+  "kind": "collectionType",
+  "collectionName": "topics",
+  "info": {
+    "singularName": "topic",
+    "pluralName": "topics",
+    "displayName": "Topic"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "topic_title": {
+      "type": "string"
+    },
+    "time": {
+      "type": "integer"
+    }
+  }
+}

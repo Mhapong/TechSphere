@@ -12,30 +12,23 @@
   },
   "pluginOptions": {},
   "attributes": {
-    "name": {
-      "type": "string",
-      "required": true,
-      "unique": true
+    "course_id": {
+      "type": "biginteger"
     },
-    "detail": {
-      "type": "text",
-      "unique": false
+    "Name": {
+      "type": "string"
     },
-    "hour": {
-      "type": "integer",
-      "required": true,
-      "min": 1
+    "Price": {
+      "type": "decimal"
     },
-    "price": {
-      "type": "integer",
-      "required": true,
-      "min": 0
+    "Description": {
+      "type": "text"
     },
-    "owner_lecturer_id": {
-      "type": "relation",
-      "relation": "manyToOne",
-      "target": "api::lecturer.lecturer",
-      "inversedBy": "lecturer_id"
+    "Time_Usage": {
+      "type": "integer"
+    },
+    "create_date": {
+      "type": "datetime"
     }
   }
 }
