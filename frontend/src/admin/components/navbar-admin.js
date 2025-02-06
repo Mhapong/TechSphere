@@ -1,16 +1,5 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useContext } from "react";
 import { AuthContext } from "../../context/Auth.context";
-// import { useNavigate } from "react-router-dom";
-import {
-  Disclosure,
-  DisclosureButton,
-  DisclosurePanel,
-  Menu,
-  MenuButton,
-  MenuItem,
-  MenuItems,
-} from "@headlessui/react";
-import { Bars3Icon, BellIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import logo from "./Image/TECHSPHERE.png";
 import usericon from "./Image/user-icon.webp";
 import HomeIcon from "@mui/icons-material/Home";
@@ -87,7 +76,10 @@ export default function NavAdmin() {
       current: true,
       key: "",
       icon: <LogoutIcon />,
-      action: logout,
+      action: () => {
+        logout();
+        window.location.href = "/";
+      },
     },
   ];
 
@@ -128,7 +120,7 @@ export default function NavAdmin() {
               <a href="/" className="flex ms-2 md:me-24">
                 <img src={logo} className="h-8 me-3" alt="Logo" />
                 <span className="self-center text-xl font-semibold sm:text-2xl whitespace-nowrap dark:text-white">
-                  TechSphere {user.userRole} Panel
+                  TechSphere {user.userRole}
                 </span>
               </a>
             </div>
