@@ -448,8 +448,8 @@ export interface ApiCourseCourse extends Struct.CollectionTypeSchema {
       'api::category.category'
     >;
     course_id: Schema.Attribute.BigInteger;
-    createdAt: Schema.Attribute.DateTime;
     create_date: Schema.Attribute.DateTime;
+    createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     Description: Schema.Attribute.Text;
