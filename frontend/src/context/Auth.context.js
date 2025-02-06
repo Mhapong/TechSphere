@@ -36,7 +36,8 @@ export const ContextProvider = (props) => {
         updateJwt(result.jwt);
       }
       const userRole = await fetchRole(result.jwt);
-      setLoginSuccess(true, { ...result.user, userRole });
+      const userProfile = await fetchProfile(result.jwt);
+      setLoginSuccess(true, { ...result.user, userRole, userProfile });
     } else if (error) {
       setLoginError(error);
     }
@@ -85,6 +86,17 @@ const fetchRole = async (jwt) => {
   } catch (error) {
     console.error("Failed to fetch role:", error);
     return "guest";
+  }
+};
+
+const fetchProfile = async (jwt) => {
+  try {
+    const response = await ax.get(`/users/me?populate=profile_picture`);
+    if (response.data) {
+      return response.data.profile_picture[0] || "No profile_picture";
+    }
+  } catch (error) {
+    console.error("Failed to fetch profile_picture:", error);
   }
 };
 

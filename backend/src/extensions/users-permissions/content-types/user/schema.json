@@ -84,6 +84,16 @@
       "relation": "manyToOne",
       "target": "api::lecturer-background.lecturer-background",
       "inversedBy": "lecturer_background"
+    },
+    "profile_picture": {
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ],
+      "type": "media",
+      "multiple": true
     }
   }
 }

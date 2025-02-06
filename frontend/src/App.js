@@ -18,6 +18,9 @@ import { Navbar } from "@material-tailwind/react";
 import Nav from "./client/components/navbar";
 import NavAdmin from "./admin/components/navbar-admin";
 import Mycourse from "./client/pages/MyCourse";
+import Profile from "./admin/pages/profile";
+import EditProfile from "./admin/pages/edit-profile";
+import AddCourse from "./admin/pages/addcourse";
 
 function App() {
   const { state } = useContext(AuthContext);
@@ -70,12 +73,13 @@ function App() {
           <BrowserRouter>
             <Routes>
               <Route path="/" element={<Home />} />
-              <Route path="/create" element={<Home />} />
+              <Route path="/create" element={<AddCourse />} />
               <Route path="/view" element={<Home />} />
               <Route path="/lecturer" element={<Home />} />
               <Route path="/student" element={<Home />} />
               <Route path="/finance" element={<Home />} />
-              <Route path="/user" element={<Home />} />
+              <Route path="/user" element={<Profile />} />
+              <Route path="/edit-profile/:userid" element={<EditProfile />} />
             </Routes>
           </BrowserRouter>
         </>

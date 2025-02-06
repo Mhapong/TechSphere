@@ -1092,6 +1092,10 @@ export interface PluginUsersPermissionsUser
       Schema.Attribute.SetMinMaxLength<{
         minLength: 6;
       }>;
+    profile_picture: Schema.Attribute.Media<
+      'images' | 'files' | 'videos' | 'audios',
+      true
+    >;
     provider: Schema.Attribute.String;
     publishedAt: Schema.Attribute.DateTime;
     rating: Schema.Attribute.Relation<
