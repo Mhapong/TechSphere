@@ -380,6 +380,7 @@ export interface ApiCategoryCategory extends Struct.CollectionTypeSchema {
     draftAndPublish: false;
   };
   attributes: {
+    Category_id: Schema.Attribute.Relation<'manyToOne', 'api::course.course'>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -408,6 +409,7 @@ export interface ApiContentContent extends Struct.CollectionTypeSchema {
     draftAndPublish: false;
   };
   attributes: {
+    content_id: Schema.Attribute.Relation<'manyToOne', 'api::topic.topic'>;
     content_title: Schema.Attribute.String;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -441,6 +443,10 @@ export interface ApiCourseCourse extends Struct.CollectionTypeSchema {
     draftAndPublish: false;
   };
   attributes: {
+    category_id: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::category.category'
+    >;
     course_id: Schema.Attribute.BigInteger;
     createdAt: Schema.Attribute.DateTime;
     create_date: Schema.Attribute.DateTime;
@@ -456,7 +462,9 @@ export interface ApiCourseCourse extends Struct.CollectionTypeSchema {
     Name: Schema.Attribute.String;
     Price: Schema.Attribute.Decimal;
     publishedAt: Schema.Attribute.DateTime;
+    rating: Schema.Attribute.Relation<'oneToMany', 'api::review.review'>;
     Time_Usage: Schema.Attribute.Integer;
+    topic: Schema.Attribute.Relation<'oneToMany', 'api::topic.topic'>;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -514,6 +522,7 @@ export interface ApiReviewReview extends Struct.CollectionTypeSchema {
     > &
       Schema.Attribute.Private;
     publishedAt: Schema.Attribute.DateTime;
+    review_id: Schema.Attribute.Relation<'manyToOne', 'api::course.course'>;
     star: Schema.Attribute.Integer;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -524,6 +533,7 @@ export interface ApiReviewReview extends Struct.CollectionTypeSchema {
 export interface ApiTopicTopic extends Struct.CollectionTypeSchema {
   collectionName: 'topics';
   info: {
+    description: '';
     displayName: 'Topic';
     pluralName: 'topics';
     singularName: 'topic';
@@ -532,6 +542,7 @@ export interface ApiTopicTopic extends Struct.CollectionTypeSchema {
     draftAndPublish: false;
   };
   attributes: {
+    content: Schema.Attribute.Relation<'oneToMany', 'api::content.content'>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -540,6 +551,7 @@ export interface ApiTopicTopic extends Struct.CollectionTypeSchema {
       Schema.Attribute.Private;
     publishedAt: Schema.Attribute.DateTime;
     time: Schema.Attribute.Integer;
+    topic_id: Schema.Attribute.Relation<'manyToOne', 'api::course.course'>;
     topic_title: Schema.Attribute.String;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &

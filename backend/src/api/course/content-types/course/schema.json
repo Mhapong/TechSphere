@@ -29,6 +29,24 @@
     },
     "create_date": {
       "type": "datetime"
+    },
+    "category_id": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::category.category",
+      "mappedBy": "Category_id"
+    },
+    "rating": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::review.review",
+      "mappedBy": "review_id"
+    },
+    "topic": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::topic.topic",
+      "mappedBy": "topic_id"
     }
   }
 }

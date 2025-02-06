@@ -32,6 +32,12 @@
     },
     "progress": {
       "type": "integer"
+    },
+    "content_id": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::topic.topic",
+      "inversedBy": "content"
     }
   }
 }

@@ -13,6 +13,12 @@
   "attributes": {
     "tag": {
       "type": "string"
+    },
+    "Category_id": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::course.course",
+      "inversedBy": "category_id"
     }
   }
 }
