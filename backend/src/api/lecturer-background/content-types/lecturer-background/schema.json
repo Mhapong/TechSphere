@@ -4,10 +4,11 @@
   "info": {
     "singularName": "lecturer-background",
     "pluralName": "lecturer-backgrounds",
-    "displayName": "Lecturer_Background"
+    "displayName": "Lecturer_Background",
+    "description": ""
   },
   "options": {
-    "draftAndPublish": true
+    "draftAndPublish": false
   },
   "pluginOptions": {},
   "attributes": {
@@ -18,7 +19,7 @@
       "mappedBy": "background"
     },
     "history": {
-      "type": "string"
+      "type": "text"
     }
   }
 }

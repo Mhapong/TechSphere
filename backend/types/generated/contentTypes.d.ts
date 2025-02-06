@@ -448,8 +448,8 @@ export interface ApiCourseCourse extends Struct.CollectionTypeSchema {
       'api::category.category'
     >;
     course_id: Schema.Attribute.BigInteger;
-    create_date: Schema.Attribute.DateTime;
     createdAt: Schema.Attribute.DateTime;
+    create_date: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     Description: Schema.Attribute.Text;
@@ -475,18 +475,19 @@ export interface ApiLecturerBackgroundLecturerBackground
   extends Struct.CollectionTypeSchema {
   collectionName: 'lecturer_backgrounds';
   info: {
+    description: '';
     displayName: 'Lecturer_Background';
     pluralName: 'lecturer-backgrounds';
     singularName: 'lecturer-background';
   };
   options: {
-    draftAndPublish: true;
+    draftAndPublish: false;
   };
   attributes: {
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-    history: Schema.Attribute.String;
+    history: Schema.Attribute.Text;
     lecturer_background: Schema.Attribute.Relation<
       'oneToMany',
       'plugin::users-permissions.user'
@@ -509,12 +510,12 @@ export interface ApiLecturerReviewLecturerReview
   collectionName: 'lecturer_reviews';
   info: {
     description: '';
-    displayName: 'lecturer_review';
+    displayName: 'Lecturer_review';
     pluralName: 'lecturer-reviews';
     singularName: 'lecturer-review';
   };
   options: {
-    draftAndPublish: true;
+    draftAndPublish: false;
   };
   attributes: {
     comment: Schema.Attribute.Text;
@@ -540,35 +541,6 @@ export interface ApiLecturerReviewLecturerReview
         },
         number
       >;
-    updatedAt: Schema.Attribute.DateTime;
-    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-  };
-}
-
-export interface ApiLecturerLecturer extends Struct.CollectionTypeSchema {
-  collectionName: 'lecturers';
-  info: {
-    displayName: 'lecturer';
-    pluralName: 'lecturers';
-    singularName: 'lecturer';
-  };
-  options: {
-    draftAndPublish: false;
-  };
-  attributes: {
-    createdAt: Schema.Attribute.DateTime;
-    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-    first_name: Schema.Attribute.String & Schema.Attribute.Required;
-    last_name: Schema.Attribute.String & Schema.Attribute.Required;
-    locale: Schema.Attribute.String & Schema.Attribute.Private;
-    localizations: Schema.Attribute.Relation<
-      'oneToMany',
-      'api::lecturer.lecturer'
-    > &
-      Schema.Attribute.Private;
-    publishedAt: Schema.Attribute.DateTime;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -1157,7 +1129,6 @@ declare module '@strapi/strapi' {
       'api::course.course': ApiCourseCourse;
       'api::lecturer-background.lecturer-background': ApiLecturerBackgroundLecturerBackground;
       'api::lecturer-review.lecturer-review': ApiLecturerReviewLecturerReview;
-      'api::lecturer.lecturer': ApiLecturerLecturer;
       'api::review.review': ApiReviewReview;
       'api::topic.topic': ApiTopicTopic;
       'plugin::content-releases.release': PluginContentReleasesRelease;

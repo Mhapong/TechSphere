@@ -4,11 +4,11 @@
   "info": {
     "singularName": "lecturer-review",
     "pluralName": "lecturer-reviews",
-    "displayName": "lecturer_review",
+    "displayName": "Lecturer_review",
     "description": ""
   },
   "options": {
-    "draftAndPublish": true
+    "draftAndPublish": false
   },
   "pluginOptions": {},
   "attributes": {
