@@ -39,7 +39,7 @@ export default function Nav() {
 
 
   return (
-    < header className="bg-white drop-shadow-sm  w-full h-1/6 sticky z-20 top-0 md:w-auto">
+    < header className="bg-white drop-shadow-sm  w-full h-1/6 sticky z-50 top-0 md:w-auto">
 
       <Disclosure as="nav" className="flex ">
 

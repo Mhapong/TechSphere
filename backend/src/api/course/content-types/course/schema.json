@@ -30,12 +30,6 @@
     "create_date": {
       "type": "datetime"
     },
-    "category_id": {
-      "type": "relation",
-      "relation": "oneToMany",
-      "target": "api::category.category",
-      "mappedBy": "Category_id"
-    },
     "rating": {
       "type": "relation",
       "relation": "oneToMany",
@@ -47,6 +41,12 @@
       "relation": "oneToMany",
       "target": "api::topic.topic",
       "mappedBy": "topic_id"
+    },
+    "categories": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::category.category",
+      "mappedBy": "category_ids"
     }
   }
 }
