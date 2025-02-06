@@ -448,8 +448,8 @@ export interface ApiCourseCourse extends Struct.CollectionTypeSchema {
       'api::category.category'
     >;
     course_id: Schema.Attribute.BigInteger;
-    createdAt: Schema.Attribute.DateTime;
     create_date: Schema.Attribute.DateTime;
+    createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     Description: Schema.Attribute.Text;
@@ -465,6 +465,81 @@ export interface ApiCourseCourse extends Struct.CollectionTypeSchema {
     rating: Schema.Attribute.Relation<'oneToMany', 'api::review.review'>;
     Time_Usage: Schema.Attribute.Integer;
     topic: Schema.Attribute.Relation<'oneToMany', 'api::topic.topic'>;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiLecturerBackgroundLecturerBackground
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'lecturer_backgrounds';
+  info: {
+    displayName: 'Lecturer_Background';
+    pluralName: 'lecturer-backgrounds';
+    singularName: 'lecturer-background';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    history: Schema.Attribute.String;
+    lecturer_background: Schema.Attribute.Relation<
+      'oneToMany',
+      'plugin::users-permissions.user'
+    >;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::lecturer-background.lecturer-background'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiLecturerReviewLecturerReview
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'lecturer_reviews';
+  info: {
+    description: '';
+    displayName: 'lecturer_review';
+    pluralName: 'lecturer-reviews';
+    singularName: 'lecturer-review';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    comment: Schema.Attribute.Text;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    lecturer_review_id: Schema.Attribute.Relation<
+      'manyToOne',
+      'plugin::users-permissions.user'
+    >;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::lecturer-review.lecturer-review'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    start: Schema.Attribute.Integer &
+      Schema.Attribute.SetMinMax<
+        {
+          max: 5;
+          min: 0;
+        },
+        number
+      >;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -1014,9 +1089,12 @@ export interface PluginUsersPermissionsUser
   };
   options: {
     draftAndPublish: false;
-    timestamps: true;
   };
   attributes: {
+    background: Schema.Attribute.Relation<
+      'manyToOne',
+      'api::lecturer-background.lecturer-background'
+    >;
     blocked: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
     confirmationToken: Schema.Attribute.String & Schema.Attribute.Private;
     confirmed: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
@@ -1028,6 +1106,8 @@ export interface PluginUsersPermissionsUser
       Schema.Attribute.SetMinMaxLength<{
         minLength: 6;
       }>;
+    first_name: Schema.Attribute.String & Schema.Attribute.Required;
+    last_name: Schema.Attribute.String & Schema.Attribute.Required;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
@@ -1041,6 +1121,10 @@ export interface PluginUsersPermissionsUser
       }>;
     provider: Schema.Attribute.String;
     publishedAt: Schema.Attribute.DateTime;
+    rating: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::lecturer-review.lecturer-review'
+    >;
     resetPasswordToken: Schema.Attribute.String & Schema.Attribute.Private;
     role: Schema.Attribute.Relation<
       'manyToOne',
@@ -1071,6 +1155,8 @@ declare module '@strapi/strapi' {
       'api::category.category': ApiCategoryCategory;
       'api::content.content': ApiContentContent;
       'api::course.course': ApiCourseCourse;
+      'api::lecturer-background.lecturer-background': ApiLecturerBackgroundLecturerBackground;
+      'api::lecturer-review.lecturer-review': ApiLecturerReviewLecturerReview;
       'api::lecturer.lecturer': ApiLecturerLecturer;
       'api::review.review': ApiReviewReview;
       'api::topic.topic': ApiTopicTopic;

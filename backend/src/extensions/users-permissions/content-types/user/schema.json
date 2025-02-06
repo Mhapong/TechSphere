@@ -9,7 +9,7 @@
     "displayName": "User"
   },
   "options": {
-    "timestamps": true
+    "draftAndPublish": false
   },
   "attributes": {
     "username": {
@@ -64,6 +64,26 @@
       "target": "plugin::users-permissions.role",
       "inversedBy": "users",
       "configurable": false
+    },
+    "first_name": {
+      "type": "string",
+      "required": true
+    },
+    "last_name": {
+      "type": "string",
+      "required": true
+    },
+    "rating": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::lecturer-review.lecturer-review",
+      "mappedBy": "lecturer_review_id"
+    },
+    "background": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::lecturer-background.lecturer-background",
+      "inversedBy": "lecturer_background"
     }
   }
 }

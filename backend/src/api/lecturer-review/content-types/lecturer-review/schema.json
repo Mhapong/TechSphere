@@ -1,0 +1,31 @@
+{
+  "kind": "collectionType",
+  "collectionName": "lecturer_reviews",
+  "info": {
+    "singularName": "lecturer-review",
+    "pluralName": "lecturer-reviews",
+    "displayName": "lecturer_review",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "comment": {
+      "type": "text"
+    },
+    "lecturer_review_id": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user",
+      "inversedBy": "rating"
+    },
+    "start": {
+      "type": "integer",
+      "max": 5,
+      "min": 0,
+      "required": false
+    }
+  }
+}

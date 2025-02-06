@@ -1,0 +1,24 @@
+{
+  "kind": "collectionType",
+  "collectionName": "lecturer_backgrounds",
+  "info": {
+    "singularName": "lecturer-background",
+    "pluralName": "lecturer-backgrounds",
+    "displayName": "Lecturer_Background"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "lecturer_background": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "plugin::users-permissions.user",
+      "mappedBy": "background"
+    },
+    "history": {
+      "type": "string"
+    }
+  }
+}
