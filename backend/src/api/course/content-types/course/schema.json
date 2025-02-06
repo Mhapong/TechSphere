@@ -12,32 +12,41 @@
   },
   "pluginOptions": {},
   "attributes": {
-    "name": {
-      "type": "string",
-      "required": true,
-      "unique": true
+    "course_id": {
+      "type": "biginteger"
     },
-    "description": {
-      "type": "text",
-      "unique": false
-    },
-    "time_usage": {
-      "type": "integer",
-      "required": true,
-      "min": 1
-    },
-    "price": {
-      "type": "integer",
-      "required": true,
-      "min": 0
-    },
-    "topic_count": {
+    "Name": {
       "type": "string"
     },
-    "admin_user": {
+    "Price": {
+      "type": "decimal"
+    },
+    "Description": {
+      "type": "text"
+    },
+    "Time_Usage": {
+      "type": "integer"
+    },
+    "create_date": {
+      "type": "datetime"
+    },
+    "category_id": {
       "type": "relation",
-      "relation": "oneToOne",
-      "target": "admin::user"
+      "relation": "oneToMany",
+      "target": "api::category.category",
+      "mappedBy": "Category_id"
+    },
+    "rating": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::review.review",
+      "mappedBy": "review_id"
+    },
+    "topic": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::topic.topic",
+      "mappedBy": "topic_id"
     }
   }
 }
