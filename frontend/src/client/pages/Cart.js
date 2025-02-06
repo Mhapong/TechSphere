@@ -8,13 +8,11 @@ export default function Cart() {
                 <h1 class="text-2xl font-semibold mb-4">Shopping Cart</h1>
                 <div class="flex flex-col md:flex-row gap-4">
                     <div class="md:w-3/4">
-                        <div class="bg-white rounded-lg shadow-md p-6 mb-4">
+                        <div class="bg-white rounded-lg h-2/3 shadow-md p-6 mb-4">
                             <table class="w-full">
                                 <thead>
                                     <tr>
                                         <th class="text-left font-semibold">Product</th>
-                                        <th class="text-left font-semibold">Price</th>
-                                        <th class="text-left font-semibold">Quantity</th>
                                         <th class="text-left font-semibold">Total</th>
                                     </tr>
                                 </thead>
@@ -28,11 +26,6 @@ export default function Cart() {
                                         </td>
                                         <td class="py-4">$19.99</td>
                                         <td class="py-4">
-                                            <div class="flex items-center">
-                                                <button class="border rounded-md py-2 px-4 mr-2">-</button>
-                                                <span class="text-center w-8">1</span>
-                                                <button class="border rounded-md py-2 px-4 ml-2">+</button>
-                                            </div>
                                         </td>
                                         <td class="py-4">$19.99</td>
                                     </tr>

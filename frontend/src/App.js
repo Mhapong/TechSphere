@@ -17,6 +17,7 @@ import Cart from "./client/pages/Cart";
 import { Navbar } from "@material-tailwind/react";
 import Nav from "./client/components/navbar";
 import NavAdmin from "./admin/components/navbar-admin";
+import Mycourse from "./client/pages/MyCourse";
 
 function App() {
   const { state } = useContext(AuthContext);
@@ -46,7 +47,7 @@ function App() {
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/cart" element={<Cart />} />
-
+              <Route path="/my-course" element={<Mycourse />} />
             </Routes>
           </BrowserRouter>
         </>

@@ -28,7 +28,7 @@ function classNames(...classes) {
 export default function Nav() {
   const NavMenu = [
     { name: "หน้าแรก", href: "/", current: true },
-    { name: "ค้นหา", href: "/explore", current: true },
+    { name: "สำรวจ", href: "/explore", current: true },
     { name: "คอร์สของคุณ", href: "/my-course", current: true },
   ];
   const [searchBar, setSearchBar] = useState(false);
