@@ -534,7 +534,7 @@ export interface ApiLecturerReviewLecturerReview
     > &
       Schema.Attribute.Private;
     publishedAt: Schema.Attribute.DateTime;
-    start: Schema.Attribute.Integer &
+    star: Schema.Attribute.Integer &
       Schema.Attribute.SetMinMax<
         {
           max: 5;

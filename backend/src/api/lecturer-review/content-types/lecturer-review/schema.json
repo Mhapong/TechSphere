@@ -21,7 +21,7 @@
       "target": "plugin::users-permissions.user",
       "inversedBy": "rating"
     },
-    "start": {
+    "star": {
       "type": "integer",
       "max": 5,
       "min": 0,
