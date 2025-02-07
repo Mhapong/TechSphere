@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router";
+import ax from "../../conf/ax";
 
 const AddCourse = () => {
   // State management for each form field
@@ -38,27 +39,21 @@ const AddCourse = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await ax.post("subjects?populate=*", {
-        data: {
-          title: values.title,
-          description: values.description,
-          create_date: new Date().toISOString(),
-          subject_id: values.subject_id,
-          users_owner: user.id,
-        },
-      });
-      message.success("Subject created successfully!");
+      // await ax.post("subjects?populate=*", {
+      //   data: {
+      //     title: values.title,
+      //     description: values.description,
+      //     create_date: new Date().toISOString(),
+      //     subject_id: values.subject_id,
+      //     users_owner: user.id,
+      //   },
+      // });
       console.log("Data successfully uploaded to Strapi!");
-      closeModal();
     } catch (error) {
       if (error.response) {
         console.error("Error response:", error.response.data);
-        message.error(
-          `Error: ${error.response.data.error || "Failed to create Subject."}`
-        );
       } else {
         console.error("Error:", error.message);
-        message.error(`Error: ${error.message}`);
       }
     }
   };
