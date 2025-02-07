@@ -73,7 +73,9 @@ function App() {
           <BrowserRouter>
             <Routes>
               <Route path="/" element={<Home />} />
-              <Route path="/create" element={<AddCourse />} />
+              <Route path="/create-course" element={<AddCourse />} />
+              <Route path="/create-topic/:courseid" element={<AddCourse />} />
+              <Route path="/create-summarize" element={<AddCourse />} />
               <Route path="/view" element={<Home />} />
               <Route path="/lecturer" element={<Home />} />
               <Route path="/student" element={<Home />} />
