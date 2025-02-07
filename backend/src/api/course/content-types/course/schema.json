@@ -12,9 +12,6 @@
   },
   "pluginOptions": {},
   "attributes": {
-    "course_id": {
-      "type": "biginteger"
-    },
     "Name": {
       "type": "string"
     },
@@ -26,9 +23,6 @@
     },
     "Time_Usage": {
       "type": "integer"
-    },
-    "create_date": {
-      "type": "datetime"
     },
     "rating": {
       "type": "relation",
@@ -62,6 +56,19 @@
       "relation": "manyToOne",
       "target": "plugin::users-permissions.user",
       "inversedBy": "owned_course"
+    },
+    "start_date": {
+      "type": "datetime"
+    },
+    "end_date": {
+      "type": "datetime"
+    },
+    "status_coure": {
+      "type": "enumeration",
+      "enum": [
+        "Activate",
+        "Deactivate"
+      ]
     }
   }
 }

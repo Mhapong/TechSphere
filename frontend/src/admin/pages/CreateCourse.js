@@ -1,54 +1,69 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import ax from "../../conf/ax";
+import {
+  Label,
+  Listbox,
+  ListboxButton,
+  ListboxOption,
+  ListboxOptions,
+} from "@headlessui/react";
+import { ChevronUpDownIcon } from "@heroicons/react/16/solid";
+import { CheckIcon } from "@heroicons/react/20/solid";
 
 const AddCourse = () => {
   // State management for each form field
   const [title, setTitle] = useState("");
-  const [category, setCategory] = useState("");
+  const [category, setCategory] = useState([]);
+  const [allcategory, setallCategory] = useState(null);
+  const [lecturer, setLecturer] = useState("");
+  const [lecturerOwner, setlecturerOwner] = useState(null);
   const [description, setDescription] = useState("");
   const [image, setImage] = useState(null);
-  const [location, setLocation] = useState("");
-  const [organizerName, setOrganizerName] = useState("");
-  const [organizerEmail, setOrganizerEmail] = useState("");
-  const [organizerAddress, setOrganizerAddress] = useState("");
+  const [TimeUsage, setTimeUsage] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [status, setStatus] = useState("");
-  const [tags, setTags] = useState("");
+  const [Price, setPrice] = useState("");
   const Navigate = useNavigate();
-  // Handle form submission
-  // const handleSubmit = (e) => {
-  //   e.preventDefault();
-  //   Navigate("/create-topic");
-  //   console.log({
-  //     title,
-  //     category,
-  //     description,
-  //     image,
-  //     location,
-  //     organizerName,
-  //     organizerEmail,
-  //     organizerAddress,
-  //     startDate,
-  //     endDate,
-  //     status,
-  //     tags,
-  //   });
-  // };
-  const handleSubmit = async (e) => {
+
+  const handleSelectChange = (e) => {
+    const selectedValues = Array.from(e.target.selectedOptions).map(
+      (option) => ({
+        id: option.value,
+        name: option.getAttribute("data-name"),
+      })
+    );
+    setCategory((prevCategory) => [
+      ...new Set([...prevCategory, ...selectedValues]),
+    ]);
+  };
+
+  const handleRemoveCategory = (value) => {
+    setCategory((prevCategory) =>
+      prevCategory.filter((item) => item.id !== value)
+    );
+  };
+  const handleSubmit = async (e, path) => {
     e.preventDefault();
     try {
-      // await ax.post("subjects?populate=*", {
-      //   data: {
-      //     title: values.title,
-      //     description: values.description,
-      //     create_date: new Date().toISOString(),
-      //     subject_id: values.subject_id,
-      //     users_owner: user.id,
-      //   },
-      // });
+      const categoryid = category.map((item) => item.id);
+      await ax.post(`courses?populate=*`, {
+        data: {
+          Name: title,
+          Description: description,
+          start_date: startDate,
+          end_date: endDate,
+          categories: categoryid,
+          Time_Usage: TimeUsage,
+          Price: Price,
+          course_owner: lecturerOwner,
+          status_coure: status,
+        },
+      });
+      alert(`สร้างคอร์สสำเร็จ กำลังพาคุณไปยัง ${path}!`);
       console.log("Data successfully uploaded to Strapi!");
+      Navigate(path);
     } catch (error) {
       if (error.response) {
         console.error("Error response:", error.response.data);
@@ -66,13 +81,44 @@ const AddCourse = () => {
     }
   };
 
+  const fetchCategory = async () => {
+    try {
+      const response = await ax.get(`categories`);
+      // console.log(response.data.data);
+      setallCategory(response.data.data);
+    } catch (e) {
+      console.log("Error", e);
+    }
+  };
+
+  const fetchLecturer = async () => {
+    try {
+      const response = await ax.get(
+        `users?filters[role][name][$eq]=Lecturer&populate=*`
+      );
+      // console.log(response.data);
+      setLecturer(response.data);
+    } catch (e) {
+      console.log("Error", e);
+    }
+  };
+
+  useEffect(() => {
+    fetchLecturer();
+    fetchCategory();
+    // fetchStatus();
+  }, []);
+
   return (
     <div className="w-[1000px] mx-96 mt-11 p-8">
       <h1 className="flex items-center justify-center text-3xl font-bold text-black mb-6">
         สร้างคอร์สใหม่
       </h1>
 
-      <form className="grid grid-cols-1 gap-6" onSubmit={handleSubmit}>
+      <form
+        className="grid grid-cols-1 gap-6"
+        onSubmit={(e) => e.preventDefault()}
+      >
         {/* Title */}
         <div className="p-2">
           <input
@@ -92,17 +138,40 @@ const AddCourse = () => {
           <select
             id="category"
             name="category"
+            multiple
             value={category}
-            onChange={(e) => setCategory(e.target.value)}
+            onChange={handleSelectChange}
             className="block w-full rounded-md border-gray-300 shadow-sm focus:border-[#8c0327] focus:ring-[#8c0327] focus:ring-opacity-50 p-2"
             style={{ backgroundColor: "#f6f6f6" }}
           >
-            <option value="">Select a category</option>
-            <option>WebDev</option>
-            <option>IoT</option>
-            <option>Other</option>
-            <option>Technology</option>
+            {allcategory &&
+              allcategory.map((value, index) => (
+                <option key={value.id} value={value.id} data-name={value.tag}>
+                  {value.tag}
+                </option>
+              ))}
           </select>
+          <div className="mt-2">
+            {category.map((value) => (
+              <div
+                key={value.id}
+                className="inline-flex items-center bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2"
+              >
+                {value.name} {/* โชว์ชื่อหมวดหมู่ */}
+                <button
+                  type="button"
+                  onClick={() => handleRemoveCategory(value.id)}
+                  className="ml-2 text-gray-500 hover:text-gray-700"
+                >
+                  &times;
+                </button>
+              </div>
+            ))}
+          </div>
+
+          <p className="mt-2">เลือกประเภทของคอร์ส: {category.join(", ")}</p>
+
+          {/* แสดงค่าเลือกพร้อมปุ่มลบ */}
         </div>
 
         {/* Description and Image Upload */}
@@ -152,7 +221,7 @@ const AddCourse = () => {
         </div>
 
         {/* Location */}
-        <div className="p-2">
+        {/* <div className="p-2">
           <input
             type="text"
             id="location"
@@ -163,41 +232,41 @@ const AddCourse = () => {
             className="block w-full rounded-md border-gray-300 shadow-sm focus:border-[#8c0327] focus:ring-[#8c0327] focus:ring-opacity-50 p-2"
             style={{ backgroundColor: "#f6f6f6" }}
           />
-        </div>
+        </div> */}
 
         {/* Organizer Name and Email */}
         <div className="p-2 grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Organizer Name */}
           <div>
             <input
-              type="text"
-              id="organizer-name"
-              name="organizer-name"
-              placeholder="Organizer Name"
-              value={organizerName}
-              onChange={(e) => setOrganizerName(e.target.value)}
-              className="block w-full rounded-md border-gray-300 shadow-sm focus:border-[#8c0327] focus:ring-[#8c0327] focus:ring-opacity-50 p-2"
+              type="number"
+              id="TimeUsage"
+              name="TimeUsage"
+              placeholder="จำนวนเวลารวมของคอร์สเรียน (หน่วยชั่วโมง)"
+              value={TimeUsage}
+              min="0"
+              onChange={(e) => setTimeUsage(e.target.value)}
+              className="block w-full rounded-md border-gray-300 shadow-sm focus:border-[#8c0327] focus:ring-[#8c0327] focus:ring-opacity-50 h-12"
               style={{ backgroundColor: "#f6f6f6" }}
             />
           </div>
 
-          {/* Organizer Email */}
           <div>
             <input
-              type="email"
-              id="organizer-email"
-              name="organizer-email"
-              placeholder="Organizer Email"
-              value={organizerEmail}
-              onChange={(e) => setOrganizerEmail(e.target.value)}
-              className="block w-full rounded-md border-gray-300 shadow-sm focus:border-[#8c0327] focus:ring-[#8c0327] focus:ring-opacity-50 p-2"
+              type="number"
+              id="Price"
+              name="Price"
+              placeholder="ราคาคอร์สเรียน (หน่วยบาท)"
+              min="0"
+              value={Price}
+              onChange={(e) => setPrice(e.target.value)}
+              className="block w-full rounded-md border-gray-300 shadow-sm focus:border-[#8c0327] focus:ring-[#8c0327] focus:ring-opacity-50 h-12"
               style={{ backgroundColor: "#f6f6f6" }}
             />
           </div>
         </div>
 
         {/* Organizer Address */}
-        <div className="p-2">
+        {/* <div className="p-2">
           <input
             type="text"
             id="organizer-address"
@@ -208,7 +277,7 @@ const AddCourse = () => {
             className="block w-full rounded-md border-gray-300 shadow-sm focus:border-[#8c0327] focus:ring-[#8c0327] focus:ring-opacity-50 p-2"
             style={{ backgroundColor: "#f6f6f6" }}
           />
-        </div>
+        </div> */}
 
         {/* Start Date and End Date */}
         <div className="p-2 grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -286,23 +355,31 @@ const AddCourse = () => {
               style={{ backgroundColor: "#f6f6f6", padding: "0" }}
             >
               <option value="">เลือกสถานะคอร์ส</option>
-              <option value="active">เปิดใช้งาน</option>
-              <option value="inactive">ปิดใช้งาน</option>
+              <option value="Activate">เปิดใช้งาน</option>
+              <option value="Deactivate">ปิดใช้งาน</option>
             </select>
           </div>
 
-          {/* Tags */}
-          <div>
-            <input
-              type="text"
-              id="tags"
-              name="tags"
-              placeholder="Tags (comma-separated)"
-              value={tags}
-              onChange={(e) => setTags(e.target.value)}
-              className="block w-full rounded-md border-gray-300 shadow-sm focus:border-[#8c0327] focus:ring-[#8c0327] focus:ring-opacity-50 h-12"
-              style={{ backgroundColor: "#f6f6f6" }}
-            />
+          {/* Status */}
+          <div className="flex items-center bg-[#f6f6f6] rounded-md">
+            <select
+              id="lecturer"
+              name="lecturer"
+              value={lecturerOwner}
+              onChange={(e) => setlecturerOwner(e.target.value)}
+              className="block w-full h-12 rounded-md border-gray-300 shadow-sm focus:border-[#8c0327] focus:ring-[#8c0327] focus:ring-opacity-50"
+              style={{ backgroundColor: "#f6f6f6", padding: "0" }}
+            >
+              <option value="">เลือกอาจารย์ผู้สอน</option>
+              {lecturer &&
+                lecturer.map((person) => {
+                  return (
+                    <option key={person.id} value={person.id}>
+                      {`${person.first_name} ${person.last_name}`}
+                    </option>
+                  );
+                })}
+            </select>
           </div>
         </div>
 
@@ -311,12 +388,14 @@ const AddCourse = () => {
           <button
             type="submit"
             className="block w-full bg-[#3b3f44] hover:bg-[#000000] text-white font-bold py-3 px-4 rounded-full"
+            onClick={(e) => handleSubmit(e, "/finish-course")}
           >
             สร้างคอร์สใหม่และจบการสร้างคอร์ส
           </button>
           <button
             type="submit"
             className="block w-full bg-[#8c0327] hover:bg-[#6b0220] text-white font-bold py-3 px-4 rounded-full"
+            onClick={(e) => handleSubmit(e, "/new-topic")}
           >
             สร้างคอร์สใหม่และสร้างหัวข้อใหม่
           </button>

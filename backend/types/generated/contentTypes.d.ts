@@ -448,16 +448,15 @@ export interface ApiCourseCourse extends Struct.CollectionTypeSchema {
       'manyToMany',
       'api::category.category'
     >;
-    course_id: Schema.Attribute.BigInteger;
     course_owner: Schema.Attribute.Relation<
       'manyToOne',
       'plugin::users-permissions.user'
     >;
-    create_date: Schema.Attribute.DateTime;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     Description: Schema.Attribute.Text;
+    end_date: Schema.Attribute.DateTime;
     image: Schema.Attribute.Media<'images' | 'files', true> &
       Schema.Attribute.Required;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
@@ -470,6 +469,8 @@ export interface ApiCourseCourse extends Struct.CollectionTypeSchema {
     Price: Schema.Attribute.Decimal;
     publishedAt: Schema.Attribute.DateTime;
     rating: Schema.Attribute.Relation<'oneToMany', 'api::review.review'>;
+    start_date: Schema.Attribute.DateTime;
+    status_coure: Schema.Attribute.Enumeration<['Activate', 'Deactivate']>;
     Time_Usage: Schema.Attribute.Integer;
     topic: Schema.Attribute.Relation<'oneToMany', 'api::topic.topic'>;
     updatedAt: Schema.Attribute.DateTime;

@@ -20,7 +20,7 @@ import NavAdmin from "./admin/components/navbar-admin";
 import Mycourse from "./client/pages/MyCourse";
 import Profile from "./admin/pages/profile";
 import EditProfile from "./admin/pages/edit-profile";
-import AddCourse from "./admin/pages/addcourse";
+import AddCourse from "./admin/pages/CreateCourse";
 
 function App() {
   const { state } = useContext(AuthContext);
