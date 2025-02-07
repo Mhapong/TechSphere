@@ -195,7 +195,7 @@ export default function Home() {
 
               {/* <!-- Product Details --> */}
               <div class="mt-4">
-                <p class="text-black text-lg font-semibold line-clamp-[calc(var(--characters)/20)] h-14 w-full">
+                <p class="text-black text-lg font-semibold line-clamp-[calc(var(--characters)/20)] h-full w-full">
                   {items.Name}
                 </p>
                 {
@@ -228,8 +228,8 @@ export default function Home() {
                 {/* <!-- Pricing --> */}
                 <div class="flex items-end justify-between">
                   <div class="flex items-baseline space-x-2 mt-2">
-                    <span class="text-blue-600 text-xl font-semibold">$806.33</span>
-                    <span class="text-gray-400 text-sm line-through">$1500.00</span>
+                    <span class="text-blue-600 text-xl font-semibold">{items.Price} THB</span>
+                    <span class="text-gray-400 text-sm line-through">{items.Price * 1.2} THB</span>
                   </div>
                   <button
                     class="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center shadow text-white">
@@ -258,9 +258,6 @@ export default function Home() {
           ))}
         </div>
       </section>
-      <div className="h-screen">
-
-      </div>
     </html >
   );
 }
