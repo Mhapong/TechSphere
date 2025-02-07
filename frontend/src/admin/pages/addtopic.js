@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router";
 
 const AddCourse = () => {
   // State management for each form field
@@ -15,52 +14,25 @@ const AddCourse = () => {
   const [endDate, setEndDate] = useState("");
   const [status, setStatus] = useState("");
   const [tags, setTags] = useState("");
-  const Navigate = useNavigate();
+
   // Handle form submission
-  // const handleSubmit = (e) => {
-  //   e.preventDefault();
-  //   Navigate("/create-topic");
-  //   console.log({
-  //     title,
-  //     category,
-  //     description,
-  //     image,
-  //     location,
-  //     organizerName,
-  //     organizerEmail,
-  //     organizerAddress,
-  //     startDate,
-  //     endDate,
-  //     status,
-  //     tags,
-  //   });
-  // };
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    try {
-      await ax.post("subjects?populate=*", {
-        data: {
-          title: values.title,
-          description: values.description,
-          create_date: new Date().toISOString(),
-          subject_id: values.subject_id,
-          users_owner: user.id,
-        },
-      });
-      message.success("Subject created successfully!");
-      console.log("Data successfully uploaded to Strapi!");
-      closeModal();
-    } catch (error) {
-      if (error.response) {
-        console.error("Error response:", error.response.data);
-        message.error(
-          `Error: ${error.response.data.error || "Failed to create Subject."}`
-        );
-      } else {
-        console.error("Error:", error.message);
-        message.error(`Error: ${error.message}`);
-      }
-    }
+    // You can handle form submission logic here
+    console.log({
+      title,
+      category,
+      description,
+      image,
+      location,
+      organizerName,
+      organizerEmail,
+      organizerAddress,
+      startDate,
+      endDate,
+      status,
+      tags,
+    });
   };
 
   // Handle image upload
@@ -73,9 +45,7 @@ const AddCourse = () => {
 
   return (
     <div className="w-[1000px] mx-96 mt-11 p-8">
-      <h1 className="flex items-center justify-center text-3xl font-bold text-black mb-6">
-        สร้างคอร์สใหม่
-      </h1>
+      <h1 className="text-3xl font-bold text-black mb-6">สร้างคอร์สใหม่</h1>
 
       <form className="grid grid-cols-1 gap-6" onSubmit={handleSubmit}>
         {/* Title */}
@@ -312,18 +282,12 @@ const AddCourse = () => {
         </div>
 
         {/* Registration Button */}
-        <div className="col-span-full mt-6 p-2  grid grid-cols-1 md:grid-cols-2 gap-6">
-          <button
-            type="submit"
-            className="block w-full bg-[#3b3f44] hover:bg-[#000000] text-white font-bold py-3 px-4 rounded-full"
-          >
-            สร้างคอร์สใหม่และจบการสร้างคอร์ส
-          </button>
+        <div className="col-span-full mt-6 p-2">
           <button
             type="submit"
             className="block w-full bg-[#8c0327] hover:bg-[#6b0220] text-white font-bold py-3 px-4 rounded-full"
           >
-            สร้างคอร์สใหม่และสร้างหัวข้อใหม่
+            Create New Course
           </button>
         </div>
       </form>

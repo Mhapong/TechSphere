@@ -30,7 +30,7 @@ export default function NavAdmin() {
     },
     {
       name: "สร้างคอร์สใหม่",
-      href: "/create",
+      href: "/create-course",
       current: true,
       key: "",
       icon: <AddCircleOutlineIcon />,
