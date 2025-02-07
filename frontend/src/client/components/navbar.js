@@ -13,6 +13,7 @@ import {
 } from "@headlessui/react";
 import { Bars3Icon, BellIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { AuthContext } from "../../context/Auth.context";
+import { motion } from 'framer-motion'
 
 
 const navigation = [
@@ -56,7 +57,12 @@ export default function Nav() {
               </DisclosureButton>
             </div>
 
-            <div className=" sm:items-stretch sm:justify-start">
+            <motion.div
+              initial={{ y: -20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ duration: 1 }}
+              className=" sm:items-stretch sm:justify-start"
+            >
               <div className="flex shrink-0 right-3 place-items-center">
                 <img
                   alt="TectSphere.logopic"
@@ -85,7 +91,7 @@ export default function Nav() {
 
 
 
-            </div>
+            </motion.div>
 
             <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
 

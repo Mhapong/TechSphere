@@ -47,6 +47,21 @@
       "relation": "manyToMany",
       "target": "api::category.category",
       "mappedBy": "category_ids"
+    },
+    "image": {
+      "type": "media",
+      "multiple": true,
+      "required": true,
+      "allowedTypes": [
+        "images",
+        "files"
+      ]
+    },
+    "course_owner": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user",
+      "inversedBy": "owned_course"
     }
   }
 }

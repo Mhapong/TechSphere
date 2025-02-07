@@ -94,6 +94,12 @@
       ],
       "type": "media",
       "multiple": true
+    },
+    "owned_course": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::course.course",
+      "mappedBy": "course_owner"
     }
   }
 }
