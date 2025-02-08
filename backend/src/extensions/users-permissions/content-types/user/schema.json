@@ -95,11 +95,11 @@
       "type": "media",
       "multiple": true
     },
-    "owned_course": {
+    "owned_courses": {
       "type": "relation",
-      "relation": "oneToMany",
+      "relation": "manyToMany",
       "target": "api::course.course",
-      "mappedBy": "course_owner"
+      "mappedBy": "course_owners"
     }
   }
 }

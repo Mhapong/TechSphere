@@ -1,15 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import ax from "../../conf/ax";
-import {
-  Label,
-  Listbox,
-  ListboxButton,
-  ListboxOption,
-  ListboxOptions,
-} from "@headlessui/react";
-import { ChevronUpDownIcon } from "@heroicons/react/16/solid";
-import { CheckIcon } from "@heroicons/react/20/solid";
 
 const AddCourse = () => {
   // State management for each form field
@@ -48,22 +39,23 @@ const AddCourse = () => {
     e.preventDefault();
     try {
       const categoryid = category.map((item) => item.id);
-      await ax.post(`courses?populate=*`, {
-        data: {
-          Name: title,
-          Description: description,
-          start_date: startDate,
-          end_date: endDate,
-          categories: categoryid,
-          Time_Usage: TimeUsage,
-          Price: Price,
-          course_owner: lecturerOwner,
-          status_coure: status,
-        },
-      });
+      // const response = await ax.post(`courses?populate=*`, {
+      //   data: {
+      //     Name: title,
+      //     Description: description,
+      //     start_date: startDate,
+      //     end_date: endDate,
+      //     categories: categoryid,
+      //     Time_Usage: TimeUsage,
+      //     Price: Price,
+      //     course_owner: lecturerOwner,
+      //     status_coure: status,
+      //   },
+      // });
       alert(`สร้างคอร์สสำเร็จ กำลังพาคุณไปยัง ${path}!`);
       console.log("Data successfully uploaded to Strapi!");
-      Navigate(path);
+      // Navigate(`${path}/${response.data.data.id}`);
+      Navigate(`${path}/d3cekbvx03qmt7fuprb2ymty`);
     } catch (error) {
       if (error.response) {
         console.error("Error response:", error.response.data);
@@ -111,8 +103,85 @@ const AddCourse = () => {
 
   return (
     <div className="w-[1000px] mx-96 mt-11 p-8">
-      <h1 className="flex items-center justify-center text-3xl font-bold text-black mb-6">
-        สร้างคอร์สใหม่
+      <ol class="flex flex-col gap-4 rounded-lg border border-gray-200 bg-gray-50 p-4 dark:border-gray-700 dark:bg-gray-800 sm:justify-center md:flex-row md:items-center lg:gap-6">
+        <div class="hidden h-px w-8 shrink-0 bg-gray-200 dark:bg-gray-700 md:block xl:w-16"></div>
+        <li class="flex items-center gap-2 md:flex-1 md:flex-col md:gap-1.5 lg:flex-none">
+          <svg
+            class="h-5 w-5 text-primary-700 dark:text-primary-500"
+            aria-hidden="true"
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M8.5 11.5 11 14l4-4m6 2a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+            />
+          </svg>
+          <p class="text-sm font-medium leading-tight text-primary-700 dark:text-primary-500">
+            สร้างคอร์สใหม่
+          </p>
+        </li>
+
+        <div class="hidden h-px w-8 shrink-0 bg-gray-200 dark:bg-gray-700 md:block xl:w-16"></div>
+
+        <li class="flex items-center gap-2 md:flex-1 md:flex-col md:gap-1.5 lg:flex-none">
+          <svg
+            class="h-5 w-5 text-gray-500 dark:text-gray-400"
+            aria-hidden="true"
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M8.5 11.5 11 14l4-4m6 2a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+            />
+          </svg>
+          <p class="text-sm font-medium leading-tight text-gray-500 dark:text-gray-400">
+            สรุปการสร้างคอร์ส
+          </p>
+        </li>
+
+        <div class="hidden h-px w-8 shrink-0 bg-gray-200 dark:bg-gray-700 md:block xl:w-16"></div>
+
+        <li class="flex items-center gap-2 md:flex-1 md:flex-col md:gap-1.5 lg:flex-none">
+          <svg
+            class="h-5 w-5 text-gray-500 dark:text-gray-400"
+            aria-hidden="true"
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M8.5 11.5 11 14l4-4m6 2a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+            />
+          </svg>
+          <p class="text-sm font-medium leading-tight text-gray-500 dark:text-gray-400">
+            สร้างหัวข้อและเนื้อหาใหม่
+          </p>
+        </li>
+        <div class="hidden h-px w-8 shrink-0 bg-gray-200 dark:bg-gray-700 md:block xl:w-16"></div>
+      </ol>
+
+      <h1 className="flex items-center justify-center text-3xl font-bold text-black mb-6 mt-5">
+        สร้างคอร์สใหม่ 📝
       </h1>
 
       <form
@@ -135,48 +204,6 @@ const AddCourse = () => {
 
         {/* Category */}
         <div className="p-2">
-          <select
-            id="category"
-            name="category"
-            multiple
-            value={category}
-            onChange={handleSelectChange}
-            className="block w-full rounded-md border-gray-300 shadow-sm focus:border-[#8c0327] focus:ring-[#8c0327] focus:ring-opacity-50 p-2"
-            style={{ backgroundColor: "#f6f6f6" }}
-          >
-            {allcategory &&
-              allcategory.map((value, index) => (
-                <option key={value.id} value={value.id} data-name={value.tag}>
-                  {value.tag}
-                </option>
-              ))}
-          </select>
-          <div className="mt-2">
-            {category.map((value) => (
-              <div
-                key={value.id}
-                className="inline-flex items-center bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2"
-              >
-                {value.name} {/* โชว์ชื่อหมวดหมู่ */}
-                <button
-                  type="button"
-                  onClick={() => handleRemoveCategory(value.id)}
-                  className="ml-2 text-gray-500 hover:text-gray-700"
-                >
-                  &times;
-                </button>
-              </div>
-            ))}
-          </div>
-
-          <p className="mt-2">เลือกประเภทของคอร์ส: {category.join(", ")}</p>
-
-          {/* แสดงค่าเลือกพร้อมปุ่มลบ */}
-        </div>
-
-        {/* Description and Image Upload */}
-        <div className="p-2 grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Description */}
           <div>
             <textarea
               id="description"
@@ -189,6 +216,47 @@ const AddCourse = () => {
               style={{ backgroundColor: "#f6f6f6" }}
             ></textarea>
           </div>
+        </div>
+
+        {/* Description and Image Upload */}
+        <div className="p-2 grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="p-2">
+            <p className="mt-2">เลือกประเภทของคอร์ส:</p>
+            <select
+              id="category"
+              name="category"
+              multiple
+              value={category}
+              onChange={handleSelectChange}
+              className="block w-full px-4 py-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[#8c0327] focus:border-[#8c0327] transition-all duration-300 ease-in-out hover:bg-gray-50"
+              style={{ backgroundColor: "#f6f6f6" }}
+            >
+              {allcategory &&
+                allcategory.map((value, index) => (
+                  <option key={value.id} value={value.id} data-name={value.tag}>
+                    {index + 1}. {value.tag}
+                  </option>
+                ))}
+            </select>
+            <div className="mt-2">
+              {category.map((value) => (
+                <div
+                  key={value.id}
+                  className="inline-flex bg-gray-200 rounded-full px-3 py-0 text-sm font-semibold text-gray-700 mr-2 mb-2 mt-0"
+                >
+                  {value.name}
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveCategory(value.id)}
+                    className="ml-2 text-gray-500 hover:text-gray-700"
+                  >
+                    &times;
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+          {/* Description */}
 
           {/* Image Upload */}
           <div>
@@ -220,21 +288,6 @@ const AddCourse = () => {
           </div>
         </div>
 
-        {/* Location */}
-        {/* <div className="p-2">
-          <input
-            type="text"
-            id="location"
-            name="location"
-            placeholder="Location"
-            value={location}
-            onChange={(e) => setLocation(e.target.value)}
-            className="block w-full rounded-md border-gray-300 shadow-sm focus:border-[#8c0327] focus:ring-[#8c0327] focus:ring-opacity-50 p-2"
-            style={{ backgroundColor: "#f6f6f6" }}
-          />
-        </div> */}
-
-        {/* Organizer Name and Email */}
         <div className="p-2 grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <input
@@ -264,20 +317,6 @@ const AddCourse = () => {
             />
           </div>
         </div>
-
-        {/* Organizer Address */}
-        {/* <div className="p-2">
-          <input
-            type="text"
-            id="organizer-address"
-            name="organizer-address"
-            placeholder="Organizer Address"
-            value={organizerAddress}
-            onChange={(e) => setOrganizerAddress(e.target.value)}
-            className="block w-full rounded-md border-gray-300 shadow-sm focus:border-[#8c0327] focus:ring-[#8c0327] focus:ring-opacity-50 p-2"
-            style={{ backgroundColor: "#f6f6f6" }}
-          />
-        </div> */}
 
         {/* Start Date and End Date */}
         <div className="p-2 grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -388,14 +427,14 @@ const AddCourse = () => {
           <button
             type="submit"
             className="block w-full bg-[#3b3f44] hover:bg-[#000000] text-white font-bold py-3 px-4 rounded-full"
-            onClick={(e) => handleSubmit(e, "/finish-course")}
+            onClick={(e) => handleSubmit(e, "/create-summarize")}
           >
             สร้างคอร์สใหม่และจบการสร้างคอร์ส
           </button>
           <button
             type="submit"
             className="block w-full bg-[#8c0327] hover:bg-[#6b0220] text-white font-bold py-3 px-4 rounded-full"
-            onClick={(e) => handleSubmit(e, "/new-topic")}
+            onClick={(e) => handleSubmit(e, `/create-topic`)}
           >
             สร้างคอร์สใหม่และสร้างหัวข้อใหม่
           </button>

@@ -21,6 +21,8 @@ import Mycourse from "./client/pages/MyCourse";
 import Profile from "./admin/pages/profile";
 import EditProfile from "./admin/pages/edit-profile";
 import AddCourse from "./admin/pages/CreateCourse";
+import AddTopic from "./admin/pages/CreateTopic";
+import CourseDetails from "./admin/pages/CreateSummarize";
 
 function App() {
   const { state } = useContext(AuthContext);
@@ -74,8 +76,14 @@ function App() {
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/create-course" element={<AddCourse />} />
-              <Route path="/create-topic/:courseid" element={<AddCourse />} />
-              <Route path="/create-summarize" element={<AddCourse />} />
+              <Route
+                path="/create-topic/:courseid/:coursename"
+                element={<AddTopic />}
+              />
+              <Route
+                path="/create-summarize/:courseid"
+                element={<CourseDetails />}
+              />
               <Route path="/view" element={<Home />} />
               <Route path="/lecturer" element={<Home />} />
               <Route path="/student" element={<Home />} />
