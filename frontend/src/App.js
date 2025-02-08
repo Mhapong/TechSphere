@@ -23,6 +23,7 @@ import EditProfile from "./admin/pages/edit-profile";
 import AddCourse from "./admin/pages/CreateCourse";
 import AddTopic from "./admin/pages/CreateTopic";
 import CourseDetails from "./admin/pages/CreateSummarize";
+import LecturerAll from "./admin/pages/Lecturer";
 
 function App() {
   const { state } = useContext(AuthContext);
@@ -85,7 +86,7 @@ function App() {
                 element={<CourseDetails />}
               />
               <Route path="/view" element={<Home />} />
-              <Route path="/lecturer" element={<Home />} />
+              <Route path="/lecturer" element={<LecturerAll />} />
               <Route path="/student" element={<Home />} />
               <Route path="/finance" element={<Home />} />
               <Route path="/user" element={<Profile />} />

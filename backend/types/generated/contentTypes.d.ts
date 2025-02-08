@@ -543,7 +543,7 @@ export interface ApiLecturerReviewLecturerReview
     > &
       Schema.Attribute.Private;
     publishedAt: Schema.Attribute.DateTime;
-    star: Schema.Attribute.Integer &
+    star: Schema.Attribute.Decimal &
       Schema.Attribute.SetMinMax<
         {
           max: 5;
