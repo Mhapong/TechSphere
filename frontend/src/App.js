@@ -12,9 +12,7 @@ import { AuthContext } from "./context/Auth.context";
 import Home from "./client/pages/Home";
 import Login from "./client/pages/Login";
 import SignUp from "./client/pages/SignUp";
-import View from "./admin/pages/view";
 import Cart from "./client/pages/Cart";
-import { Navbar } from "@material-tailwind/react";
 import Nav from "./client/components/navbar";
 import NavAdmin from "./admin/components/navbar-admin";
 import Mycourse from "./client/pages/MyCourse";
@@ -26,6 +24,8 @@ import CourseDetails from "./admin/pages/CreateSummarize";
 import LecturerAll from "./admin/pages/Lecturer";
 import StudentTable from "./admin/pages/student";
 import HomeAdmin from "./admin/pages/home-admin";
+import BuyCourse from "./client/pages/buyCourse.js";
+import AddCourse from "./admin/pages/CreateCourse";
 
 function App() {
   const { state } = useContext(AuthContext);

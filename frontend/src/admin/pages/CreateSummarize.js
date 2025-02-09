@@ -144,7 +144,8 @@ export default function CourseDetails() {
           </div>
           <p className="text-gray-600">
             จำนวนผู้เรียนที่รองรับ :
-            {Course.course_owners ? ` ${Course.course_owners.length}` : " 0"} คน
+            {Course.lecturer_owner ? ` ${Course.lecturer_owner.length}` : " 0"}{" "}
+            คน
           </p>
         </div>
       </div>

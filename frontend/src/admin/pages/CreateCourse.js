@@ -48,7 +48,7 @@ const AddCourse = () => {
       //     categories: categoryid,
       //     Time_Usage: TimeUsage,
       //     Price: Price,
-      //     course_owner: lecturerOwner,
+      //     lecturer_owner: lecturerOwner,
       //     status_coure: status,
       //   },
       // });

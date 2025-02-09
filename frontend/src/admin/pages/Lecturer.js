@@ -77,7 +77,7 @@ const LecturerAll = () => {
                   {value.role?.name || "No Role"}
                 </span>
                 <p className="mb-4 font-light text-gray-500 dark:text-gray-400">
-                  จำนวนคอร์สที่มี : {value.owned_courses?.length || 0}
+                  จำนวนคอร์สที่มี : {value.owned_course?.length || 0}
                 </p>
                 <p className="text-2xl lg:text-sm flex items-center justify-center lg:justify-start">
                   <span
