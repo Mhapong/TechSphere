@@ -20,7 +20,6 @@ import NavAdmin from "./admin/components/navbar-admin";
 import Mycourse from "./client/pages/MyCourse";
 import Profile from "./admin/pages/profile";
 import EditProfile from "./admin/pages/edit-profile";
-import AddCourse from "./admin/pages/addcourse";
 import ContentStudy from "./client/pages/ContentStudy.js" 
 import AddTopic from "./admin/pages/CreateTopic";
 import CourseDetails from "./admin/pages/CreateSummarize";
@@ -41,7 +40,6 @@ function App() {
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/cart" element={<Cart />} />
-              <Route path="/my-course" element={<Mycourse />} /> 
             </Routes>
           </>
         ) : userRole === "Lecturer" ? (
@@ -56,7 +54,6 @@ function App() {
             <NavAdmin />
             <Routes>
               <Route path="/" element={<Home />} />
-              <Route path="/create-course" element={<AddCourse />} />
               <Route path="/lecturer" element={<LecturerAll />} />
             </Routes>
           </>
@@ -68,9 +65,9 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login />} />
             <Route path="/sign-up" element={<SignUp />} />
-            <Route path="/my-course" element={<Mycourse />} />
             {/* testing in plublic role */}
             <Route path="/contentstudy" element={<ContentStudy />} /> 
+            <Route path="/my-course" element={<Mycourse />} /> 
           </Routes>
         </>
       )}
