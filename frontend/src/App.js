@@ -5,23 +5,27 @@ import {
   BrowserRouter,
 } from "react-router-dom";
 import React, { useContext } from "react";
-import { AuthContext } from "./context/Auth.context.js";
-import LoginForm from "./page/login.js";
-import HomeLecturer from "./lecturer/page/home.js";
-import TopicLecturer from "./lecturer/page/topic.js";
-import HomeStudent from "./student/page/home.js";
-import TopicStudent from "./student/page/topic.js";
-import UserPage from "./page/user.js";
-import ExcelFetch from "./lecturer/page/excelfetch.js";
-import CreateTopic from "./lecturer/page/addTopic.js";
-import CreateSubject from "./lecturer/page/addSubject.js";
-import AddStudent from "./lecturer/page/addStudent.js";
-import StudentListPage from "./lecturer/page/Student.js";
-import EditSubjectInfo from "./lecturer/page/editSubjectInfo.js";
-import DetailTopicLecturer from "./lecturer/page/detailTopic.js";
-import AddIDStudent from "./lecturer/page/addIdStudent.js";
-import AddScoreTopic from "./lecturer/page/addScore.js";
-import ContactLecturer from "./page/contact_lecturer.js";
+import { AuthContext } from "./context/Auth.context";
+
+import Home from "./client/pages/Home";
+import Login from "./client/pages/Login";
+import SignUp from "./client/pages/SignUp";
+import View from "./admin/pages/view";
+import Cart from "./client/pages/Cart";
+import { Navbar } from "@material-tailwind/react";
+import Nav from "./client/components/navbar";
+import NavAdmin from "./admin/components/navbar-admin";
+import Mycourse from "./client/pages/MyCourse";
+import Profile from "./admin/pages/profile";
+import EditProfile from "./admin/pages/edit-profile";
+import AddCourse from "./admin/pages/CreateCourse";
+import BuyCourse from "./client/pages/buyCourse";
+import ContentStudy from "./client/pages/ContentStudy.js";
+import AddTopic from "./admin/pages/CreateTopic";
+import CourseDetails from "./admin/pages/CreateSummarize";
+import LecturerAll from "./admin/pages/Lecturer";
+import Explore from "./client/pages/explore.js";
+
 function App() {
   const { state } = useContext(AuthContext);
 
@@ -63,6 +67,7 @@ function App() {
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/cart" element={<Cart />} />
+              <Route path="/explore" element={<Explore />} />
               <Route path="/my-course" element={<Mycourse />} />
               <Route path="/contentstudy" element={<ContentStudy />} />
               <Route

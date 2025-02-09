@@ -392,6 +392,10 @@ export interface ApiCategoryCategory extends Struct.CollectionTypeSchema {
     > &
       Schema.Attribute.Private;
     publishedAt: Schema.Attribute.DateTime;
+    student_owned: Schema.Attribute.Relation<
+      'manyToMany',
+      'plugin::users-permissions.user'
+    >;
     tag: Schema.Attribute.String;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -450,10 +454,6 @@ export interface ApiCourseCourse extends Struct.CollectionTypeSchema {
       'manyToMany',
       'api::category.category'
     >;
-    course_owners: Schema.Attribute.Relation<
-      'manyToMany',
-      'plugin::users-permissions.user'
-    >;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -461,6 +461,10 @@ export interface ApiCourseCourse extends Struct.CollectionTypeSchema {
     end_date: Schema.Attribute.DateTime;
     image: Schema.Attribute.Media<'images' | 'files', true> &
       Schema.Attribute.Required;
+    lecturer_owner: Schema.Attribute.Relation<
+      'manyToOne',
+      'plugin::users-permissions.user'
+    >;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
@@ -1080,6 +1084,10 @@ export interface PluginUsersPermissionsUser
     blocked: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
     confirmationToken: Schema.Attribute.String & Schema.Attribute.Private;
     confirmed: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
+    created_courses: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::course.course'
+    >;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -1096,9 +1104,9 @@ export interface PluginUsersPermissionsUser
       'plugin::users-permissions.user'
     > &
       Schema.Attribute.Private;
-    owned_courses: Schema.Attribute.Relation<
+    owned_course: Schema.Attribute.Relation<
       'manyToMany',
-      'api::course.course'
+      'api::category.category'
     >;
     password: Schema.Attribute.Password &
       Schema.Attribute.Private &

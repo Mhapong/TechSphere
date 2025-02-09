@@ -86,20 +86,27 @@
       "inversedBy": "lecturer_background"
     },
     "profile_picture": {
+      "type": "media",
+      "multiple": true,
+      "required": false,
       "allowedTypes": [
         "images",
         "files",
         "videos",
         "audios"
-      ],
-      "type": "media",
-      "multiple": true
+      ]
     },
-    "owned_courses": {
+    "created_courses": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::course.course",
+      "mappedBy": "lecturer_owner"
+    },
+    "owned_course": {
       "type": "relation",
       "relation": "manyToMany",
-      "target": "api::course.course",
-      "mappedBy": "course_owners"
+      "target": "api::category.category",
+      "inversedBy": "student_owned"
     }
   }
 }

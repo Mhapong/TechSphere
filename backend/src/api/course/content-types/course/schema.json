@@ -48,12 +48,6 @@
         "files"
       ]
     },
-    "course_owners": {
-      "type": "relation",
-      "relation": "manyToMany",
-      "target": "plugin::users-permissions.user",
-      "inversedBy": "owned_courses"
-    },
     "start_date": {
       "type": "datetime"
     },
@@ -69,6 +63,12 @@
     },
     "Description": {
       "type": "richtext"
+    },
+    "lecturer_owner": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user",
+      "inversedBy": "created_courses"
     }
   }
 }

@@ -118,7 +118,7 @@ export default function Home() {
                 className="inline-block mx-2 h-full overflow-visible"
               >
                 <Card
-                  className="h-fit my-3 cursor-pointer z-30 flex flex-col shadow-md shadow-blue-100 ring-2 ring-black ring-"
+                  className="h-fit my-3 cursor-pointer overflow-visible z-30 flex flex-col shadow-md shadow-blue-100 ring-2 ring-black ring-"
                   onClick={() => navigate("/")}
                 >
                   <CardBody className="flex-none h-24 justify-center self-center place-content-center">
@@ -200,10 +200,10 @@ export default function Home() {
                 <p class="text-black text-lg font-semibold line-clamp-[calc(var(--characters)/20)] h-full w-full">
                   {items.Name}
                 </p>
-                {items.course_owner !== null ? (
+                {items.lecturer_owner !== null ? (
                   <p class="uppercase text-green-600 text-xs font-medium">
-                    {items.course_owner.first_name}{" "}
-                    {items.course_owner.last_name}
+                    {items.lecturer_owner.first_name}{" "}
+                    {items.lecturer_owner.last_name}
                   </p>
                 ) : (
                   <p class="uppercase text-green-600 text-xs font-medium">
