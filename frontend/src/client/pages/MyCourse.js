@@ -1,83 +1,70 @@
 import React, { useEffect, useState } from "react";
 import { Card } from "@mui/material";
-import axios from "axios";
+import ax from "../../conf/ax";
 
 export default function MyCourse() {
-    const [courses, setCourses] = useState([]); // คอร์สที่ลงทะเบียน
-    const [recommendedCourses, setRecommendedCourses] = useState([]); // คอร์สแนะนำ
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
+  const [user, setUser] = useState(null); // ข้อมูลผู้ใช้
+  const [ownedCourses, setOwnedCourses] = useState([]); // คอร์สที่ผู้ใช้ลงทะเบียน
+  const [courseData, setCourseData] = useState([]); // คอร์สทั้งหมด
+  const [loading, setLoading] = useState(true); // สถานะการโหลด
+  const [error, setError] = useState(null); // สถานะข้อผิดพลาด
 
-    useEffect(() => {
-        const fetchCourses = async () => {
-            try {
-                const response = await axios.get("/api/courses");
-                setCourses(response.data);
-                setLoading(false);
-            } catch (err) {
-                setError(err);
-                setLoading(false);
-            }
-        };
+  useEffect(() => {
+    // ดึงข้อมูลผู้ใช้และคอร์สที่ผู้ใช้ลงทะเบียน
+    const fetchUserData = async () => {
+      try {
+        const response = await ax.get(
+          "http://localhost:1337/api/users/me?populate=owned_course"
+        );
+        console.log("✅ User Data:", response.data);
+        setUser(response.data); // เก็บข้อมูลผู้ใช้
+        setOwnedCourses(response.data.owned_course || []); // เก็บคอร์สที่ผู้ใช้ลงทะเบียน
+      } catch (err) {
+        console.error("🚨 Error fetching user data:", err);
+        setError(err);
+      }
+    };
 
-        const fetchRecommendedCourses = async () => {
-            try {
-                const response = await axios.get("/api/recommended-courses"); // เรียก API คอร์สแนะนำ
-                setRecommendedCourses(response.data);
-            } catch (err) {
-                console.error("Error fetching recommended courses:", err);
-            }
-        };
+    // ดึงข้อมูลคอร์สทั้งหมด
+    const fetchCourses = async () => {
+      try {
+        const response = await ax.get(
+          "http://localhost:1337/api/courses?populate=*"
+        );
+        console.log("✅ Course Data:", response.data.data);
+        setCourseData(response.data.data); // เก็บคอร์สทั้งหมด
+      } catch (err) {
+        console.error("🚨 Error fetching courses:", err);
+        setError(err);
+      }
+    };
 
-        fetchCourses();
-        fetchRecommendedCourses();
-    }, []);
+    fetchUserData();
+    fetchCourses();
+    setLoading(false); // ปรับสถานะการโหลดเป็น false หลังจากดึงข้อมูลเรียบร้อย
+  }, []);
 
-    if (loading) return <div>Loading...</div>;
-    if (error) return <div>Error: {error.message}</div>;
+  if (loading) return <div>Loading...</div>; // กรณีที่ยังโหลดข้อมูล
+  if (error) return <div>Error: {error.message}</div>; // กรณีที่เกิดข้อผิดพลาด
 
-    return (
-        <div className="container mx-auto mt-10 p-5">
-            <h1 className="text-2xl font-bold mb-5">ยินดีต้อนรับคุณ,</h1>
+  return (
+    <div className="container mx-auto mt-10 p-5">
+      <h1 className="text-2xl font-bold mb-5">
+        ยินดีต้อนรับคุณ, {user ? user.username : "Guest"}
+      </h1>
 
-            {courses.length > 0 ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-                    {courses.map((course) => (
-                        <Card key={course.id} sx={{ p: 3, boxShadow: 3, mb: 3 }}>
-                            <div className="max-w-sm bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
-                                <img className="rounded-t-lg" src={course.img} alt="Course" />
-                                <div className="p-5">
-                                    <h5 className="text-2xl font-bold text-gray-900 dark:text-white">{course.name}</h5>
-                                    <p className="text-gray-700 dark:text-gray-400">{course.description}</p>
-                                    <a href="#" className="text-white bg-blue-700 px-3 py-2 rounded-lg">Get Start</a>
-                                </div>
-                            </div>
-                        </Card>
-                    ))}
-                </div>
-            ) : (
-                //กรณียังไม่มีการสมัตรคอร์สเรียนใดๆ
-                <div className="text-center p-5">
-                    <h2 className="text-2xl font-semibold text-gray-800 dark:text-white">คุณยังไม่ได้ลงทะเบียนคอร์สใด ๆ</h2>
-                    <p className="mt-3 text-gray-600 dark:text-gray-400">คอร์สที่แนะนำ:</p>
-                    
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mt-5">
-                        {recommendedCourses.map((course) => (
-                            <div key={course.id} className="max-w-sm bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
-                                <img className="p-8 rounded-t-lg" src={course.img} alt="Course Thumbnail" />
-                                <div className="px-5 pb-5">
-                                    <h5 className="text-xl font-semibold text-gray-900 dark:text-white">{course.name}</h5>
-                                    <p className="text-gray-700 dark:text-gray-400">{course.description}</p>
-                                    <div className="flex items-center justify-between mt-3">
-                                        <span className="text-2xl font-bold text-gray-900 dark:text-white">${course.price}</span>
-                                        <a href="#" className="text-white bg-blue-700 px-5 py-2.5 rounded-lg">ลงทะเบียน</a>
-                                    </div>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            )}
+      {ownedCourses.length > 0 ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+          {ownedCourses.map((course) => (
+            <Card key={course.id} sx={{ p: 3, boxShadow: 3, mb: 3 }}>
+              <h2 className="text-xl font-semibold">{course.Name}</h2>
+              <p>{course.Description}</p>
+            </Card>
+          ))}
         </div>
-    );
+      ) : (
+        <p>คุณยังไม่ได้ลงทะเบียนคอร์สใด ๆ</p>
+      )}
+    </div>
+  );
 }
