@@ -24,6 +24,8 @@ import AddCourse from "./admin/pages/CreateCourse";
 import AddTopic from "./admin/pages/CreateTopic";
 import CourseDetails from "./admin/pages/CreateSummarize";
 import LecturerAll from "./admin/pages/Lecturer";
+import StudentTable from "./admin/pages/student";
+import HomeAdmin from "./admin/pages/home-admin";
 
 function App() {
   const { state } = useContext(AuthContext);
@@ -40,7 +42,7 @@ function App() {
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/cart" element={<Cart />} />
-              <Route path="/my-course" element={<Mycourse />} /> 
+              <Route path="/my-course" element={<Mycourse />} />
             </Routes>
           </>
         ) : userRole === "Lecturer" ? (
@@ -54,9 +56,23 @@ function App() {
           <>
             <NavAdmin />
             <Routes>
-              <Route path="/" element={<Home />} />
+              <Route path="/" element={<HomeAdmin />} />
               <Route path="/create-course" element={<AddCourse />} />
+              <Route
+                path="/create-topic/:courseid/:coursename"
+                element={<AddTopic />}
+              />
+              <Route
+                path="/create-summarize/:courseid"
+                element={<CourseDetails />}
+              />
+              <Route path="/view" element={<Home />} />
               <Route path="/lecturer" element={<LecturerAll />} />
+              <Route path="/student" element={<StudentTable />} />
+              <Route path="/finance" element={<Home />} />
+              <Route path="/user" element={<Profile />} />
+              <Route path="/edit-profile/:userid" element={<EditProfile />} />
+              <Route path="/sign-up" element={<SignUp />} />
             </Routes>
           </>
         ) : null
