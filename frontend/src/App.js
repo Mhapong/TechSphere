@@ -20,7 +20,8 @@ import NavAdmin from "./admin/components/navbar-admin";
 import Mycourse from "./client/pages/MyCourse";
 import Profile from "./admin/pages/profile";
 import EditProfile from "./admin/pages/edit-profile";
-import AddCourse from "./admin/pages/addcourse";
+import AddCourse from "./admin/pages/CreateCourse";
+import BuyCourse from "./client/pages/buyCourse";
 import ContentStudy from "./client/pages/ContentStudy.js"
 
 function App() {
@@ -37,6 +38,10 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/sign-up" element={<SignUp />} />
             <Route path="/contentstudy" element={<ContentStudy />} />
+            <Route
+              path="/view-product/:name/:documenId"
+              element={<BuyCourse />}
+            />
           </Routes>
         </BrowserRouter>
       </>
@@ -53,7 +58,10 @@ function App() {
               <Route path="/" element={<Home />} />
               <Route path="/cart" element={<Cart />} />
               <Route path="/my-course" element={<Mycourse />} />
-
+              <Route
+                path="/view-product/:name/:documenId"
+                element={<BuyCourse />}
+              />
             </Routes>
           </BrowserRouter>
         </>
