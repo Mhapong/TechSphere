@@ -18,9 +18,6 @@
     "Price": {
       "type": "decimal"
     },
-    "Description": {
-      "type": "text"
-    },
     "Time_Usage": {
       "type": "integer"
     },
@@ -51,11 +48,11 @@
         "files"
       ]
     },
-    "course_owner": {
+    "course_owners": {
       "type": "relation",
-      "relation": "manyToOne",
+      "relation": "manyToMany",
       "target": "plugin::users-permissions.user",
-      "inversedBy": "owned_course"
+      "inversedBy": "owned_courses"
     },
     "start_date": {
       "type": "datetime"
@@ -69,6 +66,9 @@
         "Activate",
         "Deactivate"
       ]
+    },
+    "Description": {
+      "type": "richtext"
     }
   }
 }

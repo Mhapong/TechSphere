@@ -22,6 +22,10 @@ import Profile from "./admin/pages/profile";
 import EditProfile from "./admin/pages/edit-profile";
 import AddCourse from "./admin/pages/CreateCourse";
 import BuyCourse from "./client/pages/buyCourse";
+import ContentStudy from "./client/pages/ContentStudy.js";
+import AddTopic from "./admin/pages/CreateTopic";
+import CourseDetails from "./admin/pages/CreateSummarize";
+import LecturerAll from "./admin/pages/Lecturer";
 
 function App() {
   const { state } = useContext(AuthContext);
@@ -56,6 +60,7 @@ function App() {
               <Route path="/" element={<Home />} />
               <Route path="/cart" element={<Cart />} />
               <Route path="/my-course" element={<Mycourse />} />
+              <Route path="/contentstudy" element={<ContentStudy />} />
               <Route
                 path="/view-product/:name/:documenId"
                 element={<BuyCourse />}
@@ -83,10 +88,16 @@ function App() {
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/create-course" element={<AddCourse />} />
-              <Route path="/create-topic/:courseid" element={<AddCourse />} />
-              <Route path="/create-summarize" element={<AddCourse />} />
+              <Route
+                path="/create-topic/:courseid/:coursename"
+                element={<AddTopic />}
+              />
+              <Route
+                path="/create-summarize/:courseid"
+                element={<CourseDetails />}
+              />
               <Route path="/view" element={<Home />} />
-              <Route path="/lecturer" element={<Home />} />
+              <Route path="/lecturer" element={<LecturerAll />} />
               <Route path="/student" element={<Home />} />
               <Route path="/finance" element={<Home />} />
               <Route path="/user" element={<Profile />} />

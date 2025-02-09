@@ -4,7 +4,8 @@
   "info": {
     "singularName": "content",
     "pluralName": "contents",
-    "displayName": "Content"
+    "displayName": "Content",
+    "description": ""
   },
   "options": {
     "draftAndPublish": false
@@ -21,23 +22,29 @@
       "type": "integer"
     },
     "video": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
       "allowedTypes": [
         "images",
         "files",
         "videos",
         "audios"
-      ],
-      "type": "media",
-      "multiple": false
-    },
-    "progress": {
-      "type": "integer"
+      ]
     },
     "content_id": {
       "type": "relation",
       "relation": "manyToOne",
       "target": "api::topic.topic",
       "inversedBy": "content"
+    },
+    "progress": {
+      "type": "enumeration",
+      "enum": [
+        "completed",
+        "incompleted"
+      ],
+      "default": "incompleted"
     }
   }
 }
