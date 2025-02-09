@@ -20,7 +20,8 @@ import NavAdmin from "./admin/components/navbar-admin";
 import Mycourse from "./client/pages/MyCourse";
 import Profile from "./admin/pages/profile";
 import EditProfile from "./admin/pages/edit-profile";
-import AddCourse from "./admin/pages/CreateCourse";
+import AddCourse from "./admin/pages/addcourse";
+import ContentStudy from "./client/pages/ContentStudy.js" 
 import AddTopic from "./admin/pages/CreateTopic";
 import CourseDetails from "./admin/pages/CreateSummarize";
 import LecturerAll from "./admin/pages/Lecturer";
@@ -68,6 +69,8 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/sign-up" element={<SignUp />} />
             <Route path="/my-course" element={<Mycourse />} />
+            {/* testing in plublic role */}
+            <Route path="/contentstudy" element={<ContentStudy />} /> 
           </Routes>
         </>
       )}
