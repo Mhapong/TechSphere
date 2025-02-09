@@ -20,6 +20,12 @@
       "relation": "manyToMany",
       "target": "api::course.course",
       "inversedBy": "categories"
+    },
+    "student_owned": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "plugin::users-permissions.user",
+      "mappedBy": "owned_course"
     }
   }
 }

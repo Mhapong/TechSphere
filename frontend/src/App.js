@@ -26,6 +26,7 @@ import ContentStudy from "./client/pages/ContentStudy.js";
 import AddTopic from "./admin/pages/CreateTopic";
 import CourseDetails from "./admin/pages/CreateSummarize";
 import LecturerAll from "./admin/pages/Lecturer";
+import Explore from "./client/pages/explore.js";
 
 function App() {
   const { state } = useContext(AuthContext);
@@ -59,6 +60,7 @@ function App() {
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/cart" element={<Cart />} />
+              <Route path="/explore" element={<Explore />} />
               <Route path="/my-course" element={<Mycourse />} />
               <Route path="/contentstudy" element={<ContentStudy />} />
               <Route
