@@ -37,7 +37,6 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login />} />
             <Route path="/sign-up" element={<SignUp />} />
-            <Route path="/contentstudy" element={<ContentStudy />} />
             <Route
               path="/view-product/:name/:documenId"
               element={<BuyCourse />}
@@ -58,6 +57,7 @@ function App() {
               <Route path="/" element={<Home />} />
               <Route path="/cart" element={<Cart />} />
               <Route path="/my-course" element={<Mycourse />} />
+              <Route path="/contentstudy" element={<ContentStudy />} />
               <Route
                 path="/view-product/:name/:documenId"
                 element={<BuyCourse />}

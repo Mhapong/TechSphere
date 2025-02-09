@@ -1,54 +1,76 @@
-import React, { useContext, useEffect } from "react";
-import { Button, } from "@mui/material";
-import { Card, CardBody, Typography } from "@material-tailwind/react";
-import { useState } from "react";
-import Nav from "../components/navbar";
+import React, { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../../context/Auth.context";
-import { motion } from 'framer-motion'
-import datapic from "../components/data.png"
-import webpic from "../components/web-100.png"
-import gamepic from "../components/game.png"
-import hardwarepic from "../components/hardware.png"
-import networkpic from "../components/network.png"
-import morepic from "../components/more.png"
-import homepic from "../components/home-page.png"
 import ax from "../../conf/ax";
-import { Image } from "@mui/icons-material";
 
 export default function ContentStudy() {
     const { state } = useContext(AuthContext);
     const [contentData, setContentData] = useState([]);
+    const BASE_URL = "http://localhost:1337";
 
     const fetchContent = async () => {
         try {
-            const response = await ax.get(
-                "http://localhost:1337/api/contents?populate=*")
-            console.log(response.data.data)
-            setContentData(response.data.data)
+            const response = await ax.get("http://localhost:1337/api/contents?populate=*");
+            console.log("API Response:", response.data.data);
+
+            const formattedData = response.data.data.map(item => ({
+                id: item.content_id,
+                content_title: item.content_title || "ไม่มีชื่อเนื้อหา",
+                video_url: item.video ? BASE_URL + item.video.url : "",
+                detail: item.detail || "ไม่มีรายละเอียด",
+            }));
+
+            console.log("Formatted Data:", formattedData);
+            setContentData(formattedData);
         } catch (err) {
-            console.log(err);
+            console.error("เกิดข้อผิดพลาดขณะดึงข้อมูล:", err);
         }
-    }
+    };
+
     useEffect(() => {
         fetchContent();
     }, []);
 
     return (
-        <html className="!scorll-smooth max-w-[100%]">
-            {contentData.map((items) => (
-                <div>
-                    <section>
-                        <iframe width="1120" height="630"
-                            src={items.yt_link} title="YouTube video player"
-                            frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                            referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-                        <h1 className="text-black text-xl justify-center self-center  font-medium">
-                            {items.content_title}
-                        </h1>
-                        <p>{items.detail}</p>
-                    </section>
-                </div>
-            ))}
-        </html>
+        <div className="flex max-w-full h-screen">
+            {/* ฝั่งซ้าย - แสดงวิดีโอและเนื้อหา */}
+            <div className="w-[70%] bg-gray-100 p-6 overflow-y-auto">
+                {contentData.length > 0 ? (
+                    contentData.map((item, index) => (
+                        <section key={index} className="mb-6">
+                            {/* แสดงวิดีโอ */}
+                            {item.video_url ? (
+                                <video width="100%" height="auto" controls controlsList="nodownload" className="mb-4">
+                                    <source src={item.video_url} type="video/mp4" />
+                                    เบราว์เซอร์ของคุณไม่รองรับการเล่นวิดีโอ
+                                </video>
+                            ) : (
+                                <p className="text-gray-500">ไม่มีวิดีโอ</p>
+                            )}
+                            <h1 className="text-black text-xl font-medium mb-2">
+                                {item.content_title}
+                            </h1>
+                            <p className="text-gray-700">{item.detail}</p>
+                        </section>
+                    ))
+                ) : (
+                    <p className="text-gray-500">กำลังโหลดข้อมูล...</p>
+                )}
+            </div>
+            {/* ฝั่งขวา - รายการเนื้อหาวิดีโอ */}
+            <div className="w-[30%] bg-white p-6 overflow-y-auto">
+                <h className="text-lg font-bold mb-4">เนื้อหาวิดีโอ</h>
+                <ul>
+                    {contentData.length > 0 ? (
+                        contentData.map((item, index) => (
+                            <li key={index} className="mb-4">
+                                <h5 className="text-blue-400 font-medium">{item.content_title}</h5>
+                            </li>
+                        ))
+                    ) : (
+                        <p className="text-gray-500">ไม่มีเนื้อหาวิดีโอ</p>
+                    )}
+                </ul>
+            </div>
+        </div>
     );
 }
