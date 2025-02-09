@@ -29,73 +29,50 @@ function App() {
   const { state } = useContext(AuthContext);
   console.log(state.user);
 
-  if (!state.isLoggedIn)
-    return (
-      <>
-        <Nav />
-        <BrowserRouter>
+  const userRole = state.user?.userRole;
+
+  return (
+    <BrowserRouter>
+      {state.isLoggedIn ? (
+        userRole === "User" ? (
+          <>
+            <Nav />
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/cart" element={<Cart />} />
+              <Route path="/my-course" element={<Mycourse />} /> 
+            </Routes>
+          </>
+        ) : userRole === "Lecturer" ? (
+          <>
+            <Nav />
+            <Routes>
+              <Route path="/" element={<Home />} />
+            </Routes>
+          </>
+        ) : userRole === "Admin" ? (
+          <>
+            <NavAdmin />
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/create-course" element={<AddCourse />} />
+              <Route path="/lecturer" element={<LecturerAll />} />
+            </Routes>
+          </>
+        ) : null
+      ) : (
+        <>
+          <Nav />
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login />} />
             <Route path="/sign-up" element={<SignUp />} />
+            <Route path="/my-course" element={<Mycourse />} />
           </Routes>
-        </BrowserRouter>
-      </>
-    );
-  else {
-    console.log(state.user.userRole);
-    const userRole = state.user?.userRole;
-    if (userRole === "User") {
-      return (
-        <>
-          <Nav />
-          <BrowserRouter>
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/cart" element={<Cart />} />
-              <Route path="/my-course" element={<Mycourse />} />
-            </Routes>
-          </BrowserRouter>
         </>
-      );
-    } else if (userRole === "Lecturer") {
-      return (
-        <>
-          <Nav />
-          <BrowserRouter>
-            <Routes>
-              <Route path="/" element={<Home />} />
-            </Routes>
-          </BrowserRouter>
-        </>
-      );
-    } else if (userRole === "Admin") {
-      return (
-        <>
-          <NavAdmin />
-          <BrowserRouter>
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/create-course" element={<AddCourse />} />
-              <Route
-                path="/create-topic/:courseid/:coursename"
-                element={<AddTopic />}
-              />
-              <Route
-                path="/create-summarize/:courseid"
-                element={<CourseDetails />}
-              />
-              <Route path="/view" element={<Home />} />
-              <Route path="/lecturer" element={<LecturerAll />} />
-              <Route path="/student" element={<Home />} />
-              <Route path="/finance" element={<Home />} />
-              <Route path="/user" element={<Profile />} />
-              <Route path="/edit-profile/:userid" element={<EditProfile />} />
-            </Routes>
-          </BrowserRouter>
-        </>
-      );
-    }
-  }
+      )}
+    </BrowserRouter>
+  );
 }
+
 export default App;
