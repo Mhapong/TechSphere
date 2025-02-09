@@ -402,6 +402,7 @@ export interface ApiCategoryCategory extends Struct.CollectionTypeSchema {
 export interface ApiContentContent extends Struct.CollectionTypeSchema {
   collectionName: 'contents';
   info: {
+    description: '';
     displayName: 'Content';
     pluralName: 'contents';
     singularName: 'content';
@@ -422,7 +423,8 @@ export interface ApiContentContent extends Struct.CollectionTypeSchema {
       'api::content.content'
     > &
       Schema.Attribute.Private;
-    progress: Schema.Attribute.Integer;
+    progress: Schema.Attribute.Enumeration<['completed', 'incompleted']> &
+      Schema.Attribute.DefaultTo<'incompleted'>;
     publishedAt: Schema.Attribute.DateTime;
     time: Schema.Attribute.Integer;
     updatedAt: Schema.Attribute.DateTime;
@@ -448,14 +450,14 @@ export interface ApiCourseCourse extends Struct.CollectionTypeSchema {
       'manyToMany',
       'api::category.category'
     >;
-    course_owner: Schema.Attribute.Relation<
-      'manyToOne',
+    course_owners: Schema.Attribute.Relation<
+      'manyToMany',
       'plugin::users-permissions.user'
     >;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-    Description: Schema.Attribute.Text;
+    Description: Schema.Attribute.RichText;
     end_date: Schema.Attribute.DateTime;
     image: Schema.Attribute.Media<'images' | 'files', true> &
       Schema.Attribute.Required;
@@ -541,7 +543,7 @@ export interface ApiLecturerReviewLecturerReview
     > &
       Schema.Attribute.Private;
     publishedAt: Schema.Attribute.DateTime;
-    star: Schema.Attribute.Integer &
+    star: Schema.Attribute.Decimal &
       Schema.Attribute.SetMinMax<
         {
           max: 5;
@@ -1094,7 +1096,10 @@ export interface PluginUsersPermissionsUser
       'plugin::users-permissions.user'
     > &
       Schema.Attribute.Private;
-    owned_course: Schema.Attribute.Relation<'oneToMany', 'api::course.course'>;
+    owned_courses: Schema.Attribute.Relation<
+      'manyToMany',
+      'api::course.course'
+    >;
     password: Schema.Attribute.Password &
       Schema.Attribute.Private &
       Schema.Attribute.SetMinMaxLength<{
