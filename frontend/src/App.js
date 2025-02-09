@@ -39,8 +39,9 @@ function App() {
       return (
         <BrowserRouter>
           <Routes>
-            <Route path="/login" element={<LoginForm />} />
-            <Route path="/" element={<HomeStudent />} />
+            <Route path="/" element={<Home />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/sign-up" element={<SignUp />} />
             <Route
               path="/topic/:subject_title/:username/:subject"
               element={<TopicStudent />}
@@ -49,6 +50,28 @@ function App() {
             <Route path="/contact" element={<ContactLecturer />} />
           </Routes>
         </BrowserRouter>
+      </>
+    );
+  else {
+    console.log(state.user.userRole);
+    const userRole = state.user?.userRole;
+    if (userRole === "User") {
+      return (
+        <>
+          <Nav />
+          <BrowserRouter>
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/cart" element={<Cart />} />
+              <Route path="/my-course" element={<Mycourse />} />
+              <Route path="/contentstudy" element={<ContentStudy />} />
+              <Route
+                path="/view-product/:name/:documenId"
+                element={<BuyCourse />}
+              />
+            </Routes>
+          </BrowserRouter>
+        </>
       );
     } else if (userRole === "Lecturer") {
       return (
