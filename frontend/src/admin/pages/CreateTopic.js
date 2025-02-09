@@ -82,7 +82,7 @@ const AddTopic = () => {
           end_date: endDate,
           categories: categoryid,
           Time_Usage: TimeUsage,
-          course_owner: lecturerOwner,
+          lecturer_owner: lecturerOwner,
         },
       });
       alert(`สร้างคอร์สสำเร็จ กำลังพาคุณไปยัง ${path}!`);

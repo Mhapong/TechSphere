@@ -123,10 +123,10 @@ export default function Explore() {
               <p class="text-black text-lg font-semibold line-clamp-[calc(var(--characters)/20)] h-full w-full">
                 {items.Name}
               </p>
-              {items.course_owners !== null ? (
+              {items.lecturer_owner !== null ? (
                 <p class="uppercase text-green-600 text-xs font-medium">
-                  {items.course_owners.first_name}{" "}
-                  {items.course_owners.last_name}
+                  {items.lecturer_owner.first_name}{" "}
+                  {items.lecturer_owner.last_name}
                 </p>
               ) : (
                 <p class="uppercase text-green-600 text-xs font-medium">

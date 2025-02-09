@@ -118,7 +118,7 @@ const StudentTable = () => {
                     <td className="px-4 py-2 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                       <div className="flex items-center ml-3">
                         {/* <div className="inline-block w-4 h-4 mr-2 bg-green-700 rounded-full"></div> */}
-                        {value.owned_courses.length} คอร์ส
+                        {value.owned_course.length} คอร์ส
                       </div>
                     </td>
                     <td className="px-4 py-2 font-medium text-gray-900 whitespace-nowrap dark:text-white">
@@ -136,7 +136,7 @@ const StudentTable = () => {
                     </td>
                     <td className="px-4 py-2 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                       <span>
-                        {value?.owned_courses?.reduce(
+                        {value?.owned_course?.reduce(
                           (sum, e) => sum + (e.Price || 0),
                           0
                         )}{" "}
