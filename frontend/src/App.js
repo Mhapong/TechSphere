@@ -27,36 +27,21 @@ import AddTopic from "./admin/pages/CreateTopic";
 import CourseDetails from "./admin/pages/CreateSummarize";
 import LecturerAll from "./admin/pages/Lecturer";
 import Explore from "./client/pages/explore.js";
+import StudentTable from "./admin/pages/student";
+import HomeAdmin from "./admin/pages/home-admin";
 
 function App() {
   const { state } = useContext(AuthContext);
   console.log(state.user);
 
-  if (!state.isLoggedIn)
-    return (
-      <>
-        <Nav />
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/sign-up" element={<SignUp />} />
-            <Route
-              path="/view-product/:name/:documenId"
-              element={<BuyCourse />}
-            />
-          </Routes>
-        </BrowserRouter>
-      </>
-    );
-  else {
-    console.log(state.user.userRole);
-    const userRole = state.user?.userRole;
-    if (userRole === "User") {
-      return (
-        <>
-          <Nav />
-          <BrowserRouter>
+  const userRole = state.user?.userRole;
+
+  return (
+    <BrowserRouter>
+      {state.isLoggedIn ? (
+        userRole === "User" ? (
+          <>
+            <Nav />
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/cart" element={<Cart />} />
@@ -68,27 +53,19 @@ function App() {
                 element={<BuyCourse />}
               />
             </Routes>
-          </BrowserRouter>
-        </>
-      );
-    } else if (userRole === "Lecturer") {
-      return (
-        <>
-          <Nav />
-          <BrowserRouter>
+          </>
+        ) : userRole === "Lecturer" ? (
+          <>
+            <Nav />
             <Routes>
               <Route path="/" element={<Home />} />
             </Routes>
-          </BrowserRouter>
-        </>
-      );
-    } else if (userRole === "Admin") {
-      return (
-        <>
-          <NavAdmin />
-          <BrowserRouter>
+          </>
+        ) : userRole === "Admin" ? (
+          <>
+            <NavAdmin />
             <Routes>
-              <Route path="/" element={<Home />} />
+              <Route path="/" element={<HomeAdmin />} />
               <Route path="/create-course" element={<AddCourse />} />
               <Route
                 path="/create-topic/:courseid/:coursename"
@@ -100,15 +77,32 @@ function App() {
               />
               <Route path="/view" element={<Home />} />
               <Route path="/lecturer" element={<LecturerAll />} />
-              <Route path="/student" element={<Home />} />
+              <Route path="/student" element={<StudentTable />} />
               <Route path="/finance" element={<Home />} />
               <Route path="/user" element={<Profile />} />
               <Route path="/edit-profile/:userid" element={<EditProfile />} />
+              <Route path="/sign-up" element={<SignUp />} />
             </Routes>
-          </BrowserRouter>
+          </>
+        ) : null
+      ) : (
+        <>
+          <Nav />
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/sign-up" element={<SignUp />} />
+            <Route path="/my-course" element={<Mycourse />} />
+            <Route path="/explore" element={<Explore />} />
+            <Route
+              path="/view-product/:name/:documenId"
+              element={<BuyCourse />}
+            />
+          </Routes>
         </>
-      );
-    }
-  }
+      )}
+    </BrowserRouter>
+  );
 }
+
 export default App;

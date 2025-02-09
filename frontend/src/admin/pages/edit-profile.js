@@ -8,6 +8,7 @@ const EditProfile = () => {
   const [Email, setEmail] = useState(User?.email || "");
   const [First_Name, setFirst_Name] = useState(User?.first_name || "");
   const [Last_Name, setLast_Name] = useState(User?.last_name || "");
+  const [background, setBackground] = useState(User?.background || "");
   const navigate = useNavigate();
   const { userid } = useParams();
   const [file, setFile] = useState(null);
@@ -16,12 +17,12 @@ const EditProfile = () => {
 
   const fetchUser = async () => {
     try {
-      const response = await ax.get(`users/${userid}`);
+      const response = await ax.get(`users/${userid}?populate=*`);
       console.log(response.data);
       setUser(response.data);
       setPreviewUrl(response.data.profile_picture[0].url);
     } catch (e) {
-      console.log(e);
+      console.log("Error", e);
     }
   };
 
@@ -30,17 +31,16 @@ const EditProfile = () => {
       const { type } = files[0];
       if (type === "image/png" || type === "image/jpeg") {
         setFile(files[0]);
-        setPreviewUrl(URL.createObjectURL(files[0])); // สร้าง URL สำหรับแสดงตัวอย่างรูปภาพ
+        setPreviewUrl(URL.createObjectURL(files[0]));
       }
     }
   };
 
   const updateUserProfilePicture = async (avatarId, avatarUrl) => {
     try {
-      await ax.put(
-        `users/${userid}`,
-        { profile_picture: [{ id: avatarId, url: avatarUrl }] } // อัปเดต profile_picture
-      );
+      await ax.put(`users/${userid}`, {
+        profile_picture: [{ id: avatarId, url: avatarUrl }],
+      });
     } catch (error) {
       console.log({ error });
     }
@@ -70,9 +70,9 @@ const EditProfile = () => {
       } = response;
       console.log(id, url);
 
-      await updateUserProfilePicture(id, url); // อัปเดต profile_picture ของผู้ใช้
+      await updateUserProfilePicture(id, url);
       setFile(null);
-      setPreviewUrl(url); // อัปเดต previewUrl ด้วย URL ใหม่
+      setPreviewUrl(url);
     } catch (error) {
       console.log({ error });
     } finally {
@@ -225,6 +225,29 @@ const EditProfile = () => {
             />
           </div>
         </div>
+        {User.role &&
+          User.role.name === "Lecturer" &&
+          User.background?.history && (
+            <div className="p-2">
+              <div>
+                <textarea
+                  id="background"
+                  name="background"
+                  rows="5"
+                  placeholder="background lecturer"
+                  value={background?.history || "None"}
+                  onChange={(e) =>
+                    setBackground((prev) => ({
+                      ...prev,
+                      history: e.target.value,
+                    }))
+                  }
+                  className="block w-full h-48 rounded-md border-gray-300 shadow-sm focus:border-[#8c0327] focus:ring-[#8c0327] focus:ring-opacity-50 p-2"
+                  style={{ backgroundColor: "#f6f6f6", whiteSpace: "pre-wrap" }}
+                ></textarea>
+              </div>
+            </div>
+          )}
 
         {/* Registration Button */}
         <div className="col-span-full mt-6 p-2">

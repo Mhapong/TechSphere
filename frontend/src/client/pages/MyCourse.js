@@ -1,24 +1,16 @@
+import React from "react";
 import { Card } from "@mui/material";
-import react from "react";
+import Nav from "../components/navbar";
 
-export default function Mycourse() {
-
-
+export default function MyCourse() {
     return (
-        <html>
-            <div>
-                <span className="text-xl top-5">
-                    คอร์สที่เป็นเจ้าของ
-                </span>
-                <Card>
-
-
+        <div>
+            <div className="container mx-auto mt-10 p-5">
+                <h1 className="text-2xl font-bold mb-5">คอร์สที่เป็นเจ้าของ</h1>
+                <Card sx={{ p: 3, boxShadow: 3 }}>
+                    <p>เนื้อหาคอร์สจะถูกแสดงที่นี่</p>
                 </Card>
             </div>
-
-        </html>
-
-    )
-
-
+        </div>
+    );
 }
