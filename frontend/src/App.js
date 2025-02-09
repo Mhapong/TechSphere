@@ -20,8 +20,6 @@ import NavAdmin from "./admin/components/navbar-admin";
 import Mycourse from "./client/pages/MyCourse";
 import Profile from "./admin/pages/profile";
 import EditProfile from "./admin/pages/edit-profile";
-import AddCourse from "./admin/pages/CreateCourse";
-import BuyCourse from "./client/pages/buyCourse";
 import ContentStudy from "./client/pages/ContentStudy.js";
 import AddTopic from "./admin/pages/CreateTopic";
 import CourseDetails from "./admin/pages/CreateSummarize";
@@ -76,6 +74,7 @@ function App() {
                 element={<CourseDetails />}
               />
               <Route path="/view" element={<Home />} />
+              <Route path="/" element={<Home />} />
               <Route path="/lecturer" element={<LecturerAll />} />
               <Route path="/student" element={<StudentTable />} />
               <Route path="/finance" element={<Home />} />
@@ -98,6 +97,9 @@ function App() {
               path="/view-product/:name/:documenId"
               element={<BuyCourse />}
             />
+            {/* testing in plublic role */}
+            <Route path="/contentstudy" element={<ContentStudy />} />
+            <Route path="/my-course" element={<Mycourse />} />
           </Routes>
         </>
       )}
