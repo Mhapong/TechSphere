@@ -1,187 +1,44 @@
-// import React from "react";
-// import { useState, useEffect } from "react";
-
-// export default function Cart() {
-//   return (
-//     <div class="bg-gray-100 h-screen py-8">
-//       <div class="container mx-auto px-4">
-//         <h1 class="text-2xl font-semibold mb-4">Shopping Cart</h1>
-//         <div class="flex flex-col md:flex-row gap-4">
-//           <div class="md:w-3/4">
-//             <div class="bg-white rounded-lg h-2/3 shadow-md p-6 mb-4">
-//               <table class="w-full">
-//                 <thead>
-//                   <tr>
-//                     <th class="text-left font-semibold">Product</th>
-//                     <th class="text-left font-semibold">Total</th>
-//                   </tr>
-//                 </thead>
-//                 <tbody>
-//                   <tr>
-//                     <td class="py-4">
-//                       <div class="flex items-center">
-//                         {/* <img class="h-16 w-16 mr-4" src="https://via.placeholder.com/150" alt="Product image"> */}
-//                         <span class="font-semibold">Product name</span>
-//                       </div>
-//                     </td>
-//                     <td class="py-4">$19.99</td>
-//                     <td class="py-4"></td>
-//                     <td class="py-4">$19.99</td>
-//                   </tr>
-//                 </tbody>
-//               </table>
-//             </div>
-//           </div>
-//           <div class="md:w-1/4">
-//             <div class="bg-white rounded-lg shadow-md p-6">
-//               <h2 class="text-lg font-semibold mb-4">Summary</h2>
-//               <div class="flex justify-between mb-2">
-//                 <span>Subtotal</span>
-//                 <span>$19.99</span>
-//               </div>
-//               <div class="flex justify-between mb-2">
-//                 <span>Taxes</span>
-//                 <span>$1.99</span>
-//               </div>
-//               <div class="flex justify-between mb-2">
-//                 <span>Shipping</span>
-//                 <span>$0.00</span>
-//               </div>
-//               <hr class="my-2" />
-//               <div class="flex justify-between mb-2">
-//                 <span class="font-semibold">Total</span>
-//                 <span class="font-semibold">$21.98</span>
-//               </div>
-//               <button class="bg-blue-500 text-white py-2 px-4 rounded-lg mt-4 w-full">
-//                 Checkout
-//               </button>
-//             </div>
-//           </div>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// }
-
 import React, { useContext, useEffect } from "react";
-import cartContext from "../context/cartContext";
+import cartContext from "../../context/Cart.context";
 
 const Cart = () => {
-  const {
-    isCartOpen,
-    cartItems,
-    toggleCart,
-    removeItem,
-    incrementItem,
-    decrementItem,
-  } = useContext(cartContext);
-
-  // disable the body-scroll when the Cart is open
-  useEffect(() => {
-    const docBody = document.body;
-
-    isCartOpen
-      ? docBody.classList.add("overflow_hide")
-      : docBody.classList.remove("overflow_hide");
-  }, [isCartOpen]);
-
-  // closing the Cart on clicking outside of it
-  useEffect(() => {
-    const outsideClose = (e) => {
-      if (e.target.id === "cart") {
-        toggleCart(false);
-      }
-    };
-
-    window.addEventListener("click", outsideClose);
-
-    return () => {
-      window.removeEventListener("click", outsideClose);
-    };
-  }, [toggleCart]);
-
-  const cartQuantity = cartItems.length;
-
-  const cartTotal = cartItems
-    .map((item) => item.price * item.quantity)
-    .reduce((prevValue, currValue) => prevValue + currValue, 0);
+  const { cartItems } = useContext(cartContext);
+  console.log(cartItems);
 
   return (
-    <>
-      {isCartOpen && (
-        <div id="cart">
-          <div className="cart_content">
-            <div className="cart_head">
-              <h2>
-                Cart <small>({cartQuantity})</small>
-              </h2>
-              <div
-                title="Close"
-                className="close_btn"
-                onClick={() => toggleCart(false)}
-              >
-                <span>&times;</span>
-              </div>
+    <div className="flex flex-col justify-center bg-gray-100">
+      <div className="flex justify-between items-center px-20 py-5">
+        <h1 className="text-2xl uppercase font-bold mt-10 text-center mb-10">
+          Shop
+        </h1>
+      </div>
+      <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 px-10">
+        {cartItems.map((cartItem) => (
+          <div
+            key={cartItem.id}
+            className="bg-white shadow-md rounded-lg px-10 py-10"
+          >
+            <img
+              src={cartItem.thumbnail}
+              alt={cartItem.title}
+              className="rounded-md h-48"
+            />
+            <div className="mt-4">
+              <h1 className="text-lg uppercase font-bold">{cartItem.title}</h1>
+              <p className="mt-2 text-gray-600 text-sm">
+                {cartItem.description.slice(0, 40)}...
+              </p>
+              <p className="mt-2 text-gray-600">${cartItem.price}</p>
             </div>
-
-            <div className="cart_body">
-              {cartQuantity === 0 ? (
-                <h2>Cart is empty</h2>
-              ) : (
-                cartItems.map((item) => {
-                  const { id, img, title, price, quantity } = item;
-                  const itemTotal = price * quantity;
-
-                  return (
-                    <div className="cart_items" key={id}>
-                      <figure className="cart_items_img">
-                        <img src={img} alt="product-img" />
-                      </figure>
-
-                      <div className="cart_items_info">
-                        <h4>{title}</h4>
-                        <h3 className="price">
-                          ₹ {itemTotal.toLocaleString()}
-                        </h3>
-                      </div>
-
-                      <div className="cart_items_quantity">
-                        <span onClick={() => decrementItem(id)}>&#8722;</span>
-                        <b>{quantity}</b>
-                        <span onClick={() => incrementItem(id)}>&#43;</span>
-                      </div>
-
-                      <div
-                        title="Remove Item"
-                        className="cart_items_delete"
-                        onClick={() => removeItem(id)}
-                      >
-                        <span>&times;</span>
-                      </div>
-                    </div>
-                  );
-                })
-              )}
-            </div>
-
-            <div className="cart_foot">
-              <h3>
-                <small>Total:</small>
-                <b>₹ {cartTotal.toLocaleString()}</b>
-              </h3>
-
-              <button
-                type="button"
-                className="checkout_btn"
-                disabled={cartQuantity === 0}
-              >
-                Checkout
+            <div className="mt-6 flex justify-between items-center">
+              <button className="px-4 py-2 bg-gray-800 text-white text-xs font-bold uppercase rounded hover:bg-gray-700 focus:outline-none focus:bg-gray-700">
+                Add to cart
               </button>
             </div>
           </div>
-        </div>
-      )}
-    </>
+        ))}
+      </div>
+    </div>
   );
 };
 
