@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useContext } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import ax from "../../conf/ax";
-import cartContext from "../context/cartContext";
+import { useCart } from "../../context/Cart.context";
 import { AuthContext } from "../../context/Auth.context";
 
 export default function BuyCourse(props) {
@@ -9,21 +9,8 @@ export default function BuyCourse(props) {
   const { state } = useContext(AuthContext);
   const { name, documenId } = useParams();
   const [course, setCourse] = useState({});
-  const { addItem } = useContext(cartContext);
-  const [isAdded, setIsAdded] = useState(false);
+  const { addToCart } = useCart();
   const [showLoginModal, setshowLoginModal] = useState(false);
-
-  const handleAddToCart = () => {
-    // here, we cannot directly pass the `props` as it is, if we need to access the same value within the child component. So, we've to pass it as a different prop like this- `{...props}`
-    const item = { ...props };
-    addItem(item);
-
-    setIsAdded(true);
-
-    setTimeout(() => {
-      setIsAdded(false);
-    }, 3000);
-  };
 
   const fetchCourse = async () => {
     try {
@@ -41,6 +28,10 @@ export default function BuyCourse(props) {
   useEffect(() => {
     fetchCourse();
   }, []);
+
+  const handleAddToCart = () => {
+    addToCart(course);
+  };
 
   return (
     <div class="bg-gray-100">
@@ -162,7 +153,6 @@ export default function BuyCourse(props) {
             <div class="flex space-x-4 mb-6">
               <button
                 class="bg-indigo-600 flex gap-2 items-center text-white px-6 py-2 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 "
-                className={`btn ${isAdded ? "added" : ""}`}
                 onClick={
                   !state.isLoggedIn ? () => navigate("/login") : handleAddToCart
                 }
@@ -181,7 +171,7 @@ export default function BuyCourse(props) {
                     d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z"
                   />
                 </svg>
-                {isAdded ? "Added" : "Add to cart"}
+                {addToCart ? "Added" : "Add to cart"}
               </button>
               <button class="bg-gray-200 flex gap-2 items-center  text-gray-800 px-6 py-2 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">
                 <svg
