@@ -27,6 +27,7 @@ import StudentTable from "./admin/pages/student";
 import HomeAdmin from "./admin/pages/home-admin";
 import BuyCourse from "./client/pages/buyCourse.js";
 import AddCourse from "./admin/pages/CreateCourse";
+import About from "./client/pages/About.js";
 
 function App() {
   const { state } = useContext(AuthContext);
@@ -97,6 +98,7 @@ function App() {
               path="/view-product/:name/:documenId"
               element={<BuyCourse />}
             />
+            <Route path="about" element={<About />} />
             {/* testing in plublic role */}
             <Route path="/contentstudy" element={<ContentStudy />} />
             <Route path="/my-course" element={<Mycourse />} />
