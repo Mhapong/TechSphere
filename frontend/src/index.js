@@ -3,9 +3,7 @@ import ReactDOM from "react-dom/client";
 import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
-import Nav from "./client/components/navbar";
 import { ContextProvider } from "./context/Auth.context.js";
-import { Navbar } from "@material-tailwind/react";
 import { CartProvider } from "./context/Cart.context.js";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
