@@ -105,8 +105,8 @@
     "owned_course": {
       "type": "relation",
       "relation": "manyToMany",
-      "target": "api::category.category",
-      "inversedBy": "student_owned"
+      "target": "api::course.course",
+      "inversedBy": "user_owner"
     }
   }
 }
