@@ -64,7 +64,7 @@ export default function MyCourse() {
                             key={item.id}
                             whileHover={{ scale: 1.1 }}
                             className="min-w-80 border border-blue-200 rounded-lg shadow-md p-4 cursor-pointer"
-                            onClick={() => navigate(`/view-product/${item.Name}/${item.documentId}/`)}
+                            onClick={() => navigate(`/contentstudy`)}
                         >
                             {/* รูปภาพคอร์ส */}
                             <div>
