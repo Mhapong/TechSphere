@@ -11,6 +11,7 @@ export default function MyCourse() {
     const [courseData, setCourseData] = useState([]);  // คอร์สทั้งหมด
     const [loading, setLoading] = useState(true);  // สถานะการโหลด
     const [error, setError] = useState(null);  // สถานะข้อผิดพลาด
+    const [query, setQuery] = useState("");
     const navigate = useNavigate();
     useEffect(() => {
         // ดึงข้อมูลผู้ใช้และคอร์สที่ผู้ใช้ลงทะเบียน
@@ -64,7 +65,7 @@ export default function MyCourse() {
                             key={item.id}
                             whileHover={{ scale: 1.1 }}
                             className="min-w-80 border border-blue-200 rounded-lg shadow-md p-4 cursor-pointer"
-                            onClick={() => navigate(`/contentstudy`)}
+                            onClick={() => navigate(`/contentstudy/${item.documentId}`)}
                         >
                             {/* รูปภาพคอร์ส */}
                             <div>
