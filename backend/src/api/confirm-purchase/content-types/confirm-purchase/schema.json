@@ -40,6 +40,10 @@
       "relation": "manyToMany",
       "target": "api::course.course",
       "inversedBy": "course_confirm_purchases"
+    },
+    "amount": {
+      "type": "decimal",
+      "min": 0
     }
   }
 }

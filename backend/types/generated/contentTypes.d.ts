@@ -412,6 +412,13 @@ export interface ApiConfirmPurchaseConfirmPurchase
     draftAndPublish: false;
   };
   attributes: {
+    amount: Schema.Attribute.Decimal &
+      Schema.Attribute.SetMinMax<
+        {
+          min: 0;
+        },
+        number
+      >;
     course_purchase: Schema.Attribute.Relation<
       'manyToMany',
       'api::course.course'
