@@ -1,31 +1,60 @@
-import { createContext, useContext, useState } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useReducer,
+  useState,
+} from "react";
 
-const CartContext = createContext();
+const CartContext = createContext(null);
 
-export const CartProvider = ({ children }) => {
-  const [cartItems, setCartItems] = useState([]);
+const cartReducer = (state, action) => {
+  switch (action.type) {
+    case "ADD_TO_CART":
+      if (state.some((item) => item.id === action.payload.id)) return state;
+      return [...state, action.payload];
+    case "REMOVE_FROM_CART":
+      return state.filter((item) => item.id !== action.payload.id);
+    default:
+      return state;
+  }
+};
+const CartProvider = ({ children }) => {
+  const [cartItems, setCartItems] = useReducer(cartReducer, [], () => {
+    const localData = localStorage.getItem("cartItems");
+    return localData ? JSON.parse(localData) : [];
+  });
 
-  const addToCart = (item) => {
-    setCartItems((prevItems) => [...prevItems, item]);
+  useEffect(() => {
+    localStorage.setItem("cartItems", JSON.stringify(cartItems));
+  }, [cartItems]);
+
+  const addToCart = (course) => {
+    setCartItems({
+      type: "ADD_TO_CART",
+      payload: {
+        id: course.id,
+        name: course.Name,
+        Price: course.Price,
+        image:
+          course.image?.length > 0
+            ? `http://localhost:1337${course.image[0].url}`
+            : true,
+      },
+    });
   };
 
-  const removeFromCart = (itemId) => {
-    setCartItems((prevItems) => prevItems.filter((item) => item.id !== itemId));
-  };
-
-  const clearCart = () => {
-    setCartItems([]);
+  const removeFromCart = (courseId) => {
+    setCartItems({ type: "REMOVE_FROM_CART", payload: { id: courseId } });
   };
 
   return (
-    <CartContext.Provider
-      value={{ cartItems, addToCart, removeFromCart, clearCart }}
-    >
+    <CartContext.Provider value={{ cartItems, addToCart, removeFromCart }}>
       {children}
     </CartContext.Provider>
   );
 };
 
+// ✅ ใช้ export default สำหรับ CartProvider
+export default CartProvider;
 export const useCart = () => useContext(CartContext);
-
-export default CartContext;
