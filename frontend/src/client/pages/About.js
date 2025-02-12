@@ -1,6 +1,6 @@
 import React from "react";
 import techspherepic from "../components/logo.png";
-
+import definitionpic from "../components/definition.png";
 const AboutPage = () => {
     return (
         <div className="flex flex-col items-center justify-center min-h-screen p-6 space-y-8">
@@ -20,7 +20,7 @@ const AboutPage = () => {
             </div>
 
             {/* คำบรรยาย TechSphere */}
-            <blockquote className="max-w-3xl text-lg leading-relaxed text-center text-gray-700">
+            <blockquote className="max-w-4xl text-2xl leading-relaxed text-center text-gray-700">
                 <p className="italic font-semibold">
                     "TechSphere คือองค์กรที่มุ่งเน้นการเสริมสร้างความรู้และทักษะด้านเทคโนโลยีสมัยใหม่
                     ผ่านการเรียนการสอนที่เข้มข้นและมีประสิทธิภาพ ไม่ว่าจะเป็นการพัฒนาซอฟต์แวร์ ปัญญาประดิษฐ์
@@ -31,6 +31,13 @@ const AboutPage = () => {
                     เราพร้อมพาคุณก้าวสู่อนาคตของเทคโนโลยีด้วยการเรียนรู้ที่มีประสิทธิภาพและสนุกสนาน"
                 </p>
             </blockquote>
+            <div className="w-screen overflow-hidden">
+                <img
+                    className="w-screen h-auto object-cover"
+                    src={definitionpic}
+                    alt="definition"
+                />
+            </div>
             <section class="bg-white dark:bg-gray-900">
                 {/*ช่องที่ 1*/}
                 <div class="py-8 px-4 mx-auto max-w-screen-xl lg:py-16">
@@ -42,7 +49,7 @@ const AboutPage = () => {
                             </svg>
                             All courses
                         </a>
-                        <h1 class="text-gray-900 dark:text-white text-3xl md:text-4xl font-extrabold mb-2">เปลี่ยนตัวเองให้พร้อมสำหรับอนาคตดิจิทัล!</h1>
+                        <h1 class="text-gray-900 dark:text-white text-3xl md:text-4xl font-extrabold mb-2">เปลี่ยนตัวเองให้พร้อมสำหรับโลกอนาคตแห่งยุคดิจิทัล!</h1>
                         <p class="text-lg font-normal text-gray-500 dark:text-gray-400 mb-6">เพิ่มพูนทักษะดิจิทัลของคุณ และก้าวสู่อนาคตอย่างมั่นใจ.</p>
                         <a href="/explore" class="inline-flex justify-center items-center py-2.5 px-5 text-base font-medium text-center text-white rounded-lg bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 dark:focus:ring-blue-900">
                             เลือกคอร์สเรียน
