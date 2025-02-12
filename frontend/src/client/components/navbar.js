@@ -16,6 +16,7 @@ import { AuthContext } from "../../context/Auth.context";
 import { motion } from "framer-motion";
 import CartIcon from "./cartIcon";
 import { useCart } from "../../context/Cart.context";
+import { FaCartShopping } from "react-icons/fa6";
 
 const navigation = [
   { name: "Sign in", href: "/login", current: true },
@@ -93,36 +94,35 @@ export default function Nav() {
             </motion.div>
 
             <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
-              <a href="/cart">
-                <motion.div
-                  initial={{ opacity: 1 }}
-                  whileHover={{ opacity: 0.1 }}
-                  transition={{ duration: 0.1 }}
-                  className="mr-3 cursor-pointer"
-                >
-                  <svg
-                    className="w-6 h-6"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
+              {state.isLoggedIn ? (
+                <a href="/cart">
+                  <motion.div
+                    initial={{ opacity: 1 }}
+                    whileHover={{ opacity: 0.1 }}
+                    transition={{ duration: 0.1 }}
+                    className="mr-3 cursor-pointer"
                   >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="1.5"
-                      d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
-                    />
-                  </svg>
-                  {itemCount > 0 && (
-                    <span className="absolute top-0 right-0 bg-red-600 text-white rounded-full w-4 h-4 flex items-center justify-center text-xs font-bold">
-                      {itemCount}
-                    </span>
-                  )}
-                </motion.div>
-              </a>
+                    <button
+                      type="button"
+                      className="relative rounded-full transition-all p-1 text-black hover:text-black/10"
+                    >
+                      <FaCartShopping className="size-5" />
+                    </button>
+                    {cartItems.length > 0 ? (
+                      <span className="absolute top-3 right-20 bg-red-600 text-white rounded-full w-4 h-4 flex items-center justify-center text-xs font-bold">
+                        {cartItems.length}
+                      </span>
+                    ) : (
+                      ""
+                    )}
+                  </motion.div>
+                </a>
+              ) : (
+                ""
+              )}
               <button
                 type="button"
-                className="relative rounded-full transition-all p-1 text-black hover:text-black/10 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
+                className="relative rounded-full transition-all p-1 text-black hover:text-black/10"
               >
                 <span className="absolute -inset-1.5" />
                 <span className="sr-only">View notifications</span>

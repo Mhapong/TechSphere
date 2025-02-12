@@ -16,6 +16,7 @@ import ax from "../../conf/ax";
 import { Image } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import no_image from "../components/No_Image_Available.jpeg";
+import Footer from "../components/footer";
 // import { IoIosArrowDropleftCircle, IoIosArrowDroprightCircle } from "react-icons/io";
 // import axios from "axios";
 
