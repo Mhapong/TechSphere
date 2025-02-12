@@ -107,6 +107,12 @@
       "relation": "manyToMany",
       "target": "api::course.course",
       "inversedBy": "user_owner"
+    },
+    "user_confirm_purchase": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::confirm-purchase.confirm-purchase",
+      "mappedBy": "users_purchase"
     }
   }
 }

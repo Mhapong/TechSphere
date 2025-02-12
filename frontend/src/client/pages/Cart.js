@@ -1,42 +1,63 @@
 import React, { useContext, useEffect } from "react";
-import cartContext from "../../context/Cart.context";
+import { useCart } from "../../context/Cart.context";
+import { Image } from "@mui/icons-material";
 
 const Cart = () => {
-  const { cartItems } = useContext(cartContext);
+  const { cartItems, removeFromCart } = useCart();
+  const baseURL = "http://localhost:1337";
+  const totalPrice = cartItems.reduce((sum, item) => sum + item.Price, 0);
   console.log(cartItems);
 
   return (
-    <div className="flex flex-col justify-center bg-gray-100">
-      <div className="flex justify-between items-center px-20 py-5">
-        <h1 className="text-2xl uppercase font-bold mt-10 text-center mb-10">
-          Shop
-        </h1>
-      </div>
-      <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 px-10">
-        {cartItems.map((cartItem) => (
-          <div
-            key={cartItem.id}
-            className="bg-white shadow-md rounded-lg px-10 py-10"
-          >
-            <img
-              src={cartItem.thumbnail}
-              alt={cartItem.title}
-              className="rounded-md h-48"
-            />
-            <div className="mt-4">
-              <h1 className="text-lg uppercase font-bold">{cartItem.title}</h1>
-              <p className="mt-2 text-gray-600 text-sm">
-                {cartItem.description.slice(0, 40)}...
-              </p>
-              <p className="mt-2 text-gray-600">${cartItem.price}</p>
-            </div>
-            <div className="mt-6 flex justify-between items-center">
-              <button className="px-4 py-2 bg-gray-800 text-white text-xs font-bold uppercase rounded hover:bg-gray-700 focus:outline-none focus:bg-gray-700">
-                Add to cart
-              </button>
-            </div>
-          </div>
-        ))}
+    <div className="container mx-auto p-4">
+      <div className="flex flex-col md:flex-row gap-6">
+        {/* Cart Items */}
+        <div className="md:w-2/3 space-y-4">
+          <h2 className="text-2xl font-bold">ตะกร้าสินค้า</h2>
+          {cartItems.length === 0 ? (
+            <p className="text-gray-500">ไม่มีสินค้าในตะกร้า</p>
+          ) : (
+            cartItems.map((item) => (
+              <div
+                key={item.id}
+                className="flex items-center justify-between bg-white p-4 rounded-xl shadow"
+              >
+                {item.image !== null ? (
+                  <img
+                    src={`${baseURL}${item.image[0].url}`}
+                    alt="Product Image"
+                    class="object-contain w-fit h-fit"
+                  />
+                ) : (
+                  <Image
+                    alt="Product Image"
+                    class="object-contain w-fit h-fit"
+                  />
+                )}
+                <div>
+                  <h3 className="text-lg font-semibold">{item.name}</h3>
+                  <p className="text-gray-600">ราคา: ฿{item.Price}</p>
+                </div>
+                <button
+                  onClick={() => removeFromCart(item.id)}
+                  className="bg-red-500 text-white px-3 py-1 rounded-md hover:bg-red-600 transition"
+                >
+                  ลบ
+                </button>
+              </div>
+            ))
+          )}
+        </div>
+        {/* Sidebar - Total Price & Checkout Button */}
+        <div className="md:w-1/3 bg-gray-100 p-6 rounded-xl shadow-md h-fit">
+          <h2 className="text-xl font-semibold mb-4">สรุปคำสั่งซื้อ</h2>
+          <p className="text-lg font-medium">
+            ราคารวม: <span className="text-green-600">฿{totalPrice}</span>
+          </p>
+          <button className="mt-4 w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition">
+            ดำเนินการชำระเงิน
+          </button>
+        </div>
       </div>
     </div>
   );

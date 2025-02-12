@@ -1,0 +1,49 @@
+{
+  "kind": "collectionType",
+  "collectionName": "confirm_purchases",
+  "info": {
+    "singularName": "confirm-purchase",
+    "pluralName": "confirm-purchases",
+    "displayName": "Confirm_purchase",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "users_purchase": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "plugin::users-permissions.user",
+      "inversedBy": "user_confirm_purchase"
+    },
+    "picture_purchase": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": [
+        "images",
+        "files"
+      ]
+    },
+    "status_confirm": {
+      "type": "enumeration",
+      "enum": [
+        "waiting",
+        "confirmed"
+      ],
+      "default": "waiting"
+    },
+    "course_purchase": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::course.course",
+      "inversedBy": "course_confirm_purchases"
+    },
+    "amount": {
+      "type": "decimal",
+      "min": 0
+    }
+  }
+}

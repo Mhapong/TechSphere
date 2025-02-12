@@ -46,7 +46,8 @@ function App() {
               <Route path="/cart" element={<Cart />} />
               <Route path="/explore" element={<Explore />} />
               <Route path="/my-course" element={<Mycourse />} />
-              <Route path="/contentstudy" element={<ContentStudy />} />
+              <Route path="/contentstudy/:documentId" element={<ContentStudy />} />
+              <Route path="/about" element={<About />} />
               <Route
                 path="/view-product/:name/:documenId"
                 element={<BuyCourse />}
@@ -98,7 +99,7 @@ function App() {
               path="/view-product/:name/:documenId"
               element={<BuyCourse />}
             />
-            <Route path="about" element={<About />} />
+            <Route path="/about" element={<About />} />
             {/* testing in plublic role */}
             <Route path="/contentstudy" element={<ContentStudy />} />
             <Route path="/my-course" element={<Mycourse />} />

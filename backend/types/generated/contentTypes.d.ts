@@ -399,6 +399,53 @@ export interface ApiCategoryCategory extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiConfirmPurchaseConfirmPurchase
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'confirm_purchases';
+  info: {
+    description: '';
+    displayName: 'Confirm_purchase';
+    pluralName: 'confirm-purchases';
+    singularName: 'confirm-purchase';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    amount: Schema.Attribute.Decimal &
+      Schema.Attribute.SetMinMax<
+        {
+          min: 0;
+        },
+        number
+      >;
+    course_purchase: Schema.Attribute.Relation<
+      'manyToMany',
+      'api::course.course'
+    >;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::confirm-purchase.confirm-purchase'
+    > &
+      Schema.Attribute.Private;
+    picture_purchase: Schema.Attribute.Media<'images' | 'files'>;
+    publishedAt: Schema.Attribute.DateTime;
+    status_confirm: Schema.Attribute.Enumeration<['waiting', 'confirmed']> &
+      Schema.Attribute.DefaultTo<'waiting'>;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    users_purchase: Schema.Attribute.Relation<
+      'oneToOne',
+      'plugin::users-permissions.user'
+    >;
+  };
+}
+
 export interface ApiContentContent extends Struct.CollectionTypeSchema {
   collectionName: 'contents';
   info: {
@@ -449,6 +496,10 @@ export interface ApiCourseCourse extends Struct.CollectionTypeSchema {
     categories: Schema.Attribute.Relation<
       'manyToMany',
       'api::category.category'
+    >;
+    course_confirm_purchases: Schema.Attribute.Relation<
+      'manyToMany',
+      'api::confirm-purchase.confirm-purchase'
     >;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -1128,6 +1179,10 @@ export interface PluginUsersPermissionsUser
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    user_confirm_purchase: Schema.Attribute.Relation<
+      'oneToOne',
+      'api::confirm-purchase.confirm-purchase'
+    >;
     username: Schema.Attribute.String &
       Schema.Attribute.Required &
       Schema.Attribute.Unique &
@@ -1148,6 +1203,7 @@ declare module '@strapi/strapi' {
       'admin::transfer-token-permission': AdminTransferTokenPermission;
       'admin::user': AdminUser;
       'api::category.category': ApiCategoryCategory;
+      'api::confirm-purchase.confirm-purchase': ApiConfirmPurchaseConfirmPurchase;
       'api::content.content': ApiContentContent;
       'api::course.course': ApiCourseCourse;
       'api::lecturer-background.lecturer-background': ApiLecturerBackgroundLecturerBackground;
