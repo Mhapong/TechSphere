@@ -38,14 +38,6 @@
       "target": "api::topic.topic",
       "inversedBy": "content"
     },
-    "progress": {
-      "type": "enumeration",
-      "enum": [
-        "completed",
-        "incompleted"
-      ],
-      "default": "incompleted"
-    },
     "progresses": {
       "type": "relation",
       "relation": "oneToMany",

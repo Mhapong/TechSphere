@@ -470,8 +470,6 @@ export interface ApiContentContent extends Struct.CollectionTypeSchema {
       'api::content.content'
     > &
       Schema.Attribute.Private;
-    progress: Schema.Attribute.Enumeration<['completed', 'incompleted']> &
-      Schema.Attribute.DefaultTo<'incompleted'>;
     progresses: Schema.Attribute.Relation<
       'oneToMany',
       'api::progress.progress'
