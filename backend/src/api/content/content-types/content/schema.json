@@ -45,6 +45,12 @@
         "incompleted"
       ],
       "default": "incompleted"
+    },
+    "progresses": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::progress.progress",
+      "mappedBy": "content_progress"
     }
   }
 }

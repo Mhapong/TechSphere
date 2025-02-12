@@ -472,6 +472,10 @@ export interface ApiContentContent extends Struct.CollectionTypeSchema {
       Schema.Attribute.Private;
     progress: Schema.Attribute.Enumeration<['completed', 'incompleted']> &
       Schema.Attribute.DefaultTo<'incompleted'>;
+    progresses: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::progress.progress'
+    >;
     publishedAt: Schema.Attribute.DateTime;
     time: Schema.Attribute.Integer;
     updatedAt: Schema.Attribute.DateTime;
@@ -606,6 +610,51 @@ export interface ApiLecturerReviewLecturerReview
         },
         number
       >;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiProgressProgress extends Struct.CollectionTypeSchema {
+  collectionName: 'progresses';
+  info: {
+    description: '';
+    displayName: 'Progress';
+    pluralName: 'progresses';
+    singularName: 'progress';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    content_progress: Schema.Attribute.Relation<
+      'manyToOne',
+      'api::content.content'
+    >;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::progress.progress'
+    > &
+      Schema.Attribute.Private;
+    progress: Schema.Attribute.BigInteger &
+      Schema.Attribute.SetMinMax<
+        {
+          max: '100';
+          min: '0';
+        },
+        string
+      > &
+      Schema.Attribute.DefaultTo<'0'>;
+    progress_owner: Schema.Attribute.Relation<
+      'manyToOne',
+      'plugin::users-permissions.user'
+    >;
+    publishedAt: Schema.Attribute.DateTime;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -1135,13 +1184,13 @@ export interface PluginUsersPermissionsUser
     blocked: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
     confirmationToken: Schema.Attribute.String & Schema.Attribute.Private;
     confirmed: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
     created_courses: Schema.Attribute.Relation<
       'oneToMany',
       'api::course.course'
     >;
-    createdAt: Schema.Attribute.DateTime;
-    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
     email: Schema.Attribute.Email &
       Schema.Attribute.Required &
       Schema.Attribute.SetMinMaxLength<{
@@ -1164,6 +1213,10 @@ export interface PluginUsersPermissionsUser
     profile_picture: Schema.Attribute.Media<
       'images' | 'files' | 'videos' | 'audios',
       true
+    >;
+    progress_owned: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::progress.progress'
     >;
     provider: Schema.Attribute.String;
     publishedAt: Schema.Attribute.DateTime;
@@ -1208,6 +1261,7 @@ declare module '@strapi/strapi' {
       'api::course.course': ApiCourseCourse;
       'api::lecturer-background.lecturer-background': ApiLecturerBackgroundLecturerBackground;
       'api::lecturer-review.lecturer-review': ApiLecturerReviewLecturerReview;
+      'api::progress.progress': ApiProgressProgress;
       'api::review.review': ApiReviewReview;
       'api::topic.topic': ApiTopicTopic;
       'plugin::content-releases.release': PluginContentReleasesRelease;

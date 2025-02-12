@@ -12,6 +12,7 @@ export default function ContentStudy() {
     const [selectedContent, setSelectedContent] = useState(null);
     const { documentId } = useParams();
     const BASE_URL = "http://localhost:1337";
+    const [progress, setProgress] = useState({});
 
     const fetchTopics = async () => {
         try {
@@ -25,7 +26,7 @@ export default function ContentStudy() {
 
             const groupedData = response.data.data.reduce((acc, topic) => {
                 acc[topic.topic_title] = topic.content.map(item => ({
-                    id: item.content_id || item.id || Math.random(), 
+                    id: item.content_id || item.id || Math.random(),
                     content_title: item.content_title || "ไม่มีชื่อเนื้อหา",
                     video_url: item.video?.url ? BASE_URL + item.video.url : "",
                     detail: item.detail || "ไม่มีรายละเอียด",
@@ -44,6 +45,25 @@ export default function ContentStudy() {
             console.error("เกิดข้อผิดพลาดขณะดึงข้อมูล:", err);
         }
     };
+
+    const handleTimeUpdate = (event, contentId) => {
+        const currentTime = event.target.currentTime;
+        const duration = event.target.duration;
+        setProgress((prev) => ({
+            ...prev,
+            [contentId]: (currentTime / duration) * 100,
+        }));
+
+        localStorage.setItem(`progress_${contentId}`, currentTime);
+    };
+
+    const handleVideoEnd = (contentId) => {
+        setProgress((prev) => ({
+            ...prev,
+            [contentId]: 100,
+        }));
+    };
+
 
     useEffect(() => {
         fetchTopics();
@@ -65,9 +85,10 @@ export default function ContentStudy() {
                                 controls
                                 controlsList="nodownload"
                                 className="mb-4"
+                                onTimeUpdate={(e) => handleTimeUpdate(e, selectedContent.id)}
+                                onEnded={() => handleVideoEnd(selectedContent.id)}
                             >
                                 <source src={selectedContent.video_url} type="video/mp4" />
-                                เบราว์เซอร์ของคุณไม่รองรับการเล่นวิดีโอ
                             </video>
                         ) : (
                             <p className="text-gray-500">ไม่มีวิดีโอ</p>
@@ -78,7 +99,6 @@ export default function ContentStudy() {
                     <p className="text-gray-500">เลือกเนื้อหาจากทางขวา</p>
                 )}
             </div>
-
             {/* ฝั่งขวา - รายการเนื้อหาวิดีโอ */}
             <div className="w-[30%] bg-white p-6 overflow-y-auto">
                 <h2 className="text-lg font-bold text-xl mb-4">เนื้อหาวิดีโอ</h2>
@@ -101,16 +121,26 @@ export default function ContentStudy() {
                                                 onClick={() => {
                                                     console.log("เลือกเนื้อหา:", item);
                                                     setSelectedContent(item);
-                                                    console.log("ค่าปัจจุบันของ selectedContent:", selectedContent);
                                                 }}
-
                                             >
                                                 <img
                                                     src={selectedContent?.id === item.id ? video_Studying : video_NeverStudy}
                                                     alt="Video Icon"
                                                     className="w-14 h-14"
                                                 />
-                                                <span >{item.content_title}</span>
+                                                <div className="flex flex-col w-full">
+                                                    <span>{item.content_title}</span>
+                                                    {/* ✅ Progress Bar + Percent */}
+                                                    <div className="relative w-32 h-6 bg-gray-200 rounded overflow-hidden mt-1">
+                                                        <div
+                                                            className="h-full bg-blue-500 transition-all duration-300"
+                                                            style={{ width: `${progress[item.id] || 0}%` }}
+                                                        ></div>
+                                                        <span className="absolute inset-0 flex items-center justify-center text-black text-xs font-bold">
+                                                            {Math.round(progress[item.id] || 0)}%
+                                                        </span>
+                                                    </div>
+                                                </div>
                                             </button>
                                         </li>
                                     ))}
@@ -121,9 +151,10 @@ export default function ContentStudy() {
                         <p className="text-gray-500">ไม่มีเนื้อหาวิดีโอ</p>
                     )}
                 </ul>
-
-
             </div>
-        </div>
+
+
+
+        </div >
     );
 }
