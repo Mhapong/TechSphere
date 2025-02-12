@@ -9,7 +9,7 @@ const Cart = () => {
   console.log(cartItems);
 
   return (
-    <div className="container mx-auto p-4">
+    <div className="container mx-auto min-h-screen p-4">
       <div className="flex flex-col md:flex-row gap-6">
         {/* Cart Items */}
         <div className="md:w-2/3 space-y-4">
@@ -25,7 +25,7 @@ const Cart = () => {
                 {item.image &&
                   (item.image[0] !== null ? (
                     <img
-                      src={item.image}
+                      src={`${baseURL}${item.image[0].url}`}
                       alt="Product Image"
                       class="w-32 h-32"
                     />
