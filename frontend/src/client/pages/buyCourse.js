@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import ax from "../../conf/ax";
 import { useCart } from "../../context/Cart.context";
 import { AuthContext } from "../../context/Auth.context";
+import { Image } from "@mui/icons-material";
 
 export default function BuyCourse(props) {
   const navigate = useNavigate();
@@ -11,11 +12,12 @@ export default function BuyCourse(props) {
   const { name, documenId } = useParams();
   const [course, setCourse] = useState([]);
   const [showLoginModal, setshowLoginModal] = useState(false);
+  const baseURL = "http://localhost:1337";
 
   const fetchCourse = async () => {
     try {
       const response = await ax.get(
-        `http://localhost:1337/api/courses?filters[documentId][$eq]=${documenId}`
+        `courses?filters[documentId][$eq]=${documenId}&populate=*`
       );
       const now_course = response.data.data;
       setCourse(now_course[0]);
@@ -40,12 +42,22 @@ export default function BuyCourse(props) {
         <div class="flex flex-wrap -mx-4">
           {/* <!-- Product Images --> */}
           <div class="w-full md:w-1/2 px-4 mb-8">
-            <img
-              src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w0NzEyNjZ8MHwxfHNlYXJjaHwxfHxoZWFkcGhvbmV8ZW58MHwwfHx8MTcyMTMwMzY5MHww&ixlib=rb-4.0.3&q=80&w=1080"
-              alt="Product"
-              class="w-full h-auto rounded-lg shadow-md mb-4"
-              id="mainImage"
-            />
+            {course.image &&
+              (course.image[0] !== null ? (
+                <img
+                  src={`${baseURL}${course.image[0].url}`}
+                  alt="Product Image"
+                  class="size-96 mx-auto rounded-lg shadow-md mb-4"
+                />
+              ) : (
+                <Image
+                  alt="Product Image"
+                  class="object-contain w-full h-[270px] fill"
+                />
+              ))}
+            {/* class="w-full h-auto rounded-lg shadow-md mb-4"
+              id="mainImage" */}
+
             <div class="flex gap-4 py-4 justify-center overflow-x-auto">
               <img
                 src="https://images.unsplash.com/photo-1505751171710-1f6d0ace5a85?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w0NzEyNjZ8MHwxfHNlYXJjaHwxMnx8aGVhZHBob25lfGVufDB8MHx8fDE3MjEzMDM2OTB8MA&ixlib=rb-4.0.3&q=80&w=1080"

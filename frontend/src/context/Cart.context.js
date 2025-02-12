@@ -39,7 +39,7 @@ const CartProvider = ({ children }) => {
         image:
           course.image?.length > 0
             ? `http://localhost:1337${course.image[0].url}`
-            : true,
+            : null,
       },
     });
   };
