@@ -22,18 +22,19 @@ const Cart = () => {
                 key={item.id}
                 className="flex items-center justify-between bg-white p-4 rounded-xl shadow"
               >
-                {item.image !== null ? (
-                  <img
-                    src={`${baseURL}${item.image[0].url}`}
-                    alt="Product Image"
-                    class="object-contain w-fit h-fit"
-                  />
-                ) : (
-                  <Image
-                    alt="Product Image"
-                    class="object-contain w-fit h-fit"
-                  />
-                )}
+                {item.image &&
+                  (item.image[0] !== null ? (
+                    <img
+                      src={item.image}
+                      alt="Product Image"
+                      class="w-32 h-32"
+                    />
+                  ) : (
+                    <Image
+                      alt="Product Image"
+                      class="object-contain w-fit h-fit"
+                    />
+                  ))}
                 <div>
                   <h3 className="text-lg font-semibold">{item.name}</h3>
                   <p className="text-gray-600">ราคา: ฿{item.Price}</p>
