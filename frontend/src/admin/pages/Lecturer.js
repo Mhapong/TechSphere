@@ -30,7 +30,8 @@ const LecturerAll = () => {
   return (
     <section className="bg-white dark:bg-gray-900">
       {/* <div className="py-8 px-4 mx-auto max-w-screen-xl lg:py-16 lg:px-6"> */}
-      <div className="w-[1200px] mx-96 mt-11 p-8 ml-80">
+      {/* <div className="w-full max-w-[1200px] mx-auto mt-11 p-8 sm:w-[90%] md:w-[80%] lg:w-[1200px]  ml-96"> */}
+      <div className="w-full max-w-[1200px] mx-auto mt-11 p-8 sm:w-[100%] sm:flexmd:w-[80%] lg:w-[1200px] lg:ml-20 xl:ml-96">
         <div className="mx-auto max-w-screen-sm text-center mb-8 lg:mb-16">
           <h2 className="mb-4 text-4xl tracking-tight font-extrabold text-gray-900 dark:text-white">
             อาจารย์ผู้สอน
