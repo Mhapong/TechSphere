@@ -219,16 +219,16 @@ const AddCourse = () => {
         </div>
 
         {/* Description and Image Upload */}
-        <div className="p-2 grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="p-2 grid grid-cols-1 md:grid-cols-2 gap-6 mt-0">
           <div className="p-2">
-            <p className="mt-2">เลือกประเภทของคอร์ส:</p>
+            <p className="mt-0">เลือกประเภทของคอร์ส:</p>
             <select
               id="category"
               name="category"
               multiple
               value={category}
               onChange={handleSelectChange}
-              className="block w-full px-4 py-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[#8c0327] focus:border-[#8c0327] transition-all duration-300 ease-in-out hover:bg-gray-50"
+              className="block w-full h-32  px-4 py-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[#8c0327] focus:border-[#8c0327] transition-all duration-300 ease-in-out hover:bg-gray-50"
               style={{ backgroundColor: "#f6f6f6" }}
             >
               {allcategory &&
