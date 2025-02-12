@@ -15,7 +15,6 @@ export default function ContentStudy() {
     const [progress, setProgress] = useState({});
     const videoRef = useRef(null);
 
-    // ดึงข้อมูลวิดีโอ
     const fetchTopics = async () => {
         try {
             const response = await ax.get("http://localhost:1337/api/topics", {
@@ -51,71 +50,65 @@ export default function ContentStudy() {
             const response = await ax.get(`http://localhost:1337/api/progresses`, {
                 params: {
                     populate: "*",
-                    "filters[progress_owner][id][$eq]": state.user.id, // ดึงเฉพาะของ user นี้
+                    "filters[progress_owner][id][$eq]": state.user.id, 
                 },
             });
-    
+
             const progressData = response.data.data.reduce((acc, item) => {
                 if (item.content_progress && item.content_progress.id) {
-                    acc[item.content_progress.id] = { 
-                        documentId: item.documentId, // เพิ่ม documentId เป็น identifier หลัก
-                        id: item.id,  // Progress record ID
-                        progress: Number(item.progress) || 0, // เปลี่ยนเป็นตัวเลข
+                    acc[item.content_progress.id] = {
+                        documentId: item.documentId, 
+                        id: item.id,  
+                        progress: Number(item.progress) || 0, 
                     };
                 }
                 return acc;
             }, {});
-    
-            console.log("📊 Fetched Progress Data:", progressData);
+
+            console.log(" Fetched Progress Data:", progressData);
             setProgress(progressData);
         } catch (err) {
-            console.error("❌ Error fetching progress data:", err);
+            console.error(" Error fetching progress data:", err);
         }
     };
-    
-   const updateProgress = async (contentId, newProgress) => {
-    try {
-        const existingProgress = progress[contentId];
 
-        if (existingProgress?.documentId) {
-            // ตรวจสอบว่าค่าความคืบหน้าต่างจากของเดิมหรือไม่
-            if (existingProgress.progress !== newProgress) { 
-                console.log("🔄 Updating progress ID:", existingProgress.documentId);
-                await ax.put(`http://localhost:1337/api/progresses/${existingProgress.documentId}`, {
-                    data: { progress: newProgress },
+    const updateProgress = async (contentId, newProgress) => {
+        try {
+            const existingProgress = progress[contentId];
+
+            if (existingProgress?.documentId) {
+                if (existingProgress.progress !== newProgress) {
+                    console.log(" Updating progress ID:", existingProgress.documentId);
+                    await ax.put(`http://localhost:1337/api/progresses/${existingProgress.documentId}`, {
+                        data: { progress: newProgress },
+                    });
+
+                    setProgress(prev => ({
+                        ...prev,
+                        [contentId]: { ...prev[contentId], progress: newProgress }
+                    }));
+                }
+            } else {
+                console.log(" Creating new progress for content ID:", contentId);
+                const response = await ax.post(`http://localhost:1337/api/progresses`, {
+                    data: {
+                        progress: newProgress,
+                        progress_owner: state.user.id,
+                        content_progress: contentId,
+                    },
                 });
 
+                const newProgressId = response.data.data.id;
                 setProgress(prev => ({
                     ...prev,
-                    [contentId]: { ...prev[contentId], progress: newProgress }
+                    [contentId]: { id: newProgressId, progress: newProgress }
                 }));
             }
-        } else {
-            console.log("🆕 Creating new progress for content ID:", contentId);
-            const response = await ax.post(`http://localhost:1337/api/progresses`, {
-                data: {
-                    progress: newProgress,
-                    progress_owner: state.user.id,
-                    content_progress: contentId,
-                },
-            });
-
-            const newProgressId = response.data.data.id;
-            setProgress(prev => ({
-                ...prev,
-                [contentId]: { id: newProgressId, progress: newProgress }
-            }));
+        } catch (err) {
+            console.error(" Error updating progress:", err.response?.data || err.message);
         }
-    } catch (err) {
-        console.error("❌ Error updating progress:", err.response?.data || err.message);
-    }
-};
+    };
 
-    
-    
-    
-
-    // คำนวณเวลาเริ่มต้นของวิดีโอตาม progress ที่ได้
     const handleLoadedMetadata = (event) => {
         const videoElement = event.target;
         const duration = videoElement.duration;
@@ -148,6 +141,16 @@ export default function ContentStudy() {
         updateProgress(contentId, 100);
     };
 
+    const goToNextLesson = () => {
+        const topics = Object.values(groupedContent).flat(); 
+        const currentIndex = topics.findIndex((item) => item.id === selectedContent.id);
+    
+        if (currentIndex !== -1 && currentIndex < topics.length - 1) {
+            setSelectedContent(topics[currentIndex + 1]); 
+        }
+    };
+    
+
     useEffect(() => {
         fetchTopics();
         fetchProgresses();
@@ -156,7 +159,7 @@ export default function ContentStudy() {
     return (
         <div className="flex max-w-full h-screen">
             <div className="w-[70%] bg-gray-100 p-6 overflow-y-auto">
-                {selectedContent ? (
+                {selectedContent && (
                     <section>
                         <h2 className="text-black text-2xl font-bold mb-4">{selectedContent.content_title}</h2>
                         {selectedContent.video_url ? (
@@ -178,10 +181,18 @@ export default function ContentStudy() {
                             <p className="text-gray-500">ไม่มีวิดีโอ</p>
                         )}
                         <p className="text-gray-700">{selectedContent.detail}</p>
+
+                        {progress[selectedContent.id]?.progress === 100 && (
+                            <button
+                                className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-full hover:bg-blue-700 transition"
+                                onClick={() => goToNextLesson()}
+                            >
+                                ไปบทเรียนถัดไป
+                            </button>
+                        )}
                     </section>
-                ) : (
-                    <p className="text-gray-500">เลือกเนื้อหาจากทางขวา</p>
                 )}
+
             </div>
             <div className="w-[30%] bg-white p-6 overflow-y-auto">
                 <h2 className="text-lg font-bold text-xl mb-4">เนื้อหาวิดีโอ</h2>
@@ -195,21 +206,37 @@ export default function ContentStudy() {
                                     {contents.map((item) => (
                                         <li key={item.id} className="mb-2">
                                             <button
-                                                className={`flex items-center space-x-4 text-left w-full ${
-                                                    selectedContent?.id === item.id ? "text-blue-500 font-bold text-xs" : "text-gray-400 text-xs"
-                                                }`}
+                                                className={`flex items-center space-x-4 text-left w-full ${progress[item.id]?.progress === 100
+                                                    ? "text-blue-500 text-xs"
+                                                    : selectedContent?.id === item.id
+                                                        ? "text-blue-500 font-bold text-xs"
+                                                        : "text-gray-400 text-xs"
+                                                    }`}
                                                 onClick={() => setSelectedContent(item)}
                                             >
-                                                <img src={selectedContent?.id === item.id ? video_Studying : video_NeverStudy} alt="Video Icon" className="w-14 h-14" />
+                                                <img
+                                                    src={
+                                                        progress[item.id]?.progress === 100
+                                                            ? video_FinishStudy
+                                                            : selectedContent?.id === item.id
+                                                                ? video_Studying
+                                                                : video_NeverStudy
+                                                    }
+                                                    alt="Video Icon"
+                                                    className="w-14 h-14"
+                                                />
                                                 <div className="flex flex-col w-full">
                                                     <span>{item.content_title}</span>
-                                                    <div className="relative w-32 h-6 bg-gray-200 rounded overflow-hidden mt-1">
-                                                        <div className="h-full bg-blue-500 transition-all duration-300" style={{ width: `${progress[item.id]?.progress || 0}%` }}></div>
-                                                        <span className="absolute inset-0 flex items-center justify-center text-black text-xs font-bold">
+                                                    <div className="w-full bg-gray-200 rounded-full dark:bg-gray-700 mt-1">
+                                                        <div
+                                                            className="bg-blue-600 text-xs font-medium text-blue-100 text-center p-0.5 leading-none rounded-full"
+                                                            style={{ width: `${progress[item.id]?.progress || 0}%` }}
+                                                        >
                                                             {Math.round(progress[item.id]?.progress || 0)}%
-                                                        </span>
+                                                        </div>
                                                     </div>
                                                 </div>
+
                                             </button>
                                         </li>
                                     ))}
