@@ -6,6 +6,65 @@ import { motion } from "framer-motion";
 import { Image } from "@mui/icons-material";
 import networkpic from "../components/network.png";
 
+const ReviewModal = ({ isOpen, onClose, rating, setRating, comment, setComment }) => {
+    // ฟังก์ชันส่งรีวิว
+    const handleSubmit = () => {
+        console.log("Review Submitted:", { rating, comment });
+        onClose();
+        setRating(5);
+        setComment("");
+    };
+
+    if (!isOpen) return null;
+
+    return (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+            <div className="bg-white rounded-lg shadow-md dark:bg-gray-700 p-6 max-w-md w-full relative">
+                {/* ปุ่มปิด Modal */}
+                <button
+                    onClick={onClose}
+                    className="absolute top-3 right-3 text-gray-400 hover:text-gray-900"
+                >
+                    ✖
+                </button>
+
+                {/* ฟอร์มให้ดาวและพิมพ์คอมเมนต์ */}
+                <h3 className="text-lg font-semibold mb-4 text-center">Rate & Review</h3>
+
+                {/* ให้ดาว 1-5 */}
+                <div className="flex justify-center mb-3">
+                    {[1, 2, 3, 4, 5].map((num) => (
+                        <button
+                            key={num}
+                            onClick={() => setRating(num)}
+                            className={`text-2xl mx-1 ${num <= rating ? "text-yellow-400" : "text-gray-300"}`}
+                        >
+                            ★
+                        </button>
+                    ))}
+                </div>
+
+                {/* ช่องพิมพ์คอมเมนต์ */}
+                <textarea
+                    placeholder="Write your review..."
+                    value={comment}
+                    onChange={(e) => setComment(e.target.value)}
+                    className="w-full p-2 mb-3 border rounded"
+                    rows="3"
+                ></textarea>
+
+                {/* ปุ่ม Submit */}
+                <button
+                    onClick={handleSubmit}
+                    className="w-full py-2 text-white bg-green-600 rounded-lg hover:bg-green-800"
+                >
+                    Submit Review
+                </button>
+            </div>
+        </div>
+    );
+};
+
 export default function MyCourse() {
     const [user, setUser] = useState(null);  // ข้อมูลผู้ใช้
     const [ownedCourses, setOwnedCourses] = useState([]);  // คอร์สที่ผู้ใช้ลงทะเบียน
@@ -13,6 +72,10 @@ export default function MyCourse() {
     const [loading, setLoading] = useState(true);  // สถานะการโหลด
     const [error, setError] = useState(null);  // สถานะข้อผิดพลาด
     const [query, setQuery] = useState("");
+    const [isOpen, setIsOpen] = useState(false);
+    const [selectedCourse, setSelectedCourse] = useState(null);
+    const [rating, setRating] = useState(5);
+    const [comment, setComment] = useState("");
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -54,6 +117,11 @@ export default function MyCourse() {
         course.Name.toLowerCase().includes(query.toLowerCase())
     );
 
+    const handleReviewClick = (course) => {
+        setSelectedCourse(course);
+        setIsOpen(true);
+    };
+
     if (loading) return <div>Loading...</div>;  // กรณีที่ยังโหลดข้อมูล
     if (error) return <div>Error: {error.message}</div>;  // กรณีที่เกิดข้อผิดพลาด
 
@@ -90,10 +158,9 @@ export default function MyCourse() {
                                 key={item.id}
                                 whileHover={{ scale: 1.1 }}
                                 className="min-w-80 border border-blue-200 rounded-lg shadow-md p-4 cursor-pointer"
-                                onClick={() => navigate(`/contentstudy/${item.documentId}`)}
                             >
                                 {/* รูปภาพคอร์ส */}
-                                <div className="overflow-hidden rounded-lg">
+                                <div className="overflow-hidden rounded-lg" onClick={() => navigate(`/contentstudy/${item.documentId}`)}>
                                     <img
                                         src={item.image}
                                         alt="Course Image"
@@ -110,7 +177,7 @@ export default function MyCourse() {
                                             : "ไม่มีผู้สอน"}
                                     </p>
                                 </div>
-                                
+
                                 {/* % การเรียน */}
                                 <div className="w-full bg-gray-200 rounded-full dark:bg-gray-700">
                                     <div
@@ -120,13 +187,19 @@ export default function MyCourse() {
                                         45%
                                     </div>
                                 </div>
-
-
+                                {/* ปุ่มกดเพื่อเปิด Modal */}
+                                <div className="flex justify-center mt-4">
+                                    <button
+                                        onClick={() => handleReviewClick(item)}
+                                        className="px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-800"
+                                    >
+                                        รีวิวคอร์สเรียน
+                                    </button>
+                                </div>
                             </motion.div>
                         ))}
                     </div>
                 </div>
-
             ) : (
                 <p className="text-center text-gray-500 mt-5">ไม่พบคอร์สที่ค้นหา</p>
             )}
@@ -182,7 +255,7 @@ export default function MyCourse() {
                                     <Image
                                         src="https://primecomputer.com.bd/wp-content/uploads/2024/07/oraimo-headphones.jpg"
                                         alt="Product Image"
-                                        className="object-contain w-full h-[270px] fill"
+                                        className="object-cover w-full h-[270px] rounded-lg"
                                     />
                                 </div>
                                 {/* <!-- Product Details --> */}
@@ -209,7 +282,7 @@ export default function MyCourse() {
                                             fill="currentColor"
                                             viewBox="0 0 20 20"
                                         >
-                                            <path d="M9.049 2.927C9.349 2.2 10.651 2.2 10.951 2.927l1.558 3.779 4.004.37c.85.079 1.194 1.139.572 1.724l-2.922 2.658.87 3.917c.181.816-.68 1.448-1.419 1.034L10 13.01l-3.614 1.96c-.74.414-1.6-.218-1.419-1.034l.87-3.917-2.922-2.658c-.622-.585-.278-1.645.572-1.724l4.004-.37L9.049 2.927z" />
+                                            <path d="M9.049 2.927C9.349 2.2 10.651 2.2 10.951 2.927ล1.558 3.779 4.004.37c.85.079 1.194 1.139.572 1.724ล-2.922 2.658.87 3.917c.181.816-.68 1.448-1.419 1.034L10 13.01ล-3.614 1.96c-.74.414-1.6-.218-1.419-1.034ล.87-3.917-2.922-2.658c-.622-.585-.278-1.645.572-1.724ล4.004-.37L9.049 2.927z" />
                                         </svg>
                                         <svg
                                             xmlns="http://www.w3.org/2000/svg"
@@ -217,7 +290,7 @@ export default function MyCourse() {
                                             fill="currentColor"
                                             viewBox="0 0 20 20"
                                         >
-                                            <path d="M9.049 2.927C9.349 2.2 10.651 2.2 10.951 2.927l1.558 3.779 4.004.37c.85.079 1.194 1.139.572 1.724l-2.922 2.658.87 3.917c.181.816-.68 1.448-1.419 1.034L10 13.01l-3.614 1.96c-.74.414-1.6-.218-1.419-1.034l.87-3.917-2.922-2.658c-.622-.585-.278-1.645.572-1.724l4.004-.37L9.049 2.927z" />
+                                            <path d="M9.049 2.927C9.349 2.2 10.651 2.2 10.951 2.927ล1.558 3.779 4.004.37c.85.079 1.194 1.139.572 1.724ล-2.922 2.658.87 3.917c.181.816-.68 1.448-1.419 1.034L10 13.01ล-3.614 1.96c-.74.414-1.6-.218-1.419-1.034ล.87-3.917-2.922-2.658c-.622-.585-.278-1.645.572-1.724ล4.004-.37L9.049 2.927z" />
                                         </svg>
                                         <svg
                                             xmlns="http://www.w3.org/2000/svg"
@@ -225,7 +298,7 @@ export default function MyCourse() {
                                             fill="currentColor"
                                             viewBox="0 0 20 20"
                                         >
-                                            <path d="M9.049 2.927C9.349 2.2 10.651 2.2 10.951 2.927l1.558 3.779 4.004.37c.85.079 1.194 1.139.572 1.724l-2.922 2.658.87 3.917c.181.816-.68 1.448-1.419 1.034L10 13.01l-3.614 1.96c-.74.414-1.6-.218-1.419-1.034l.87-3.917-2.922-2.658c-.622-.585-.278-1.645.572-1.724l4.004-.37L9.049 2.927z" />
+                                            <path d="M9.049 2.927C9.349 2.2 10.651 2.2 10.951 2.927ล1.558 3.779 4.004.37c.85.079 1.194 1.139.572 1.724ล-2.922 2.658.87 3.917c.181.816-.68 1.448-1.419 1.034L10 13.01ล-3.614 1.96c-.74.414-1.6-.218-1.419-1.034ล.87-3.917-2.922-2.658c-.622-.585-.278-1.645.572-1.724ล4.004-.37L9.049 2.927z" />
                                         </svg>
                                         <svg
                                             xmlns="http://www.w3.org/2000/svg"
@@ -233,7 +306,7 @@ export default function MyCourse() {
                                             fill="currentColor"
                                             viewBox="0 0 20 20"
                                         >
-                                            <path d="M9.049 2.927C9.349 2.2 10.651 2.2 10.951 2.927l1.558 3.779 4.004.37c.85.079 1.194 1.139.572 1.724l-2.922 2.658.87 3.917c.181.816-.68 1.448-1.419 1.034L10 13.01l-3.614 1.96c-.74.414-1.6-.218-1.419-1.034l.87-3.917-2.922-2.658c-.622-.585-.278-1.645.572-1.724l4.004-.37L9.049 2.927z" />
+                                            <path d="M9.049 2.927C9.349 2.2 10.651 2.2 10.951 2.927ล1.558 3.779 4.004.37c.85.079 1.194 1.139.572 1.724ล-2.922 2.658.87 3.917c.181.816-.68 1.448-1.419 1.034L10 13.01ล-3.614 1.96c-.74.414-1.6-.218-1.419-1.034ล.87-3.917-2.922-2.658c-.622-.585-.278-1.645.572-1.724ล4.004-.37L9.049 2.927z" />
                                         </svg>
                                         <svg
                                             xmlns="http://www.w3.org/2000/svg"
@@ -241,7 +314,7 @@ export default function MyCourse() {
                                             fill="currentColor"
                                             viewBox="0 0 20 20"
                                         >
-                                            <path d="M9.049 2.927C9.349 2.2 10.651 2.2 10.951 2.927l1.558 3.779 4.004.37c.85.079 1.194 1.139.572 1.724l-2.922 2.658.87 3.917c.181.816-.68 1.448-1.419 1.034L10 13.01l-3.614 1.96c-.74.414-1.6-.218-1.419-1.034l.87-3.917-2.922-2.658c-.622-.585-.278-1.645.572-1.724l4.004-.37L9.049 2.927z" />
+                                            <path d="M9.049 2.927C9.349 2.2 10.651 2.2 10.951 2.927ล1.558 3.779 4.004.37c.85.079 1.194 1.139.572 1.724ล-2.922 2.658.87 3.917c.181.816-.68 1.448-1.419 1.034L10 13.01ล-3.614 1.96c-.74.414-1.6-.218-1.419-1.034ล.87-3.917-2.922-2.658c-.622-.585-.278-1.645.572-1.724ล4.004-.37L9.049 2.927z" />
                                         </svg>
                                     </div>
 
@@ -282,6 +355,14 @@ export default function MyCourse() {
                     </div>
                 </div>
             )}
+            <ReviewModal
+                isOpen={isOpen}
+                onClose={() => setIsOpen(false)}
+                rating={rating}
+                setRating={setRating}
+                comment={comment}
+                setComment={setComment}
+            />
         </div>
     );
 }
