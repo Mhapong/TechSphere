@@ -208,7 +208,8 @@ export default function ContentStudy() {
                 <div className="w-full bg-gray-200 rounded-full dark:bg-gray-700 mt-2 mb-4">
                     <div
                         className="bg-green-500 text-xs font-medium text-white text-center p-0.5 leading-none rounded-full"
-                        style={{ width: `${overallProgress}%` }}
+                        style={{ width: `${overallProgress}%` ,
+                        background: `linear-gradient(to right, #64c5d7 , #2563eb)`,}}
                     >
                         {overallProgress}%
                     </div>
@@ -248,7 +249,8 @@ export default function ContentStudy() {
                                                     <div className="w-full bg-gray-200 rounded-full dark:bg-gray-700 mt-1">
                                                         <div
                                                             className="bg-blue-600 text-xs font-medium text-blue-100 text-center p-0.5 leading-none rounded-full"
-                                                            style={{ width: `${progress[item.id]?.progress || 0}%` }}
+                                                            style={{ width: `${progress[item.id]?.progress || 0}%`,
+                                                            background: `linear-gradient(to right, #64c5d7 , #2563eb)`, }}
                                                         >
                                                             {Math.round(progress[item.id]?.progress || 0)}%
                                                         </div>
