@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useContext } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { FaChalkboardTeacher } from "react-icons/fa";
 import ax from "../../conf/ax";
 import { useCart } from "../../context/Cart.context";
 import { AuthContext } from "../../context/Auth.context";
@@ -92,9 +93,9 @@ export default function ViewCourse(props) {
             {/* <!-- Product Details --> */}
             <div>
               <h2 class="text-3xl font-bold mb-2">{course.Name}</h2>
-              <p class="text-gray-600 mb-4">SKU: {course.documentId}</p>
+              <p class="text-gray-600">SKU: {course.documentId}</p>
               <div class="flex items-center mb-4">
-                <div className="flex items-center mt-4 text-yellow-400">
+                <div className="flex items-center mt-3 text-yellow-400">
                   <FaStar /> <FaStar /> <FaStar /> <FaStar />
                   <FaStar className="text-gray-300" />
                   <span className="ml-2 text-gray-700">4.8 (320 รีวิว)</span>
@@ -103,11 +104,22 @@ export default function ViewCourse(props) {
               <div className="flex items-center text-blue-500 mt-3">
                 <FaClock className="mr-2" /> ระยะเวลาเรียน 3 ชั่วโมง
               </div>
+              {course.lecturer_owner !== null ? (
+                <div className="flex items-center text-green-900 mt-3">
+                  <FaChalkboardTeacher className="mr-2" /> ครูผู้สอน :{" "}
+                  {course.lecturer_owner}
+                </div>
+              ) : (
+                <div className="flex items-center text-red-900 mt-3">
+                  <FaChalkboardTeacher className="mr-2" /> ครูผู้สอน :
+                  ไม่มีครูผู้สอนระบุ
+                </div>
+              )}
 
               <div className="mt-6">
-                <span className="text-xl font-semibold text-green-500">
+                {/* <span className="text-xl font-semibold text-green-500">
                   {course.Price}฿
-                </span>
+                </span> */}
                 <span class="text-2xl font-bold mr-2">{course.Price}฿</span>
                 {/* <span className="text-gray-400 line-through ml-2">฿ 990</span> */}
               </div>
@@ -124,7 +136,7 @@ export default function ViewCourse(props) {
                   <FaShoppingCart className="mr-2" /> */}
                 {cartItems.some((item) => item.id === course.id) ? (
                   <button
-                    class="mt-4 bg-gray-200 text-gray-700 px-6 py-3 rounded-lg flex items-center cursor-not-allowed"
+                    class="mt-6 w-full text-center items-center justify-center bg-gray-200 text-gray-700 px-6 py-3 rounded-lg flex cursor-not-allowed"
                     onClick={() =>
                       !state.isLoggedIn
                         ? navigate("/login")
@@ -135,7 +147,7 @@ export default function ViewCourse(props) {
                   </button>
                 ) : (
                   <button
-                    class="mt-4 bg-blue-600 text-white px-6 py-3 rounded-lg flex items-center hover:bg-blue-700 cursor-pointer"
+                    class="mt-6 w-full text-center items-center justify-center bg-blue-600 text-white px-6 py-3 rounded-lg flex hover:bg-blue-700 cursor-pointer"
                     onClick={() =>
                       !state.isLoggedIn
                         ? navigate("/login")
@@ -147,7 +159,7 @@ export default function ViewCourse(props) {
                   </button>
                 )}
                 {/* </button> */}
-                <button class="bg-gray-200 flex gap-2 items-center  text-gray-800 px-6 py-2 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">
+                {/* <button class="bg-gray-200 flex gap-2 items-center  text-gray-800 px-6 py-2 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none"
@@ -163,7 +175,7 @@ export default function ViewCourse(props) {
                     />
                   </svg>
                   Wishlist
-                </button>
+                </button> */}
               </div>
 
               {/* <div>

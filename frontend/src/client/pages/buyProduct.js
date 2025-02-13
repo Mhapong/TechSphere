@@ -91,7 +91,7 @@ export default function BuyProduct() {
     <div className="flex flex-col items-center justify-center min-h-screen p-4 bg-gray-100">
       <div className="w-full max-w-md p-6 bg-white rounded-lg shadow-md">
         <h1 className="text-xl font-bold text-center mb-4">
-          PromptPay QR Generator
+          จำนวนเงินที่ต้องชำระ {location.state.total}
         </h1>
         {/* <input
           type="number"
@@ -123,7 +123,7 @@ export default function BuyProduct() {
           type="button"
           onClick={handleOpenModal}
         >
-          Open Modal
+          ส่งใบเสร็จโอนเงิน
         </button>
         <Dialog open={openModal} handler={handleOpenModal}>
           <DialogHeader>Its a simple modal.</DialogHeader>
@@ -140,14 +140,14 @@ export default function BuyProduct() {
             >
               <span>Cancel</span>
             </Button>
-            <button
+            <Button
               variant="gradient"
               color="green"
               type="submit"
               onClick={handleComfirmPurchease}
             >
               <span>Confirm</span>
-            </button>
+            </Button>
           </DialogFooter>
         </Dialog>
       </div>

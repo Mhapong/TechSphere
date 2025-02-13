@@ -66,7 +66,7 @@ function App() {
               <Route path="/test" element={<Test />} />
               <Route path="/purchase" element={<BuyProduct />} />
               <Route path="/payment-succeed" element={<PaymentSucceed />} />
-              <Route path="*" element={<PageNotFound />} />
+              {/* <Route path="*" element={<PageNotFound />} /> */}
             </Routes>
             <Footer />
           </>
@@ -75,7 +75,7 @@ function App() {
             <Nav />
             <Routes>
               <Route path="/" element={<HomeAdmin />} />
-              <Route path="*" element={<PageNotFound />} />
+              {/* <Route path="*" element={<PageNotFound />} /> */}
             </Routes>
           </>
         ) : userRole === "Admin" ? (
@@ -97,7 +97,7 @@ function App() {
               <Route path="/user" element={<Profile />} />
               <Route path="/edit-profile/:userid" element={<EditProfile />} />
               <Route path="/sign-up" element={<SignUp />} />
-              <Route path="*" element={<PageNotFound />} />
+              {/* <Route path="*" element={<PageNotFound />} /> */}
             </Routes>
           </>
         ) : null
@@ -119,7 +119,7 @@ function App() {
             <Route path="/contentstudy" element={<ContentStudy />} />
             <Route path="/my-course" element={<Mycourse />} />
 
-            <Route path="*" element={<PageNotFound />} />
+            {/* <Route path="*" element={<PageNotFound />} /> */}
           </Routes>
           <Footer />
         </>

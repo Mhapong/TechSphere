@@ -126,13 +126,19 @@ const FinanceOrder = () => {
                   <p className="text-sm text-gray-600">
                     หมายเลขการสั่งซื้อ : {payment.id}
                   </p>
+                  {payment.users_purchase !== null ? (
+                    <p className="font-medium">
+                      ผู้ซื้อ : {payment.users_purchase.first_name}{" "}
+                      {payment.users_purchase.last_name}
+                    </p>
+                  ) : (
+                    "ผู้ซื้อ : ไม่มีชื่อ"
+                  )}
                   <p className="font-medium">
-                    ผู้ซื้อ :{" "}
-                    {payment?.users_purchase.first_name || "ไม่มีชื่อ"}{" "}
-                    {payment?.users_purchase.last_name || "ไม่มีนามสกุล"}
-                  </p>
-                  <p className="font-medium">
-                    Email : {payment?.users_purchase.email || "ไม่มีนามสกุล"}
+                    Email :{" "}
+                    {payment.users_purchase !== null
+                      ? payment.users_purchase.email
+                      : "ไม่มีอีเมล"}
                   </p>
                   <p className="text-sm text-gray-600">
                     เวลาการยืนยันชำระเงิน :{" "}
@@ -231,9 +237,9 @@ const FinanceOrder = () => {
                             ? `http://localhost:1337${currentData.url}`
                             : Error
                         }
-                        className="px-3 py-1 flex justify-center"
+                        className="px-3 py-1 flex justify-center h-fit self-center relative pl-12 left-2"
                         alt="Img"
-                        style={{ width: "550px" }}
+                        style={{ width: "300px" }}
                       />
                     </div>
                   </div>
