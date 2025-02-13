@@ -139,7 +139,8 @@ export default function Explore() {
               <motion.div
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="bg-white shadow-lg rounded-2xl overflow-hidden transition-all duration-300 h-[28rem]"
+                transition={{ duration: 0.1 }}
+                className="bg-white shadow-lg rounded-2xl overflow-hidden transition-all duration-300 h-[28rem] cursor-pointer"
                 onClick={() =>
                   navigate(`/view-product/${items.Name}/${items.documentId}/`)
                 }

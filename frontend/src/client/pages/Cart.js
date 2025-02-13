@@ -74,22 +74,31 @@ const Cart = () => {
             ราคารวม:{" "}
             <span className="text-green-600 font-extrabold">฿{totalPrice}</span>
           </p>
-          <button
-            className="mt-4 w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition"
-            onClick={() =>
-              navigate(`/purchease`, {
-                state: {
-                  total: totalPrice,
-                  course_id: cartItems.map((course) => course.id),
-                  course_name: cartItems
-                    .map((course) => course.name)
-                    .join(", "),
-                },
-              })
-            }
-          >
-            ดำเนินการชำระเงิน
-          </button>
+          {cartItems.length === 0 ? (
+            <button
+              className="mt-4 w-full bg-gray-200 text-gray-700 py-2 rounded-lg transition"
+              onClick={() => navigate(`/explore`)}
+            >
+              โปรดเพิ่มสินค้าก่อนทำการชำระเงิน
+            </button>
+          ) : (
+            <button
+              className="mt-4 w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition"
+              onClick={() =>
+                navigate(`/purchase`, {
+                  state: {
+                    total: totalPrice,
+                    course_id: cartItems.map((course) => ({ id: course.id })),
+                    course_name: cartItems
+                      .map((course) => course.name)
+                      .join(", "),
+                  },
+                })
+              }
+            >
+              ดำเนินการชำระเงิน
+            </button>
+          )}
         </div>
       </div>
     </div>

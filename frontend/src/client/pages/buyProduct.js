@@ -11,13 +11,15 @@ import {
 } from "@material-tailwind/react";
 import ax from "../../conf/ax";
 import { AuthContext } from "../../context/Auth.context";
+import { useCart } from "../../context/Cart.context";
 
 export default function BuyProduct() {
   const { state } = useContext(AuthContext);
+  const { removeFromCart } = useCart();
   const location = useLocation();
   const promptPayNumber = "0922695522";
   const amount = location.state.total;
-  const [courseId, setCourseId] = useState([]);
+  const [courseId, setCourseId] = useState({});
   const [qrCode, setQrCode] = useState(null);
   const [openModal, setOpenModal] = useState(false);
   const [reciept, setReciept] = useState();
@@ -36,19 +38,23 @@ export default function BuyProduct() {
 
   const handleComfirmPurchease = async () => {
     try {
-      for (const items of location.state.course_id) {
-        courseId.push(items);
-        console.log(courseId);
+      if (!location.state?.course_id) {
+        console.error("Error: course_id is missing");
+        return;
       }
+
       const response = await ax.post("confirm-purchases?populate=*", {
-        users_purchease: state.user.id,
-        amount: location.total,
-        course_purchase: courseId,
+        data: {
+          users_purchase: state.user.id,
+          amount: location.total,
+          course_purchase: location.state.course_id,
+        },
       });
-      console.log(response.data.data);
-      navigate("/purchease-succeed");
+      location.state.course_id.forEach((id) => removeFromCart(id.id));
+      console.log(response);
+      navigate("/payment-succeed");
     } catch (err) {
-      console.log(err);
+      console.error("Error:", err.response || err.message);
     }
   };
 

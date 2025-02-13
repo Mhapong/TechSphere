@@ -35,6 +35,7 @@ import BuyProduct from "./client/pages/buyProduct.js";
 import { CourseView } from "./admin/pages/Course.js";
 import FinanceOrder from "./admin/pages/Finance.js";
 import CourseStudentTable from "./admin/pages/CourseViewStudent.js";
+import PaymentSucceed from "./client/pages/paymentSucceedPage.js";
 
 function App() {
   const { state } = useContext(AuthContext);
@@ -63,8 +64,9 @@ function App() {
                 element={<ViewCourse />}
               />
               <Route path="/test" element={<Test />} />
-              <Route path="/purchease" element={<BuyProduct />} />
-              <Route element={<PageNotFound />} />
+              <Route path="/purchase" element={<BuyProduct />} />
+              <Route path="/payment-succeed" element={<PaymentSucceed />} />
+              <Route path="*" element={<PageNotFound />} />
             </Routes>
             <Footer />
           </>
@@ -82,10 +84,7 @@ function App() {
             <Routes>
               <Route path="/" element={<HomeAdmin />} />
               <Route path="/create-course" element={<AddCourse />} />
-              <Route
-                path="/create-topic/:courseid/:coursename"
-                element={<AddTopic />}
-              />
+              <Route path="/create-topic/:topicid" element={<AddTopic />} />
               <Route
                 path="/create-summarize/:courseid"
                 element={<CourseDetails />}
@@ -120,7 +119,7 @@ function App() {
             <Route path="/contentstudy" element={<ContentStudy />} />
             <Route path="/my-course" element={<Mycourse />} />
 
-            <Route element={<PageNotFound />} />
+            <Route path="*" element={<PageNotFound />} />
           </Routes>
           <Footer />
         </>
