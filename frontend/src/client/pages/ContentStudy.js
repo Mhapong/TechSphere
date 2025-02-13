@@ -14,6 +14,7 @@ export default function ContentStudy() {
     const BASE_URL = "http://localhost:1337";
     const [progress, setProgress] = useState({});
     const videoRef = useRef(null);
+    const [overallProgress, setOverallProgress] = useState(0);
 
     const fetchTopics = async () => {
         try {
@@ -50,16 +51,16 @@ export default function ContentStudy() {
             const response = await ax.get(`http://localhost:1337/api/progresses`, {
                 params: {
                     populate: "*",
-                    "filters[progress_owner][id][$eq]": state.user.id, 
+                    "filters[progress_owner][id][$eq]": state.user.id,
                 },
             });
 
             const progressData = response.data.data.reduce((acc, item) => {
                 if (item.content_progress && item.content_progress.id) {
                     acc[item.content_progress.id] = {
-                        documentId: item.documentId, 
-                        id: item.id,  
-                        progress: Number(item.progress) || 0, 
+                        documentId: item.documentId,
+                        id: item.id,
+                        progress: Number(item.progress) || 0,
                     };
                 }
                 return acc;
@@ -142,19 +143,27 @@ export default function ContentStudy() {
     };
 
     const goToNextLesson = () => {
-        const topics = Object.values(groupedContent).flat(); 
+        const topics = Object.values(groupedContent).flat();
         const currentIndex = topics.findIndex((item) => item.id === selectedContent.id);
-    
+
         if (currentIndex !== -1 && currentIndex < topics.length - 1) {
-            setSelectedContent(topics[currentIndex + 1]); 
+            setSelectedContent(topics[currentIndex + 1]);
         }
     };
-    
+
 
     useEffect(() => {
         fetchTopics();
         fetchProgresses();
     }, []);
+
+    useEffect(() => {
+        if (Object.keys(progress).length > 0) {
+            const totalProgress = Object.values(progress).reduce((sum, item) => sum + item.progress, 0);
+            const count = Object.values(progress).length;
+            setOverallProgress(count > 0 ? Math.round(totalProgress / count) : 0);
+        }
+    }, [progress]);
 
     return (
         <div className="flex max-w-full h-screen">
@@ -184,17 +193,30 @@ export default function ContentStudy() {
 
                         {progress[selectedContent.id]?.progress === 100 && (
                             <button
-                                className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-full hover:bg-blue-700 transition"
+                                className="mt-4 px-4 py-2 text-white rounded-full transition bg-gradient-to-r from-[#64c5d7] to-[#2563eb] hover:opacity-80"
                                 onClick={() => goToNextLesson()}
                             >
                                 ไปบทเรียนถัดไป
                             </button>
+
                         )}
                     </section>
                 )}
 
             </div>
             <div className="w-[30%] bg-white p-6 overflow-y-auto">
+                <h2 className="text-lg font-bold text-xl mb-4">ความคืบหน้าของบทเรียน</h2>
+                <div className="w-full bg-gray-200 rounded-full dark:bg-gray-700 mt-2 mb-4">
+                    <div
+                        className="bg-green-500 text-xs font-medium text-white text-center p-0.5 leading-none rounded-full"
+                        style={{
+                            width: `${overallProgress}%`,
+                            background: `linear-gradient(to right, #64c5d7 , #2563eb)`,
+                        }}
+                    >
+                        {overallProgress}%
+                    </div>
+                </div>
                 <h2 className="text-lg font-bold text-xl mb-4">เนื้อหาวิดีโอ</h2>
                 <ul>
                     {Object.keys(groupedContent).length > 0 ? (
@@ -230,7 +252,10 @@ export default function ContentStudy() {
                                                     <div className="w-full bg-gray-200 rounded-full dark:bg-gray-700 mt-1">
                                                         <div
                                                             className="bg-blue-600 text-xs font-medium text-blue-100 text-center p-0.5 leading-none rounded-full"
-                                                            style={{ width: `${progress[item.id]?.progress || 0}%` }}
+                                                            style={{
+                                                                width: `${progress[item.id]?.progress || 0}%`,
+                                                                background: `linear-gradient(to right, #64c5d7 , #2563eb)`,
+                                                            }}
                                                         >
                                                             {Math.round(progress[item.id]?.progress || 0)}%
                                                         </div>

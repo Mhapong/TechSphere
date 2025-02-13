@@ -16,9 +16,13 @@ export default function CourseDetails() {
       console.log("Error", e);
     }
   };
-  const handleAddTopic = () => {
-    Navigate(`/create-topic/${Course.id}/${Course.Name}`);
-  };
+  // const handleAddTopic = () => {
+  // Navigate(`/create-topic/${Course.Id}/${Course.documentId}/${Course.Name}`);
+
+  //   Navigate("/view-student", {
+  //     state: { Value: items },
+  //   });
+  // };
 
   useEffect(() => {
     fetchCoures();
@@ -120,7 +124,14 @@ export default function CourseDetails() {
             <h2 className="text-xl font-semibold">
               หัวข้อเรื่อง : {Course.Name}
             </h2>
-            <button className="text-orange-500 hover:text-orange-600">
+            <button
+              onClick={() => {
+                Navigate(`/create-course`, {
+                  state: { Value: Course },
+                });
+              }}
+              className="text-orange-500 hover:text-orange-600"
+            >
               <span className="text-xl">
                 <Edit />
               </span>
@@ -143,9 +154,8 @@ export default function CourseDetails() {
             <p className="text-gray-600">{Course.Description}</p>
           </div>
           <p className="text-gray-600">
-            จำนวนผู้เรียนที่รองรับ :
-            {Course.lecturer_owner ? ` ${Course.lecturer_owner.length}` : " 0"}{" "}
-            คน
+            จำนวนผู้เรียน.ในคอร์สทั้งหมด :
+            {Course.user_owner ? ` ${Course.user_owner.length}` : " 0"} คน
           </p>
         </div>
       </div>
@@ -155,7 +165,11 @@ export default function CourseDetails() {
         <div className="mb-4 flex items-center justify-between">
           <h3 className="text-lg font-semibold">หัวข้อ</h3>
           <button
-            onClick={handleAddTopic}
+            onClick={() => {
+              Navigate(`/create-topic/${Course.documentId}`, {
+                state: { Value: Course },
+              });
+            }}
             className="text-teal-600 hover:text-teal-700"
           >
             <span className="text-xl flex items-center">
@@ -178,7 +192,14 @@ export default function CourseDetails() {
                   }`}</span>
                   <span className="text-gray-600">เวลา {value.time} นาที</span>
                 </div>
-                <button className="text-gray-500 hover:text-gray-700">
+                <button
+                  onClick={() => {
+                    Navigate(`/create-topic/${value.documentId}`, {
+                      state: { Value: Course },
+                    });
+                  }}
+                  className="text-gray-500 hover:text-gray-700"
+                >
                   <span className="text-sm">
                     {" "}
                     <Edit />
@@ -191,7 +212,10 @@ export default function CourseDetails() {
 
       {/* Action Buttons */}
       <div className="mt-8 flex justify-end gap-4">
-        <button className="rounded-md border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">
+        <button
+          onClick={() => Navigate(-1)}
+          className="rounded-md border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+        >
           ยกเลิก
         </button>
         <button className="px-4 py-2 text-sm font-medium bg-[#8c0327] text-white rounded-md hover:bg-[#6c021f]">
