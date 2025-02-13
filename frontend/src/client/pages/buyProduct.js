@@ -1,1 +1,150 @@
-function buyProduct() {}
+import { useContext, useEffect, useState } from "react";
+import QRCode from "qrcode";
+import generatePayload from "promptpay-qr";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
+import {
+  Button,
+  Dialog,
+  DialogBody,
+  DialogFooter,
+  DialogHeader,
+} from "@material-tailwind/react";
+import ax from "../../conf/ax";
+import { AuthContext } from "../../context/Auth.context";
+
+export default function BuyProduct() {
+  const { state } = useContext(AuthContext);
+  const location = useLocation();
+  const promptPayNumber = "0922695522";
+  const amount = location.state.total;
+  const [courseId, setCourseId] = useState([]);
+  const [qrCode, setQrCode] = useState(null);
+  const [openModal, setOpenModal] = useState(false);
+  const [reciept, setReciept] = useState();
+  console.log(location.state);
+  const navigate = useNavigate();
+
+  const handleOpenModal = () => {
+    setOpenModal(!openModal);
+  };
+
+  function handleChange(e) {
+    console.log(e.target.files);
+    setReciept(URL.createObjectURL(e.target.files[0]));
+    console.log(reciept);
+  }
+
+  const handleComfirmPurchease = async () => {
+    try {
+      for (const items of location.state.course_id) {
+        courseId.push(items);
+        console.log(courseId);
+      }
+      const response = await ax.post("confirm-purchases?populate=*", {
+        users_purchease: state.user.id,
+        amount: location.total,
+        course_purchase: courseId,
+      });
+      console.log(response.data.data);
+      navigate("/purchease-succeed");
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const generateQRCode = async () => {
+    if (!promptPayNumber || !amount) return alert("โปรดป้อนข้อมูลให้ครบ!");
+    if (parseFloat(amount) < 0)
+      return alert("จำนวนเงินต้องมากกว่าหรือเท่ากับ 0 บาท!");
+
+    let formattedNumber;
+    if (promptPayNumber.length === 10) {
+      formattedNumber = promptPayNumber.replace(
+        /(\d{3})(\d{3})(\d{4})/,
+        "$1-$2-$3"
+      );
+    } else if (promptPayNumber.length === 13) {
+      formattedNumber = promptPayNumber.replace(
+        /(\d{1})(\d{4})(\d{5})(\d{2})/,
+        "$1-$2-$3-$4"
+      );
+    } else {
+      return alert("รหัสพร้อมเพย์ไม่ถูกต้อง!");
+    }
+
+    const payload = generatePayload(formattedNumber, {
+      amount: parseFloat(amount),
+    });
+    const qrImage = await QRCode.toDataURL(payload, { width: 300 });
+    setQrCode(qrImage);
+  };
+
+  useEffect(() => generateQRCode, []);
+
+  return (
+    <div className="flex flex-col items-center justify-center min-h-screen p-4 bg-gray-100">
+      <div className="w-full max-w-md p-6 bg-white rounded-lg shadow-md">
+        <h1 className="text-xl font-bold text-center mb-4">
+          PromptPay QR Generator
+        </h1>
+        {/* <input
+          type="number"
+          className="w-full p-2 border rounded mb-3"
+          placeholder="จำนวนเงิน (บาท)"
+          value={amount}
+        /> */}
+        {/* <button
+          className="w-full p-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+          onClick={generateQRCode}
+        >
+          สร้าง QR Code
+        </button> */}
+        {qrCode && (
+          <div className="mt-4 flex flex-col items-center">
+            <img src={qrCode} alt="QR Code" className="w-64 h-64" />
+            <a
+              href={qrCode}
+              download="promptpay_qr.png"
+              className="mt-2 text-blue-500 underline"
+            >
+              ดาวน์โหลด QR Code
+            </a>
+          </div>
+        )}
+        <button
+          data-dialog-target="modal"
+          class="rounded-md bg-slate-800 text-black py-2 px-4 border border-transparent text-center text-sm transition-all shadow-md hover:shadow-lg focus:bg-slate-700 focus:shadow-none active:bg-slate-700 hover:bg-slate-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none ml-2"
+          type="button"
+          onClick={handleOpenModal}
+        >
+          Open Modal
+        </button>
+        <Dialog open={openModal} handler={handleOpenModal}>
+          <DialogHeader>Its a simple modal.</DialogHeader>
+          <DialogBody>
+            <input type="file" onChange={handleChange} required />
+            <img src={reciept} />
+          </DialogBody>
+          <DialogFooter>
+            <Button
+              variant="text"
+              color="red"
+              onClick={handleOpenModal}
+              className="mr-1"
+            >
+              <span>Cancel</span>
+            </Button>
+            <button
+              variant="gradient"
+              color="green"
+              type="submit"
+              onClick={handleComfirmPurchease}
+            >
+              <span>Confirm</span>
+            </button>
+          </DialogFooter>
+        </Dialog>
+      </div>
+    </div>
+  );
+}

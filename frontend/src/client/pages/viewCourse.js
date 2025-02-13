@@ -29,7 +29,7 @@ export default function ViewCourse(props) {
   };
 
   const handleAddToCart = (course) => {
-    addToCart(course);
+    addToCart({ ...course, course_id: course.documentId });
     console.log(cartItems);
   };
 
@@ -113,17 +113,40 @@ export default function ViewCourse(props) {
               </div>
 
               <div class="flex space-x-4 mb-6">
-                <button
-                  class="mt-4 bg-blue-600 text-white px-6 py-3 rounded-lg flex items-center hover:bg-blue-700 "
+                {/* <button
+                  class="mt-4 bg-blue-600 text-white px-6 py-3 rounded-lg flex items-center hover:bg-blue-700 cursor-pointer"
                   onClick={() =>
                     !state.isLoggedIn
                       ? navigate("/login")
                       : handleAddToCart(course)
                   }
                 >
-                  <FaShoppingCart className="mr-2" />
-                  {cartItems ? "Added" : "Add to cart"}
-                </button>
+                  <FaShoppingCart className="mr-2" /> */}
+                {cartItems.some((item) => item.id === course.id) ? (
+                  <button
+                    class="mt-4 bg-gray-200 text-gray-700 px-6 py-3 rounded-lg flex items-center cursor-not-allowed"
+                    onClick={() =>
+                      !state.isLoggedIn
+                        ? navigate("/login")
+                        : handleAddToCart(course)
+                    }
+                  >
+                    Already in cart
+                  </button>
+                ) : (
+                  <button
+                    class="mt-4 bg-blue-600 text-white px-6 py-3 rounded-lg flex items-center hover:bg-blue-700 cursor-pointer"
+                    onClick={() =>
+                      !state.isLoggedIn
+                        ? navigate("/login")
+                        : handleAddToCart(course)
+                    }
+                  >
+                    <FaShoppingCart className="mr-2" />
+                    Add to Cart
+                  </button>
+                )}
+                {/* </button> */}
                 <button class="bg-gray-200 flex gap-2 items-center  text-gray-800 px-6 py-2 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"

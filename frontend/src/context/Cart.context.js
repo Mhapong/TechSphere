@@ -34,8 +34,10 @@ const CartProvider = ({ children }) => {
       type: "ADD_TO_CART",
       payload: {
         id: course.id,
+        course_id: course.documentId,
         name: course.Name,
         Price: course.Price,
+        Time_Usage: course.Time_Usage,
         image:
           course.image?.length > 0
             ? `http://localhost:1337${course.image[0].url}`

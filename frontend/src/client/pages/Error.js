@@ -1,3 +1,5 @@
+import React from "react";
+
 export default function PageNotFound() {
   <body class="flex flex-col h-screen justify-center items-center bg-gray-100">
     <div class="flex flex-col items-center">
