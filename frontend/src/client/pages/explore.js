@@ -56,9 +56,11 @@ export default function Explore() {
     const matchesSearch = course.Name.toLowerCase().includes(
       query.toLowerCase()
     );
-    // const matchesCategory = course.categories.includes(query.toLowerCase());
-    return matchesSearch;
-    // && matchesCategory;
+    const matchesCategory = selectedCategory
+      ? course.categories.some((cat) => cat.tag === selectedCategory)
+      : true;
+
+    return matchesSearch && matchesCategory;
   });
 
   return (
@@ -129,21 +131,22 @@ export default function Explore() {
           {/* Course List */}
           <motion.div
             className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
             {filteredCourses.map((items) => (
               <motion.div
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="bg-white shadow-lg rounded-2xl overflow-hidden transition-all duration-300"
+                transition={{ duration: 0.1 }}
+                className="bg-white shadow-lg rounded-2xl overflow-hidden transition-all duration-300 h-[28rem] cursor-pointer"
                 onClick={() =>
                   navigate(`/view-product/${items.Name}/${items.documentId}/`)
                 }
               >
                 {/* Course Image */}
-                <div className="relative">
+                <div className="relative h-56">
                   {items.image !== null ? (
                     <img
                       src={`${baseURL}${items.image[0].url}`}
@@ -159,8 +162,8 @@ export default function Explore() {
                 </div>
 
                 {/* Course Details */}
-                <div className="p-4">
-                  <h3 className="text-lg font-semibold text-gray-800 mb-auto">
+                <div className="flex-row p-4">
+                  <h3 className="flex-auto text-lg font-semibold text-gray-800 mb-auto">
                     {items.Name}
                   </h3>
                   {items.category}

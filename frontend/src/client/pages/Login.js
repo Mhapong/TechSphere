@@ -1,136 +1,92 @@
 import React, { useContext } from "react";
 import { useSetState } from "react-use";
-import Nav from "../components/navbar";
-import bgpic from "../components/bglogin.jpeg";
 import { AuthContext } from "../../context/Auth.context.js";
 import { useNavigate } from "react-router";
 
 const initialState = {
-    username: "admin",
-    password: "123456",
+  username: "",
+  password: "",
 };
 
 export default function Login() {
-    const { state: ContextState, login } = useContext(AuthContext);
-    const { isLoginPending, isLoggedIn, loginError } = ContextState;
-    const [state, setState] = useSetState(initialState);
-    const Navigate = useNavigate();
-    const onSubmit = (e) => {
-        e.preventDefault();
-        const { username, password } = state;
-        login(username, password, Navigate);
-        setState({
-            username: "",
-            password: "",
-        });
-    };
-    return (
-        <div className="overflow-y-hidden">
-            <div class="max-h-[100%]  h-screen flex">
-                <div
-                    className="hidden lg:flex w-full lg:w-1/2  login_img_section
-          justify-around items-center bg-[url(https://images8.alphacoders.com/559/559128.jpg)]"
-                >
+  const { state: ContextState, login } = useContext(AuthContext);
+  const { isLoginPending, isLoggedIn, loginError } = ContextState;
+  const [state, setState] = useSetState(initialState);
+  const navigate = useNavigate();
 
-                    <div class="w-full mx-auto px-20 flex-col items-center space-y-6 z-20">
-                        <h1 class="text-white font-bold text-8xl font-sans">TECHSPHERE</h1>
-                        <p class="text-white -top-9 ml-4">ศูนย์กลางความรู้ด้านเทคโนโลยี</p>
-                        {/* <div class="flex justify-center lg:justify-start mt-6">
-              <a
-                href="#"
-                class="hover:bg-indigo-700 hover:text-white hover:-translate-y-1 transition-all duration-500 bg-white text-indigo-800 mt-4 px-4 py-2 rounded-2xl font-bold mb-2"
-              >
-                Get Started
-              </a>
-            </div> */}
-                    </div>
-                </div>
-                <div class="flex w-full lg:w-1/2 justify-center items-center bg-teal-900 space-y-8">
-                    <div class="w-full px-8 md:px-32 lg:px-24">
-                        <form
-                            class="bg-white rounded-md shadow-2xl p-5"
-                            name="loginForm"
-                            onSubmit={onSubmit}
-                        >
-                            <h1 class="text-gray-800 font-bold text-2xl mb-1">
-                                Hello Again!
-                            </h1>
-                            <p class="text-sm font-normal text-gray-600 mb-8">Welcome Back</p>
-                            <div class="flex items-center border-2 mb-8 py-2 px-3 rounded-2xl">
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    class="h-5 w-5 text-gray-400"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                    stroke="currentColor"
-                                >
-                                    <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth="2"
-                                        d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"
-                                    />
-                                </svg>
-                                <input
-                                    id="email"
-                                    class=" pl-2 w-full outline-none border-none"
-                                    onChange={(e) => setState({ username: e.target.value })}
-                                    value={state.username}
-                                    type="text"
-                                    name="email"
-                                    placeholder="Email Address"
-                                />
-                            </div>
-                            <div class="flex items-center border-2 mb-12 py-2 px-3 rounded-2xl ">
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    class="h-5 w-5 text-gray-400"
-                                    viewBox="0 0 20 20"
-                                    fill="currentColor"
-                                >
-                                    <path
-                                        fillRule="evenodd"
-                                        d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"
-                                        clipRule="evenodd"
-                                    />
-                                </svg>
-                                <input
-                                    class="pl-2 w-full outline-none border-none"
-                                    onChange={(e) => setState({ password: e.target.value })}
-                                    value={state.password}
-                                    type="text"
-                                    name="password"
-                                    id="password"
-                                    placeholder="Password"
-                                />
-                            </div>
-                            <button
-                                type="submit"
-                                class="block w-full bg-indigo-600 mt-5 py-2 rounded-2xl hover:bg-indigo-700 hover:-translate-y-1 transition-all duration-500 text-white font-semibold mb-2"
-                                value="Login"
-                            >
-                                Login
-                            </button>
-                            <div class="flex justify-between mt-4">
-                                <span class="text-sm ml-2 hover:text-blue-500 cursor-pointer hover:-translate-y-1 duration-500 transition-all">
-                                    Forgot Password ?
-                                </span>
+  const onSubmit = (e) => {
+    e.preventDefault();
+    const { username, password } = state;
+    login(username, password, navigate);
+    setState({ username: "", password: "" });
+  };
 
-                                <a
-                                    href="/sign-up"
-                                    className="primary"
-                                    class="text-sm ml-2 hover:text-blue-500 cursor-pointer hover:-translate-y-1 duration-500 transition-all"
-                                >
-                                    Don't have an account yet?
-                                </a>
-                            </div>
-                            {isLoginPending && <div>Please wait...</div>}
-                            {isLoggedIn && <div>Success.</div>}
-                            {loginError && <div>{loginError.message}</div>}
-                        </form>
-                    </div>
-                </div>
-            </div>
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gray-900">
+      <div class="absolute inset-0 z-0">
+        <img
+          src="https://source.unsplash.com/random/1920x1080"
+          alt=""
+          class="w-full h-full object-cover filter blur-lg brightness-50"
+        />
+      </div>
+      <div className="bg-white p-10 rounded-3xl shadow-2xl w-full z-10 max-w-md">
+        <h1 className="text-4xl font-bold text-gray-800 text-center mb-6">
+          Welcome Back!
+        </h1>
+        <p className="text-gray-500 text-center mb-8">Login to your account</p>
+        <form onSubmit={onSubmit}>
+          <div className="mb-4">
+            <label className="block text-gray-700 text-sm font-bold mb-2">
+              Username
+            </label>
+            <input
+              type="text"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Enter your username"
+              value={state.username}
+              onChange={(e) => setState({ username: e.target.value })}
+            />
+          </div>
+          <div className="mb-6">
+            <label className="block text-gray-700 text-sm font-bold mb-2">
+              Password
+            </label>
+            <input
+              type="password"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Enter your password"
+              value={state.password}
+              onChange={(e) => setState({ password: e.target.value })}
+            />
+          </div>
+          <button
+            type="submit"
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-lg transition duration-300"
+          >
+            Login
+          </button>
+        </form>
+        {isLoginPending && (
+          <p className="text-blue-500 mt-4 text-center">Please wait...</p>
+        )}
+        {isLoggedIn && (
+          <p className="text-green-500 mt-4 text-center">Login successful!</p>
+        )}
+        {loginError && (
+          <p className="text-red-500 mt-4 text-center">{loginError.message}</p>
+        )}
+        <div className="text-center mt-6">
+          <a href="#" className="text-sm text-blue-500 hover:underline">
+            Forgot Password?
+          </a>
         </div>
-    );
+        <div className="text-center mt-2">
+          <a href="/sign-up" className="text-sm text-blue-500 hover:underline">
+            Don't have an account? Sign up
+          </a>
+        </div>
+      </div>
+    </div>
+  );
 }
