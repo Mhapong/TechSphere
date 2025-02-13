@@ -32,10 +32,13 @@ import Test from "./client/pages/test.js";
 import Footer from "./client/components/footer.js";
 import PageNotFound from "./client/pages/Error.js";
 import BuyProduct from "./client/pages/buyProduct.js";
+import { CourseView } from "./admin/pages/Course.js";
+import FinanceOrder from "./admin/pages/Finance.js";
+import CourseStudentTable from "./admin/pages/CourseViewStudent.js";
 
 function App() {
   const { state } = useContext(AuthContext);
-  console.log(state.user);
+  // console.log(state.user);
 
   const userRole = state.user?.userRole;
 
@@ -69,7 +72,7 @@ function App() {
           <>
             <Nav />
             <Routes>
-              <Route path="/" element={<Home />} />
+              <Route path="/" element={<HomeAdmin />} />
               <Route path="*" element={<PageNotFound />} />
             </Routes>
           </>
@@ -87,11 +90,11 @@ function App() {
                 path="/create-summarize/:courseid"
                 element={<CourseDetails />}
               />
-              <Route path="/view" element={<Home />} />
-              <Route path="/" element={<Home />} />
+              <Route path="/view" element={<CourseView />} />
+              <Route path="/view-student" element={<CourseStudentTable />} />
               <Route path="/lecturer" element={<LecturerAll />} />
               <Route path="/student" element={<StudentTable />} />
-              <Route path="/finance" element={<Home />} />
+              <Route path="/finance" element={<FinanceOrder />} />
               <Route path="/user" element={<Profile />} />
               <Route path="/edit-profile/:userid" element={<EditProfile />} />
               <Route path="/sign-up" element={<SignUp />} />

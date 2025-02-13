@@ -113,6 +113,12 @@
       "relation": "oneToOne",
       "target": "api::confirm-purchase.confirm-purchase",
       "mappedBy": "users_purchase"
+    },
+    "progress_owned": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::progress.progress",
+      "mappedBy": "progress_owner"
     }
   }
 }
