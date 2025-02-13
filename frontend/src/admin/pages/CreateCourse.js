@@ -31,7 +31,7 @@ const AddCourse = () => {
 
       setStatus(Value.status_coure);
       setTimeUsage(Value.Time_Usage);
-      setlecturerOwner(Value.lecturer_owner.id);
+      setlecturerOwner(Value.lecturer_owner?.id);
       setCategory(Value.categories.map((category) => category.id));
     }
   }, [Value]);

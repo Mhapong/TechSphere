@@ -127,11 +127,12 @@ const FinanceOrder = () => {
                     หมายเลขการสั่งซื้อ : {payment.id}
                   </p>
                   <p className="font-medium">
-                    ผู้ซื้อ : {payment.users_purchase.first_name}{" "}
-                    {payment.users_purchase.last_name}
+                    ผู้ซื้อ :{" "}
+                    {payment?.users_purchase.first_name || "ไม่มีชื่อ"}{" "}
+                    {payment?.users_purchase.last_name || "ไม่มีนามสกุล"}
                   </p>
                   <p className="font-medium">
-                    Email : {payment.users_purchase.email}
+                    Email : {payment?.users_purchase.email || "ไม่มีนามสกุล"}
                   </p>
                   <p className="text-sm text-gray-600">
                     เวลาการยืนยันชำระเงิน :{" "}

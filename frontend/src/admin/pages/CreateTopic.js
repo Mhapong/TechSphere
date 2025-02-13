@@ -368,6 +368,41 @@ const AddTopic = () => {
                     style={{ backgroundColor: "#f6f6f6" }}
                     required
                   ></textarea>
+                  <div className="mt-5">
+                    <label
+                      htmlFor="description"
+                      className="block text-sm font-medium text-gray-700"
+                    >
+                      ใส่วิดีโอของคลิป:
+                    </label>
+                    <label
+                      htmlFor="image-upload"
+                      className=" w-full h-48 border-2 border-dashed border-gray-300 rounded-md cursor-pointer flex flex-col items-center justify-center bg-[#f6f6f6] hover:bg-gray-50"
+                    >
+                      <div className="text-center">
+                        <div className="mb-2">
+                          <button
+                            type="button"
+                            className="bg-[#8c0327] hover:bg-[#6b0220] text-white rounded-full py-2 px-4"
+                          >
+                            Select from the computer
+                          </button>
+                        </div>
+                        <p className="text-gray-500">or drag photo here</p>
+                        <p className="text-gray-500 text-sm mt-1">
+                          PNG, JPG, SVG
+                        </p>
+                      </div>
+                    </label>
+                    <input
+                      id="image-upload"
+                      name="image"
+                      type="file"
+                      accept="image/*"
+                      // onChange={handleImageUpload}
+                      className="sr-only"
+                    />
+                  </div>
                 </div>
                 {/* ปุ่มกด */}
                 <div className="flex justify-end gap-5 mt-2">
