@@ -25,7 +25,10 @@
     "react-router-dom": "^6.28.1",
     "react-scripts": "^5.0.1",
     "react-use": "^17.6.0",
-    "tailwind-scrollbar-hide": "^2.0.0"
+    "tailwind-scrollbar-hide": "^2.0.0",
+    "canvas": "^2.7.0",
+    "promptpay-qr": "0.4.4",
+    "qrcode": "1.4.4"
   },
   "scripts": {
     "start": "react-scripts start",

@@ -31,6 +31,7 @@ import About from "./client/pages/About.js";
 import Test from "./client/pages/test.js";
 import Footer from "./client/components/footer.js";
 import PageNotFound from "./client/pages/Error.js";
+import BuyProduct from "./client/pages/buyProduct.js";
 
 function App() {
   const { state } = useContext(AuthContext);
@@ -59,7 +60,8 @@ function App() {
                 element={<ViewCourse />}
               />
               <Route path="/test" element={<Test />} />
-              <Route path="*" element={<PageNotFound />} />
+              <Route path="/purchease" element={<BuyProduct />} />
+              <Route element={<PageNotFound />} />
             </Routes>
             <Footer />
           </>
@@ -114,7 +116,8 @@ function App() {
             {/* testing in plublic role */}
             <Route path="/contentstudy" element={<ContentStudy />} />
             <Route path="/my-course" element={<Mycourse />} />
-            <Route path="*" element={<PageNotFound />} />
+
+            <Route element={<PageNotFound />} />
           </Routes>
           <Footer />
         </>
