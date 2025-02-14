@@ -51,9 +51,7 @@ export default function Home() {
 
   const fetchCategory = async () => {
     try {
-      const response = await ax.get(
-        "http://localhost:1337/api/categories?populate=*"
-      );
+      const response = await ax.get("categories?populate=*");
       setCategory(response.data.data);
       console.log(category);
     } catch {
@@ -211,8 +209,8 @@ export default function Home() {
                   </p>
                   {items.lecturer_owner !== null ? (
                     <p class="uppercase text-green-600 text-xs font-medium">
-                      {items.lecturer_owner.first_name}{" "}
-                      {items.lecturer_owner.last_name}
+                      {/* {items.lecturer_owner.first_name}{" "}
+                      {items.lecturer_owner.last_name} */}
                     </p>
                   ) : (
                     <p class="uppercase text-green-600 text-xs font-medium">

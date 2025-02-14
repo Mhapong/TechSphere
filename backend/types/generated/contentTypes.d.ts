@@ -399,6 +399,39 @@ export interface ApiCategoryCategory extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiChatChat extends Struct.CollectionTypeSchema {
+  collectionName: 'chats';
+  info: {
+    displayName: 'Chat';
+    pluralName: 'chats';
+    singularName: 'chat';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<'oneToMany', 'api::chat.chat'> &
+      Schema.Attribute.Private;
+    massage: Schema.Attribute.String;
+    publishedAt: Schema.Attribute.DateTime;
+    request: Schema.Attribute.Relation<
+      'manyToOne',
+      'plugin::users-permissions.user'
+    >;
+    sender: Schema.Attribute.Relation<
+      'manyToOne',
+      'plugin::users-permissions.user'
+    >;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiConfirmPurchaseConfirmPurchase
   extends Struct.CollectionTypeSchema {
   collectionName: 'confirm_purchases';
@@ -600,7 +633,7 @@ export interface ApiLecturerReviewLecturerReview
     > &
       Schema.Attribute.Private;
     publishedAt: Schema.Attribute.DateTime;
-    star: Schema.Attribute.Decimal &
+    star: Schema.Attribute.Integer &
       Schema.Attribute.SetMinMax<
         {
           max: 5;
@@ -662,6 +695,7 @@ export interface ApiProgressProgress extends Struct.CollectionTypeSchema {
 export interface ApiReviewReview extends Struct.CollectionTypeSchema {
   collectionName: 'reviews';
   info: {
+    description: '';
     displayName: 'Review';
     pluralName: 'reviews';
     singularName: 'review';
@@ -682,10 +716,21 @@ export interface ApiReviewReview extends Struct.CollectionTypeSchema {
       Schema.Attribute.Private;
     publishedAt: Schema.Attribute.DateTime;
     review_id: Schema.Attribute.Relation<'manyToOne', 'api::course.course'>;
-    star: Schema.Attribute.Integer;
+    star: Schema.Attribute.Integer &
+      Schema.Attribute.SetMinMax<
+        {
+          max: 5;
+          min: 0;
+        },
+        number
+      >;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    users_review: Schema.Attribute.Relation<
+      'manyToOne',
+      'plugin::users-permissions.user'
+    >;
   };
 }
 
@@ -1180,6 +1225,8 @@ export interface PluginUsersPermissionsUser
       'api::lecturer-background.lecturer-background'
     >;
     blocked: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
+    chat: Schema.Attribute.Relation<'oneToMany', 'api::chat.chat'>;
+    chat_recieved: Schema.Attribute.Relation<'oneToMany', 'api::chat.chat'>;
     confirmationToken: Schema.Attribute.String & Schema.Attribute.Private;
     confirmed: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
     created_courses: Schema.Attribute.Relation<
@@ -1223,6 +1270,7 @@ export interface PluginUsersPermissionsUser
       'api::lecturer-review.lecturer-review'
     >;
     resetPasswordToken: Schema.Attribute.String & Schema.Attribute.Private;
+    reviews: Schema.Attribute.Relation<'oneToMany', 'api::review.review'>;
     role: Schema.Attribute.Relation<
       'manyToOne',
       'plugin::users-permissions.role'
@@ -1254,6 +1302,7 @@ declare module '@strapi/strapi' {
       'admin::transfer-token-permission': AdminTransferTokenPermission;
       'admin::user': AdminUser;
       'api::category.category': ApiCategoryCategory;
+      'api::chat.chat': ApiChatChat;
       'api::confirm-purchase.confirm-purchase': ApiConfirmPurchaseConfirmPurchase;
       'api::content.content': ApiContentContent;
       'api::course.course': ApiCourseCourse;

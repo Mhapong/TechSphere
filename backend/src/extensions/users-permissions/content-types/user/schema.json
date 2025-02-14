@@ -119,6 +119,24 @@
       "relation": "oneToMany",
       "target": "api::progress.progress",
       "mappedBy": "progress_owner"
+    },
+    "chat": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::chat.chat",
+      "mappedBy": "sender"
+    },
+    "chat_recieved": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::chat.chat",
+      "mappedBy": "request"
+    },
+    "reviews": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::review.review",
+      "mappedBy": "users_review"
     }
   }
 }

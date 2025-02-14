@@ -4,7 +4,8 @@
   "info": {
     "singularName": "review",
     "pluralName": "reviews",
-    "displayName": "Review"
+    "displayName": "Review",
+    "description": ""
   },
   "options": {
     "draftAndPublish": false
@@ -12,7 +13,9 @@
   "pluginOptions": {},
   "attributes": {
     "star": {
-      "type": "integer"
+      "type": "integer",
+      "max": 5,
+      "min": 0
     },
     "comment": {
       "type": "text"
@@ -22,6 +25,12 @@
       "relation": "manyToOne",
       "target": "api::course.course",
       "inversedBy": "rating"
+    },
+    "users_review": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user",
+      "inversedBy": "reviews"
     }
   }
 }

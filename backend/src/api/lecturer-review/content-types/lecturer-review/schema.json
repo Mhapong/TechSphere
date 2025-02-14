@@ -22,7 +22,7 @@
       "inversedBy": "rating"
     },
     "star": {
-      "type": "decimal",
+      "type": "integer",
       "max": 5,
       "min": 0,
       "required": false

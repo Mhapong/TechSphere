@@ -104,7 +104,7 @@ export default function ViewCourse(props) {
               <div className="flex items-center text-blue-500 mt-3">
                 <FaClock className="mr-2" /> ระยะเวลาเรียน 3 ชั่วโมง
               </div>
-              {course.lecturer_owner !== null ? (
+              {/* {course.lecturer_owner !== null ? (
                 <div className="flex items-center text-green-900 mt-3">
                   <FaChalkboardTeacher className="mr-2" /> ครูผู้สอน :{" "}
                   {course.lecturer_owner}
@@ -114,7 +114,7 @@ export default function ViewCourse(props) {
                   <FaChalkboardTeacher className="mr-2" /> ครูผู้สอน :
                   ไม่มีครูผู้สอนระบุ
                 </div>
-              )}
+              )} */}
 
               <div className="mt-6">
                 {/* <span className="text-xl font-semibold text-green-500">
