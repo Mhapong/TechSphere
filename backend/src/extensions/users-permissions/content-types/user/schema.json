@@ -132,7 +132,13 @@
       "target": "api::chat.chat",
       "mappedBy": "request"
     },
-    "reviews": {
+    "lecturer_review": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::lecturer-review.lecturer-review",
+      "mappedBy": "review"
+    },
+    "course_review": {
       "type": "relation",
       "relation": "oneToMany",
       "target": "api::review.review",

@@ -633,6 +633,10 @@ export interface ApiLecturerReviewLecturerReview
     > &
       Schema.Attribute.Private;
     publishedAt: Schema.Attribute.DateTime;
+    review: Schema.Attribute.Relation<
+      'manyToOne',
+      'plugin::users-permissions.user'
+    >;
     star: Schema.Attribute.Integer &
       Schema.Attribute.SetMinMax<
         {
@@ -1229,6 +1233,7 @@ export interface PluginUsersPermissionsUser
     chat_recieved: Schema.Attribute.Relation<'oneToMany', 'api::chat.chat'>;
     confirmationToken: Schema.Attribute.String & Schema.Attribute.Private;
     confirmed: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
+    course_review: Schema.Attribute.Relation<'oneToMany', 'api::review.review'>;
     created_courses: Schema.Attribute.Relation<
       'oneToMany',
       'api::course.course'
@@ -1243,6 +1248,10 @@ export interface PluginUsersPermissionsUser
       }>;
     first_name: Schema.Attribute.String & Schema.Attribute.Required;
     last_name: Schema.Attribute.String & Schema.Attribute.Required;
+    lecturer_review: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::lecturer-review.lecturer-review'
+    >;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
@@ -1270,7 +1279,6 @@ export interface PluginUsersPermissionsUser
       'api::lecturer-review.lecturer-review'
     >;
     resetPasswordToken: Schema.Attribute.String & Schema.Attribute.Private;
-    reviews: Schema.Attribute.Relation<'oneToMany', 'api::review.review'>;
     role: Schema.Attribute.Relation<
       'manyToOne',
       'plugin::users-permissions.role'
