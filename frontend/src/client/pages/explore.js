@@ -114,7 +114,7 @@ export default function Explore() {
           <div className="mb-4 flex items-center space-x-2">
             <input
               type="text"
-              placeholder="ค้นหาชื่อวิชา..."
+              placeholder="ค้นหาโดยใช้ชื่อวิชา..."
               className="w-full p-2 border border-gray-300 rounded-lg"
               value={query}
               onChange={(e) => setQuery(e.target.value)}

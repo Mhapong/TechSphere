@@ -107,6 +107,7 @@ const EditProfile = () => {
       setEmail(User.email || "");
       setFirst_Name(User.first_name || "");
       setLast_Name(User.last_name || "");
+      setBackground(User.background || "");
     }
   }, [User]);
 

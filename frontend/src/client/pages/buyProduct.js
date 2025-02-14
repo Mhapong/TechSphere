@@ -36,6 +36,8 @@ export default function BuyProduct() {
     console.log(reciept);
   }
 
+  console.log(state.user.id);
+
   const handleComfirmPurchease = async () => {
     try {
       if (!location.state?.course_id) {
@@ -45,7 +47,7 @@ export default function BuyProduct() {
 
       const response = await ax.post("confirm-purchases?populate=*", {
         data: {
-          users_purchase: state.user.id,
+          users_purchase: [state.user.id],
           amount: location.total,
           course_purchase: location.state.course_id,
         },
@@ -91,20 +93,8 @@ export default function BuyProduct() {
     <div className="flex flex-col items-center justify-center min-h-screen p-4 bg-gray-100">
       <div className="w-full max-w-md p-6 bg-white rounded-lg shadow-md">
         <h1 className="text-xl font-bold text-center mb-4">
-          จำนวนเงินที่ต้องชำระ {location.state.total}
+          จำนวนเงินที่ต้องชำระ: {location.state.total} ฿
         </h1>
-        {/* <input
-          type="number"
-          className="w-full p-2 border rounded mb-3"
-          placeholder="จำนวนเงิน (บาท)"
-          value={amount}
-        /> */}
-        {/* <button
-          className="w-full p-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-          onClick={generateQRCode}
-        >
-          สร้าง QR Code
-        </button> */}
         {qrCode && (
           <div className="mt-4 flex flex-col items-center">
             <img src={qrCode} alt="QR Code" className="w-64 h-64" />
@@ -119,14 +109,14 @@ export default function BuyProduct() {
         )}
         <button
           data-dialog-target="modal"
-          class="rounded-md bg-slate-800 text-black py-2 px-4 border border-transparent text-center text-sm transition-all shadow-md hover:shadow-lg focus:bg-slate-700 focus:shadow-none active:bg-slate-700 hover:bg-slate-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none ml-2"
+          class=" mx-auto mt-6 center  rounded-md bg-slate-800 bg-green-800 text-white py-2 px-4 border border-transparent text-center text-sm transition-all shadow-md hover:shadow-lg focus:bg-slate-700 focus:shadow-none active:bg-slate-700 hover:bg-slate-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none ml-2"
           type="button"
           onClick={handleOpenModal}
         >
           ส่งใบเสร็จโอนเงิน
         </button>
         <Dialog open={openModal} handler={handleOpenModal}>
-          <DialogHeader>Its a simple modal.</DialogHeader>
+          <DialogHeader>โปรดใส่รูปใบเสร็จ</DialogHeader>
           <DialogBody>
             <input type="file" onChange={handleChange} required />
             <img src={reciept} />

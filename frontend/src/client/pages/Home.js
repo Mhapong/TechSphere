@@ -28,6 +28,7 @@ export default function Home() {
   const { state } = useContext(AuthContext);
   const [courseData, setCourseData] = useState([]);
   const [category, setCategory] = useState([]);
+  const baseURL = "http://localhost:1337";
 
   const categorys = [
     { name: "Web Develop", img: webpic, path: "Web Develop" },
@@ -180,9 +181,9 @@ export default function Home() {
                   <div>
                     {items.image !== null ? (
                       <img
-                        src={items.image}
+                        src={`${baseURL}${items.image[0].url}`}
                         alt="Product Image"
-                        class="object-contain w-full h-[270px] fill"
+                        class="object-contain w-full h-[270px] fill rounded-lg"
                       />
                     ) : (
                       <Image
