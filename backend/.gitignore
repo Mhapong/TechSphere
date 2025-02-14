@@ -1,7 +1,7 @@
 ############################
 # OS X
 ############################
-
+/node_modules
 .DS_Store
 .AppleDouble
 .LSOverride
@@ -65,6 +65,7 @@ $RECYCLE.BIN/
 # Logs and databases
 ############################
 
+# .tmp
 *.log
 *.sql
 *.sqlite
