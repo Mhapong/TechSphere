@@ -11,14 +11,14 @@ export default function ContentStudy() {
     const [groupedContent, setGroupedContent] = useState({});
     const [selectedContent, setSelectedContent] = useState(null);
     const { documentId } = useParams();
-    const BASE_URL = "http://localhost:1337";
+    const BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:1337";
     const [progress, setProgress] = useState({});
     const videoRef = useRef(null);
     const [overallProgress, setOverallProgress] = useState(0);
 
     const fetchTopics = async () => {
         try {
-            const response = await ax.get("http://localhost:1337/api/topics", {
+            const response = await ax.get(`${BASE_URL}/api/topics`, {
                 params: {
                     populate: "content.video",
                     "filters[topic_id][documentId][$eq]": documentId,
@@ -45,10 +45,10 @@ export default function ContentStudy() {
             console.error("เกิดข้อผิดพลาดขณะดึงข้อมูล:", err);
         }
     };
-
+// progress ของ Content
     const fetchProgresses = async () => {
         try {
-            const response = await ax.get(`http://localhost:1337/api/progresses`, {
+            const response = await ax.get(`${BASE_URL}/api/progresses`, {
                 params: {
                     populate: "*",
                     "filters[progress_owner][id][$eq]": state.user.id,
@@ -59,7 +59,7 @@ export default function ContentStudy() {
                 if (item.content_progress && item.content_progress.id) {
                     acc[item.content_progress.id] = {
                         documentId: item.documentId,
-                        id: item.id,
+                        id: item.content_progress.id,
                         progress: Number(item.progress) || 0,
                     };
                 }
@@ -80,7 +80,7 @@ export default function ContentStudy() {
             if (existingProgress?.documentId) {
                 if (existingProgress.progress !== newProgress) {
                     console.log(" Updating progress ID:", existingProgress.documentId);
-                    await ax.put(`http://localhost:1337/api/progresses/${existingProgress.documentId}`, {
+                    await ax.put(`${BASE_URL}/api/progresses/${existingProgress.documentId}`, {
                         data: { progress: newProgress },
                     });
 
@@ -91,7 +91,7 @@ export default function ContentStudy() {
                 }
             } else {
                 console.log(" Creating new progress for content ID:", contentId);
-                const response = await ax.post(`http://localhost:1337/api/progresses`, {
+                const response = await ax.post(`${BASE_URL}/api/progresses`, {
                     data: {
                         progress: newProgress,
                         progress_owner: state.user.id,
@@ -114,9 +114,14 @@ export default function ContentStudy() {
         const videoElement = event.target;
         const duration = videoElement.duration;
         const contentId = selectedContent?.id;
+
         if (contentId && progress[contentId]) {
             const startTime = (progress[contentId].progress / 100) * duration;
-            videoElement.currentTime = startTime;
+            console.log(`Setting video time to ${startTime}s`);
+
+            if (!isNaN(startTime) && startTime > 0 && startTime < duration) {
+                videoElement.currentTime = startTime;
+            }
         }
     };
 
@@ -153,9 +158,11 @@ export default function ContentStudy() {
 
 
     useEffect(() => {
-        fetchTopics();
-        fetchProgresses();
+        fetchProgresses().then(() => {
+            fetchTopics();
+        });
     }, []);
+    
 
     useEffect(() => {
         if (Object.keys(progress).length > 0) {
@@ -173,7 +180,6 @@ export default function ContentStudy() {
                         <h2 className="text-black text-2xl font-bold mb-4">{selectedContent.content_title}</h2>
                         {selectedContent.video_url ? (
                             <video
-                                key={selectedContent.video_url}
                                 ref={videoRef}
                                 width="100%"
                                 height="auto"
@@ -186,6 +192,7 @@ export default function ContentStudy() {
                             >
                                 <source src={selectedContent.video_url} type="video/mp4" />
                             </video>
+
                         ) : (
                             <p className="text-gray-500">ไม่มีวิดีโอ</p>
                         )}

@@ -143,6 +143,12 @@
       "relation": "oneToMany",
       "target": "api::review.review",
       "mappedBy": "users_review"
+    },
+    "course_progress_owned": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::course-progress.course-progress",
+      "mappedBy": "course_progress_owner"
     }
   }
 }
