@@ -119,7 +119,7 @@ export default function BuyProduct() {
           <DialogHeader>โปรดใส่รูปใบเสร็จ</DialogHeader>
           <DialogBody>
             <input type="file" onChange={handleChange} required />
-            <img src={reciept} />
+            <img src={reciept} className="h-96 mx-auto" />
           </DialogBody>
           <DialogFooter>
             <Button
