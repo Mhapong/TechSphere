@@ -21,12 +21,6 @@
     "Time_Usage": {
       "type": "integer"
     },
-    "rating": {
-      "type": "relation",
-      "relation": "oneToMany",
-      "target": "api::review.review",
-      "mappedBy": "review_id"
-    },
     "topic": {
       "type": "relation",
       "relation": "oneToMany",
@@ -81,6 +75,12 @@
       "relation": "manyToMany",
       "target": "api::confirm-purchase.confirm-purchase",
       "mappedBy": "course_purchase"
+    },
+    "rating": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::review.review",
+      "mappedBy": "review_id"
     }
   }
 }

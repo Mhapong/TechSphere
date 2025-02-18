@@ -4,33 +4,33 @@
   "info": {
     "singularName": "review",
     "pluralName": "reviews",
-    "displayName": "Review",
-    "description": ""
+    "displayName": "Review"
   },
   "options": {
-    "draftAndPublish": false
+    "draftAndPublish": true
   },
-  "pluginOptions": {},
   "attributes": {
     "star": {
       "type": "integer",
       "max": 5,
-      "min": 0
+      "min": 1,
+      "required": true
     },
     "comment": {
-      "type": "text"
-    },
-    "review_id": {
-      "type": "relation",
-      "relation": "manyToOne",
-      "target": "api::course.course",
-      "inversedBy": "rating"
+      "type": "text",
+      "required": false
     },
     "users_review": {
       "type": "relation",
       "relation": "manyToOne",
       "target": "plugin::users-permissions.user",
       "inversedBy": "course_review"
+    },
+    "review_id": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::course.course",
+      "inversedBy": "rating"
     }
   }
 }

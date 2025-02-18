@@ -699,13 +699,12 @@ export interface ApiProgressProgress extends Struct.CollectionTypeSchema {
 export interface ApiReviewReview extends Struct.CollectionTypeSchema {
   collectionName: 'reviews';
   info: {
-    description: '';
     displayName: 'Review';
     pluralName: 'reviews';
     singularName: 'review';
   };
   options: {
-    draftAndPublish: false;
+    draftAndPublish: true;
   };
   attributes: {
     comment: Schema.Attribute.Text;
@@ -721,10 +720,11 @@ export interface ApiReviewReview extends Struct.CollectionTypeSchema {
     publishedAt: Schema.Attribute.DateTime;
     review_id: Schema.Attribute.Relation<'manyToOne', 'api::course.course'>;
     star: Schema.Attribute.Integer &
+      Schema.Attribute.Required &
       Schema.Attribute.SetMinMax<
         {
           max: 5;
-          min: 0;
+          min: 1;
         },
         number
       >;

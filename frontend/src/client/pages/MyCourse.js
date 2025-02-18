@@ -6,16 +6,44 @@ import { motion } from "framer-motion";
 import { Image } from "@mui/icons-material";
 import networkpic from "../components/network.png";
 
-const ReviewModal = ({ isOpen, onClose, rating, setRating, comment, setComment }) => {
+const ReviewModal = ({ 
+    isOpen, 
+    onClose, 
+    rating, 
+    setRating, 
+    comment, 
+    setComment, 
+    selectedCourse, 
+    user 
+  }) => {
     // ฟังก์ชันส่งรีวิว
-    const handleSubmit = () => {
-        console.log("Review Submitted:", { rating, comment });
+    const handleSubmit = async (e) => {
+      e.preventDefault();
+      try {
+        const response = await ax.post("reviews?populate=*", {
+          data: {
+            star: rating,
+            comment,
+            review_id: selectedCourse?.id,
+            users_review: user?.id,
+          },
+        });
+  
+        console.log("Review Submitted:", response.data);
+  
+        // ปิด Modal และรีเซ็ตค่า
         onClose();
         setRating(5);
         setComment("");
+        alert("Review submitted successfully!");
+      } catch (error) {
+        console.error("Error submitting review:", error);
+        alert("Failed to submit review, please try again.");
+      }
     };
-
+  
     if (!isOpen) return null;
+  
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
@@ -362,6 +390,8 @@ export default function MyCourse() {
                 setRating={setRating}
                 comment={comment}
                 setComment={setComment}
+                selectedCourse={selectedCourse}
+                user={user}
             />
         </div>
     );
