@@ -601,6 +601,10 @@ export interface ApiCourseCourse extends Struct.CollectionTypeSchema {
       Schema.Attribute.Private;
     Name: Schema.Attribute.String;
     Price: Schema.Attribute.Decimal;
+    progress_of_course: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::progress.progress'
+    >;
     publishedAt: Schema.Attribute.DateTime;
     rating: Schema.Attribute.Relation<'oneToMany', 'api::review.review'>;
     start_date: Schema.Attribute.DateTime;
@@ -716,6 +720,10 @@ export interface ApiProgressProgress extends Struct.CollectionTypeSchema {
     content_progress: Schema.Attribute.Relation<
       'manyToOne',
       'api::content.content'
+    >;
+    course_of_progress: Schema.Attribute.Relation<
+      'manyToOne',
+      'api::course.course'
     >;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &

@@ -29,6 +29,12 @@
       "default": "0",
       "max": "100",
       "min": "0"
+    },
+    "course_of_progress": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::course.course",
+      "inversedBy": "progress_of_course"
     }
   }
 }

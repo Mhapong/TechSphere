@@ -50,10 +50,10 @@ export default function ContentStudy() {
 
     // progress ของ Content
     const fetchProgresses = async () => {
-        if (isProgressFetched.current) return; 
+        if (isProgressFetched.current) return;
         isProgressFetched.current = true;
         try {
-            //ดึง Progress ทั้งหมดของ User
+            console.log("Fetching progress data...");
             const progressResponse = await ax.get(`${BASE_URL}/api/progresses`, {
                 params: {
                     populate: "*",
@@ -64,21 +64,30 @@ export default function ContentStudy() {
             let progressData = progressResponse.data.data.reduce((acc, item) => {
                 if (item.content_progress && item.content_progress.id) {
                     acc[item.content_progress.id] = {
-                        documentId: item.documentId, 
+                        documentId: item.documentId,
                         progress: Number(item.progress) || 0,
+                        course_of_progress: item.course_of_progress.documentId,
                     };
                 }
                 return acc;
             }, {});
     
-            // ดึง Content ทั้งหมดที่ควรมี Progress
-            const contentResponse = await ax.get(`${BASE_URL}/api/contents`);
-            const contentIds = contentResponse.data.data.map(content => content.id);
+            console.log("Current progress data:", progressData);
     
-            // หาว่ามี Content ไหนที่ยังไม่มี Progress
+            // ดึง topics ที่เกี่ยวข้องกับ course นี้
+            const topicResponse = await ax.get(`${BASE_URL}/api/topics`, {
+                params: {
+                    populate: "*",
+                    "filters[topic_id][documentId][$eq]": documentId, 
+                },
+            });
+    
+            const contentIds = topicResponse.data.data.flatMap(topic => topic.content.map(content => content.id));
+    
             const missingContents = contentIds.filter(id => !progressData[id]);
     
-            // สร้าง Progress ใหม่ที่ 0 ให้ Content ที่ยังไม่มี
+            console.log("Missing content progress:", missingContents);
+    
             const newProgressEntries = await Promise.all(
                 missingContents.map(async (contentId) => {
                     const response = await ax.post(`${BASE_URL}/api/progresses`, {
@@ -86,106 +95,151 @@ export default function ContentStudy() {
                             progress: 0,
                             progress_owner: state.user.id,
                             content_progress: contentId,
+                            course_of_progress: documentId,
                         },
                     });
     
-                    const newDocumentId = response.data.data.documentId 
+                    const newDocumentId = response.data.data.documentId;
     
-                    return { [contentId]: { documentId: newDocumentId, progress: 0 } };
+                    return { [contentId]: { documentId: newDocumentId, progress: 0, course_of_progress: documentId } };
                 })
             );
     
-            // รวม Progress ที่มีอยู่กับ Progress ที่สร้างใหม่
             newProgressEntries.forEach(entry => {
                 progressData = { ...progressData, ...entry };
             });
     
-            console.log("Fetched Progress Data:", progressData);
+            console.log("Final progress data after adding missing entries:", progressData);
+    
             setProgress(progressData);
+            calculateOverallProgress(progressData, documentId);
+    
         } catch (err) {
             console.error("Error fetching progress data:", err);
         }
     };
-
-    const updateProgress = async (contentId, newProgress) => {
+    
+    
+    const calculateOverallProgress = (progressData, courseId) => {
+        const filteredProgress = Object.values(progressData).filter(item => item.course_of_progress === courseId);
+        const totalContents = filteredProgress.length;
+        if (totalContents === 0) {
+            setOverallProgress(0);
+            console.log("No relevant content available for progress calculation.");
+            return;
+        }
+    
+        const totalProgress = filteredProgress.reduce((sum, item) => sum + (item.progress || 0), 0);
+        const averageProgress = Math.round(totalProgress / totalContents);
+    
+        console.log(`Calculated overall progress for course ${courseId}: ${averageProgress}%`);
+        setOverallProgress(averageProgress);
+    };
+    
+    const updateProgress = async (contentId, newProgress, courseId) => {
         try {
             const existingProgress = progress[contentId];
-
+    
             if (existingProgress?.documentId && existingProgress.progress !== newProgress) {
-                console.log("Updating progress:", existingProgress);
+                console.log(`Updating progress for content ID ${contentId} - New progress: ${newProgress}%`);
                 await ax.put(`${BASE_URL}/api/progresses/${existingProgress.documentId}`, {
                     data: { progress: newProgress },
                 });
-
-                setProgress(prev => ({
-                    ...prev,
-                    [contentId]: { ...prev[contentId], progress: newProgress }
-                }));
+    
+                setProgress(prev => {
+                    const updatedProgress = {
+                        ...prev,
+                        [contentId]: { ...prev[contentId], progress: newProgress }
+                    };
+                    console.log("Updated progress state:", updatedProgress);
+                    calculateOverallProgress(updatedProgress, courseId);
+                    return updatedProgress;
+                });
             }
         } catch (err) {
             console.error("Error updating progress:", err.response?.data || err.message);
         }
     };
-
-
-
-    // progress ของ Course (โละใหม่)
-
-
-    //ส่วนจัดการวิดีโอ
+    
     const handleLoadedMetadata = (event) => {
         const videoElement = event.target;
         const duration = videoElement.duration;
         const contentId = selectedContent?.id;
-
+    
         if (contentId && progress[contentId]) {
-            const startTime = (progress[contentId].progress / 100) * duration;
-            console.log(`Setting video time to ${startTime}s`);
-
+            let startTime = (progress[contentId].progress / 100) * duration;
+    
+            console.log(`Setting video time for content ${contentId}:`, {
+                progress: progress[contentId].progress,
+                duration,
+                startTime,
+            });
+    
             if (!isNaN(startTime) && startTime > 0 && startTime < duration) {
                 videoElement.currentTime = startTime;
             }
         }
     };
-
-    const handleTimeUpdate = (event, contentId) => {
+    
+    // ตั้งค่าเวลาเล่นหลังจาก progress โหลดเสร็จ
+    useEffect(() => {
+        if (selectedContent?.id && videoRef.current) {
+            const videoElement = videoRef.current;
+            const duration = videoElement.duration;
+            if (duration && progress[selectedContent.id]) {
+                let startTime = (progress[selectedContent.id].progress / 100) * duration;
+                console.log(`Applying saved progress to video: ${startTime}s`);
+                videoElement.currentTime = startTime;
+            }
+        }
+    }, [selectedContent, progress]);
+    
+    const handleTimeUpdate = (event) => {
+        const contentId = selectedContent?.id;
+        if (!contentId) return;
+    
         const currentTime = event.target.currentTime;
         const duration = event.target.duration;
         const newProgress = Math.round((currentTime / duration) * 100);
-
-        setProgress(prev => ({
-            ...prev,
-            [contentId]: { ...(prev[contentId] || {}), progress: newProgress }
-        }));
-
-        updateProgress(contentId, newProgress);
+    
+        if (progress[contentId]?.progress !== newProgress) {
+            console.log(`Updating progress for content ${contentId}: ${newProgress}%`);
+            setProgress(prev => ({
+                ...prev,
+                [contentId]: { ...(prev[contentId] || {}), progress: newProgress }
+            }));
+            updateProgress(contentId, newProgress, documentId);
+        }
     };
-
-
-    const handleVideoEnd = (contentId) => {
+    
+    
+    const handleVideoEnd = () => {
+        const contentId = selectedContent?.id;
+        if (!contentId) return;
+    
         setProgress(prev => ({
             ...prev,
             [contentId]: { ...(prev[contentId] || {}), progress: 100 }
         }));
-
-        updateProgress(contentId, 100);
+    
+        updateProgress(contentId, 100, documentId);
     };
 
     const goToNextLesson = () => {
         const topics = Object.values(groupedContent).flat();
-        const currentIndex = topics.findIndex((item) => item.id === selectedContent.id);
-
+        const currentIndex = topics.findIndex((item) => item.id === selectedContent?.id);
+    
         if (currentIndex !== -1 && currentIndex < topics.length - 1) {
             setSelectedContent(topics[currentIndex + 1]);
         }
     };
-
-
+    
+    
     useEffect(() => {
         fetchProgresses().then(() => {
             fetchTopics();
         });
-    }, []); 
+    }, []);
     
 
 
