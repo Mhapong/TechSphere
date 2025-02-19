@@ -16,6 +16,7 @@ export default function ContentStudy() {
     const [courseProgress, setCourseProgress] = useState({});
     const videoRef = useRef(null);
     const isProgressFetched = useRef(false)
+    const isCourseProgressFetched = useRef(false)
     const [overallProgress, setOverallProgress] = useState(0);
 
     const fetchTopics = async () => {
@@ -118,6 +119,95 @@ export default function ContentStudy() {
             console.error("Error fetching progress data:", err);
         }
     };
+
+    // progress ของ Course
+    const fetchCourseProgresses = async () => {
+        if (isCourseProgressFetched.current) return;
+        isCourseProgressFetched.current = true;
+    
+        try {
+            console.log("Fetching course progress data...");
+            const courseProgressResponse = await ax.get(`${BASE_URL}/api/course-progresses`, {
+                params: {
+                    populate: "*",
+                    "filters[course_progress_owner][id][$eq]": state.user.id,
+                },
+            });
+    
+            let courseProgressData = courseProgressResponse.data.data.reduce((acc, item) => {
+                if (item.course_progress_name && item.course_progress_name.documentId) {  // ✅ แก้ให้ดึง documentId
+                    acc[item.course_progress_name.documentId] = {  // ✅ ใช้ documentId เป็น key
+                        documentId: item.documentId,
+                        course_progress: Number(item.course_progress) || 0,
+                        course_progress_name: item.course_progress_name.documentId,  // ✅ ใช้ documentId แทน id
+                    };
+                }
+                return acc;
+            }, {});
+    
+            console.log("Current course progress data:", courseProgressData);
+    
+            const courseResponse = await ax.get(`${BASE_URL}/api/courses`, {
+                params: {
+                    populate: "*",
+                    "filters[documentId][$eq]": documentId,  // ✅ ใช้ documentId เป็นตัวกรอง
+                },
+            });
+    
+            console.log("Fetched course data:", courseResponse.data);
+    
+            const courseDocumentIds = courseResponse.data.data.map(course => course.documentId);
+    
+            console.log("Extracted course document IDs:", courseDocumentIds);
+    
+            const missingCourses = courseDocumentIds.filter(docId => !courseProgressData[docId]);
+    
+            console.log("Missing course progress:", missingCourses);
+    
+            const newCourseProgressEntries = await Promise.all(
+                missingCourses.map(async (docId) => {
+                    console.log(`Creating new course progress for documentId: ${docId}`);
+    
+                    try {
+                        const response = await ax.post(`${BASE_URL}/api/course-progresses`, {
+                            data: {
+                                course_progress:  overallProgress || 0,
+                                course_progress_owner: state.user.id,
+                                course_progress_name: docId,  // ✅ ใช้ documentId ตรงนี้
+                            },
+                        });
+    
+                        console.log("New course progress response:", response.data);
+    
+                        const newDocumentId = response.data.data.documentId;
+    
+                        return { 
+                            [docId]: { 
+                                documentId: newDocumentId, 
+                                course_progress: overallProgress || 0, 
+                                course_progress_name: docId  // ✅ ใช้ documentId แทน id
+                            } 
+                        };
+                    } catch (error) {
+                        console.error(`Error creating course progress for documentId ${docId}:`, error);
+                        return {};
+                    }
+                })
+            );
+    
+            newCourseProgressEntries.forEach(entry => {
+                courseProgressData = { ...courseProgressData, ...entry };
+            });
+    
+            console.log("Final course progress data after adding missing entries:", courseProgressData);
+    
+            setCourseProgress(courseProgressData);  // ✅ แก้เป็น `setCourseProgress`
+    
+        } catch (err) {
+            console.error("Error fetching course progress data:", err);
+        }
+    };
+    
     
     
     const calculateOverallProgress = (progressData, courseId) => {
@@ -134,7 +224,11 @@ export default function ContentStudy() {
     
         console.log(`Calculated overall progress for course ${courseId}: ${averageProgress}%`);
         setOverallProgress(averageProgress);
+    
+        // **เรียกอัปเดต Course Progress**
+        updateCourseProgress(courseId, averageProgress);
     };
+    
     
     const updateProgress = async (contentId, newProgress, courseId) => {
         try {
@@ -152,7 +246,10 @@ export default function ContentStudy() {
                         [contentId]: { ...prev[contentId], progress: newProgress }
                     };
                     console.log("Updated progress state:", updatedProgress);
+                    
+                    // **คำนวณ overall progress ใหม่**
                     calculateOverallProgress(updatedProgress, courseId);
+    
                     return updatedProgress;
                 });
             }
@@ -160,6 +257,33 @@ export default function ContentStudy() {
             console.error("Error updating progress:", err.response?.data || err.message);
         }
     };
+
+    const updateCourseProgress = async (courseId, newOverallProgress) => {
+        try {
+            const existingCourseProgress = courseProgress[courseId];
+    
+            if (existingCourseProgress?.documentId) {
+                const previousProgress = existingCourseProgress.course_progress || 0;
+                
+                // อัปเดตเฉพาะเมื่อเปลี่ยนแปลงมากกว่า 1%
+                if (Math.abs(previousProgress - newOverallProgress) >= 1) {
+                    console.log(`Updating course progress for course ${courseId} - New progress: ${newOverallProgress}%`);
+                    
+                    await ax.put(`${BASE_URL}/api/course-progresses/${existingCourseProgress.documentId}`, {
+                        data: { course_progress: newOverallProgress },
+                    });
+    
+                    setCourseProgress(prev => ({
+                        ...prev,
+                        [courseId]: { ...prev[courseId], course_progress: newOverallProgress }
+                    }));
+                }
+            }
+        } catch (err) {
+            console.error("Error updating course progress:", err.response?.data || err.message);
+        }
+    };
+    
     
     const handleLoadedMetadata = (event) => {
         const videoElement = event.target;
@@ -238,8 +362,11 @@ export default function ContentStudy() {
     useEffect(() => {
         fetchProgresses().then(() => {
             fetchTopics();
+            fetchCourseProgresses();
         });
     }, []);
+
+    
     
 
 
