@@ -521,6 +521,52 @@ export interface ApiContentContent extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiCourseProgressCourseProgress
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'course_progresses';
+  info: {
+    description: '';
+    displayName: 'Course_Progress';
+    pluralName: 'course-progresses';
+    singularName: 'course-progress';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    course_progress: Schema.Attribute.BigInteger &
+      Schema.Attribute.SetMinMax<
+        {
+          max: '100';
+          min: '0';
+        },
+        string
+      > &
+      Schema.Attribute.DefaultTo<'0'>;
+    course_progress_name: Schema.Attribute.Relation<
+      'manyToOne',
+      'api::course.course'
+    >;
+    course_progress_owner: Schema.Attribute.Relation<
+      'manyToOne',
+      'plugin::users-permissions.user'
+    >;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::course-progress.course-progress'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiCourseCourse extends Struct.CollectionTypeSchema {
   collectionName: 'courses';
   info: {
@@ -560,10 +606,18 @@ export interface ApiCourseCourse extends Struct.CollectionTypeSchema {
       Schema.Attribute.Private;
     Name: Schema.Attribute.String;
     Price: Schema.Attribute.Decimal;
+    progress_of_course: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::progress.progress'
+    >;
     publishedAt: Schema.Attribute.DateTime;
     rating: Schema.Attribute.Relation<'oneToMany', 'api::review.review'>;
     start_date: Schema.Attribute.DateTime;
     status_coure: Schema.Attribute.Enumeration<['Activate', 'Deactivate']>;
+    sum_progresses: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::course-progress.course-progress'
+    >;
     Time_Usage: Schema.Attribute.Integer;
     topic: Schema.Attribute.Relation<'oneToMany', 'api::topic.topic'>;
     updatedAt: Schema.Attribute.DateTime;
@@ -671,6 +725,10 @@ export interface ApiProgressProgress extends Struct.CollectionTypeSchema {
     content_progress: Schema.Attribute.Relation<
       'manyToOne',
       'api::content.content'
+    >;
+    course_of_progress: Schema.Attribute.Relation<
+      'manyToOne',
+      'api::course.course'
     >;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -1239,14 +1297,18 @@ export interface PluginUsersPermissionsUser
     chat_recieved: Schema.Attribute.Relation<'oneToMany', 'api::chat.chat'>;
     confirmationToken: Schema.Attribute.String & Schema.Attribute.Private;
     confirmed: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
+    course_progress_owned: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::course-progress.course-progress'
+    >;
     course_review: Schema.Attribute.Relation<'oneToMany', 'api::review.review'>;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
     created_courses: Schema.Attribute.Relation<
       'oneToMany',
       'api::course.course'
     >;
-    createdAt: Schema.Attribute.DateTime;
-    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
     email: Schema.Attribute.Email &
       Schema.Attribute.Required &
       Schema.Attribute.SetMinMaxLength<{
@@ -1319,6 +1381,7 @@ declare module '@strapi/strapi' {
       'api::chat.chat': ApiChatChat;
       'api::confirm-purchase.confirm-purchase': ApiConfirmPurchaseConfirmPurchase;
       'api::content.content': ApiContentContent;
+      'api::course-progress.course-progress': ApiCourseProgressCourseProgress;
       'api::course.course': ApiCourseCourse;
       'api::lecturer-background.lecturer-background': ApiLecturerBackgroundLecturerBackground;
       'api::lecturer-review.lecturer-review': ApiLecturerReviewLecturerReview;

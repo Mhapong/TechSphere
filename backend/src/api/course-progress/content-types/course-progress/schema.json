@@ -1,0 +1,34 @@
+{
+  "kind": "collectionType",
+  "collectionName": "course_progresses",
+  "info": {
+    "singularName": "course-progress",
+    "pluralName": "course-progresses",
+    "displayName": "Course_Progress",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "course_progress": {
+      "type": "biginteger",
+      "default": "0",
+      "max": "100",
+      "min": "0"
+    },
+    "course_progress_owner": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user",
+      "inversedBy": "course_progress_owned"
+    },
+    "course_progress_name": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::course.course",
+      "inversedBy": "sum_progresses"
+    }
+  }
+}

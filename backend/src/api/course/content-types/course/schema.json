@@ -76,6 +76,19 @@
       "target": "api::confirm-purchase.confirm-purchase",
       "mappedBy": "course_purchase"
     },
+    "sum_progresses": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::course-progress.course-progress",
+      "mappedBy": "course_progress_name"
+    },
+    "progress_of_course": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::progress.progress",
+      "mappedBy": "course_of_progress"
+    },
+    
     "rating": {
       "type": "relation",
       "relation": "oneToMany",
