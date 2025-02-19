@@ -143,6 +143,12 @@
       "relation": "oneToMany",
       "target": "api::confirm-purchase.confirm-purchase",
       "mappedBy": "users_purchase"
+    },
+    "course_progress_owned": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::course-progress.course-progress",
+      "mappedBy": "course_progress_owner"
     }
   }
 }
