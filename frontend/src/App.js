@@ -6,9 +6,9 @@ import {
   Routes,
   BrowserRouter,
 } from "react-router-dom";
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { AuthContext } from "./context/Auth.context";
-
+import ForumIcon from "@mui/icons-material/Forum";
 import Home from "./client/pages/Home";
 import Login from "./client/pages/Login";
 import SignUp from "./client/pages/SignUp";
@@ -36,11 +36,11 @@ import { CourseView } from "./admin/pages/Course.js";
 import FinanceOrder from "./admin/pages/Finance.js";
 import CourseStudentTable from "./admin/pages/CourseViewStudent.js";
 import PaymentSucceed from "./client/pages/paymentSucceedPage.js";
+import Chat from "./admin/components/chat.js";
 
 function App() {
   const { state } = useContext(AuthContext);
-  // console.log(state.user);
-
+  const [isChatOpen, setIsChatOpen] = useState(false);
   const userRole = state.user?.userRole;
 
   return (
@@ -69,6 +69,12 @@ function App() {
               {/* <Route path="*" element={<PageNotFound />} /> */}
             </Routes>
             <Footer />
+            <button
+              onClick={() => setIsChatOpen(true)}
+              className="fixed bottom-6 right-6 bg-blue-500 text-white p-4 rounded-full shadow-lg hover:bg-blue-600 transition duration-300"
+            >
+              <ForumIcon fontSize="large" />
+            </button>
           </>
         ) : userRole === "Lecturer" ? (
           <>
@@ -77,6 +83,12 @@ function App() {
               <Route path="/" element={<HomeAdmin />} />
               {/* <Route path="*" element={<PageNotFound />} /> */}
             </Routes>
+            <button
+              onClick={() => setIsChatOpen(true)}
+              className="fixed bottom-6 right-6 bg-blue-500 text-white p-4 rounded-full shadow-lg hover:bg-blue-600 transition duration-300"
+            >
+              <ForumIcon fontSize="large" />
+            </button>
           </>
         ) : userRole === "Admin" ? (
           <>
@@ -97,8 +109,13 @@ function App() {
               <Route path="/user" element={<Profile />} />
               <Route path="/edit-profile/:userid" element={<EditProfile />} />
               <Route path="/sign-up" element={<SignUp />} />
-              {/* <Route path="*" element={<PageNotFound />} /> */}
             </Routes>
+            <button
+              onClick={() => setIsChatOpen(true)}
+              className="fixed bottom-6 right-6 bg-blue-500 text-white p-4 rounded-full shadow-lg hover:bg-blue-600 transition duration-300"
+            >
+              <ForumIcon fontSize="large" />
+            </button>
           </>
         ) : null
       ) : (
@@ -123,6 +140,13 @@ function App() {
           </Routes>
           <Footer />
         </>
+      )}
+      {isChatOpen && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white rounded-lg shadow-lg w-full max-w-md">
+            <Chat open={isChatOpen} close={() => setIsChatOpen(false)} />
+          </div>
+        </div>
       )}
     </BrowserRouter>
   );

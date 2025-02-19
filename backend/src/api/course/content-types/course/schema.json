@@ -21,12 +21,6 @@
     "Time_Usage": {
       "type": "integer"
     },
-    "rating": {
-      "type": "relation",
-      "relation": "oneToMany",
-      "target": "api::review.review",
-      "mappedBy": "review_id"
-    },
     "topic": {
       "type": "relation",
       "relation": "oneToMany",
@@ -93,6 +87,13 @@
       "relation": "oneToMany",
       "target": "api::progress.progress",
       "mappedBy": "course_of_progress"
+    },
+    
+    "rating": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::review.review",
+      "mappedBy": "review_id"
     }
   }
 }
