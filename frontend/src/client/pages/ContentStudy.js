@@ -18,6 +18,7 @@ export default function ContentStudy() {
     const isProgressFetched = useRef(false)
     const isCourseProgressFetched = useRef(false)
     const [overallProgress, setOverallProgress] = useState(0);
+    const lastUpdatedProgress = useRef({});
 
     const fetchTopics = async () => {
         try {
@@ -75,7 +76,6 @@ export default function ContentStudy() {
     
             console.log("Current progress data:", progressData);
     
-            // ดึง topics ที่เกี่ยวข้องกับ course นี้
             const topicResponse = await ax.get(`${BASE_URL}/api/topics`, {
                 params: {
                     populate: "*",
@@ -135,11 +135,11 @@ export default function ContentStudy() {
             });
     
             let courseProgressData = courseProgressResponse.data.data.reduce((acc, item) => {
-                if (item.course_progress_name && item.course_progress_name.documentId) {  // ✅ แก้ให้ดึง documentId
-                    acc[item.course_progress_name.documentId] = {  // ✅ ใช้ documentId เป็น key
+                if (item.course_progress_name && item.course_progress_name.documentId) {  
+                    acc[item.course_progress_name.documentId] = {  
                         documentId: item.documentId,
                         course_progress: Number(item.course_progress) || 0,
-                        course_progress_name: item.course_progress_name.documentId,  // ✅ ใช้ documentId แทน id
+                        course_progress_name: item.course_progress_name.documentId,  
                     };
                 }
                 return acc;
@@ -150,7 +150,7 @@ export default function ContentStudy() {
             const courseResponse = await ax.get(`${BASE_URL}/api/courses`, {
                 params: {
                     populate: "*",
-                    "filters[documentId][$eq]": documentId,  // ✅ ใช้ documentId เป็นตัวกรอง
+                    "filters[documentId][$eq]": documentId, 
                 },
             });
     
@@ -173,7 +173,7 @@ export default function ContentStudy() {
                             data: {
                                 course_progress:  overallProgress || 0,
                                 course_progress_owner: state.user.id,
-                                course_progress_name: docId,  // ✅ ใช้ documentId ตรงนี้
+                                course_progress_name: docId,  
                             },
                         });
     
@@ -185,7 +185,7 @@ export default function ContentStudy() {
                             [docId]: { 
                                 documentId: newDocumentId, 
                                 course_progress: overallProgress || 0, 
-                                course_progress_name: docId  // ✅ ใช้ documentId แทน id
+                                course_progress_name: docId  
                             } 
                         };
                     } catch (error) {
@@ -201,8 +201,7 @@ export default function ContentStudy() {
     
             console.log("Final course progress data after adding missing entries:", courseProgressData);
     
-            setCourseProgress(courseProgressData);  // ✅ แก้เป็น `setCourseProgress`
-    
+            setCourseProgress(courseProgressData);  
         } catch (err) {
             console.error("Error fetching course progress data:", err);
         }
@@ -210,68 +209,77 @@ export default function ContentStudy() {
     
     
     
+    const updateProgress = async (contentId, newProgress, courseId) => {
+        try {
+            const existingProgress = progress[contentId];
+    
+            console.log("🔍 Checking progress update condition:", {
+                contentId,
+                newProgress,
+                existingProgress
+            });
+    
+            if (existingProgress?.documentId && Math.abs(existingProgress.progress - newProgress) >= 1) {
+                console.log(`⏳ Updating progress for content ${contentId} - New progress: ${newProgress}%`);
+    
+                const response = await ax.put(`${BASE_URL}/api/progresses/${existingProgress.documentId}`, {
+                    data: { progress: newProgress },
+                });
+    
+                console.log("✅ PUT request success:", response.data);
+
+                setProgress(prev => {
+                    const updatedProgress = {
+                        ...prev,
+                        [contentId]: { ...prev[contentId], progress: newProgress }
+                    };
+                    console.log("📌 Updated progress state:", updatedProgress);
+    
+                    calculateOverallProgress(updatedProgress, courseId);
+                    return updatedProgress;
+                });
+            }
+        } catch (err) {
+            console.error("❌ Error updating progress:", err.response?.data || err.message);
+        }
+    };
+    
     const calculateOverallProgress = (progressData, courseId) => {
         const filteredProgress = Object.values(progressData).filter(item => item.course_of_progress === courseId);
         const totalContents = filteredProgress.length;
+    
         if (totalContents === 0) {
             setOverallProgress(0);
-            console.log("No relevant content available for progress calculation.");
+            console.log("⚠️ No relevant content available for progress calculation.");
             return;
         }
     
         const totalProgress = filteredProgress.reduce((sum, item) => sum + (item.progress || 0), 0);
         const averageProgress = Math.round(totalProgress / totalContents);
     
-        console.log(`Calculated overall progress for course ${courseId}: ${averageProgress}%`);
-        setOverallProgress(averageProgress);
+        console.log(`📊 Calculated overall progress for course ${courseId}: ${averageProgress}%`);
     
-        // **เรียกอัปเดต Course Progress**
-        updateCourseProgress(courseId, averageProgress);
-    };
-    
-    
-    const updateProgress = async (contentId, newProgress, courseId) => {
-        try {
-            const existingProgress = progress[contentId];
-    
-            if (existingProgress?.documentId && existingProgress.progress !== newProgress) {
-                console.log(`Updating progress for content ID ${contentId} - New progress: ${newProgress}%`);
-                await ax.put(`${BASE_URL}/api/progresses/${existingProgress.documentId}`, {
-                    data: { progress: newProgress },
-                });
-    
-                setProgress(prev => {
-                    const updatedProgress = {
-                        ...prev,
-                        [contentId]: { ...prev[contentId], progress: newProgress }
-                    };
-                    console.log("Updated progress state:", updatedProgress);
-                    
-                    // **คำนวณ overall progress ใหม่**
-                    calculateOverallProgress(updatedProgress, courseId);
-    
-                    return updatedProgress;
-                });
-            }
-        } catch (err) {
-            console.error("Error updating progress:", err.response?.data || err.message);
+        if (Math.abs(overallProgress - averageProgress) >= 1) {
+            setOverallProgress(averageProgress);
+            updateCourseProgress(courseId, averageProgress);
         }
     };
-
+    
     const updateCourseProgress = async (courseId, newOverallProgress) => {
         try {
             const existingCourseProgress = courseProgress[courseId];
     
             if (existingCourseProgress?.documentId) {
                 const previousProgress = existingCourseProgress.course_progress || 0;
-                
-                // อัปเดตเฉพาะเมื่อเปลี่ยนแปลงมากกว่า 1%
+    
                 if (Math.abs(previousProgress - newOverallProgress) >= 1) {
-                    console.log(`Updating course progress for course ${courseId} - New progress: ${newOverallProgress}%`);
-                    
-                    await ax.put(`${BASE_URL}/api/course-progresses/${existingCourseProgress.documentId}`, {
+                    console.log(`⏳ Updating course progress for course ${courseId} - New progress: ${newOverallProgress}%`);
+    
+                    const response = await ax.put(`${BASE_URL}/api/course-progresses/${existingCourseProgress.documentId}`, {
                         data: { course_progress: newOverallProgress },
                     });
+    
+                    console.log("✅ Course progress updated:", response.data);
     
                     setCourseProgress(prev => ({
                         ...prev,
@@ -280,43 +288,9 @@ export default function ContentStudy() {
                 }
             }
         } catch (err) {
-            console.error("Error updating course progress:", err.response?.data || err.message);
+            console.error("❌ Error updating course progress:", err.response?.data || err.message);
         }
     };
-    
-    
-    const handleLoadedMetadata = (event) => {
-        const videoElement = event.target;
-        const duration = videoElement.duration;
-        const contentId = selectedContent?.id;
-    
-        if (contentId && progress[contentId]) {
-            let startTime = (progress[contentId].progress / 100) * duration;
-    
-            console.log(`Setting video time for content ${contentId}:`, {
-                progress: progress[contentId].progress,
-                duration,
-                startTime,
-            });
-    
-            if (!isNaN(startTime) && startTime > 0 && startTime < duration) {
-                videoElement.currentTime = startTime;
-            }
-        }
-    };
-    
-    // ตั้งค่าเวลาเล่นหลังจาก progress โหลดเสร็จ
-    useEffect(() => {
-        if (selectedContent?.id && videoRef.current) {
-            const videoElement = videoRef.current;
-            const duration = videoElement.duration;
-            if (duration && progress[selectedContent.id]) {
-                let startTime = (progress[selectedContent.id].progress / 100) * duration;
-                console.log(`Applying saved progress to video: ${startTime}s`);
-                videoElement.currentTime = startTime;
-            }
-        }
-    }, [selectedContent, progress]);
     
     const handleTimeUpdate = (event) => {
         const contentId = selectedContent?.id;
@@ -326,16 +300,24 @@ export default function ContentStudy() {
         const duration = event.target.duration;
         const newProgress = Math.round((currentTime / duration) * 100);
     
-        if (progress[contentId]?.progress !== newProgress) {
-            console.log(`Updating progress for content ${contentId}: ${newProgress}%`);
+        console.log(`[handleTimeUpdate] contentId: ${contentId}, currentTime: ${currentTime}, newProgress: ${newProgress}%`);
+    
+        if (newProgress !== progress[contentId]?.progress) {
             setProgress(prev => ({
                 ...prev,
                 [contentId]: { ...(prev[contentId] || {}), progress: newProgress }
             }));
+        }
+    
+        if (!lastUpdatedProgress.current[contentId] || newProgress !== lastUpdatedProgress.current[contentId]) {
+            lastUpdatedProgress.current[contentId] = newProgress;
+            console.log(`🔄 Updating progress for content ${contentId}: ${newProgress}%`);
             updateProgress(contentId, newProgress, documentId);
         }
-    };
     
+        const updatedProgress = { ...progress, [contentId]: { ...(progress[contentId] || {}), progress: newProgress } };
+        calculateOverallProgress(updatedProgress, documentId);
+    };
     
     const handleVideoEnd = () => {
         const contentId = selectedContent?.id;
@@ -348,6 +330,44 @@ export default function ContentStudy() {
     
         updateProgress(contentId, 100, documentId);
     };
+    
+    
+    
+    const handleLoadedMetadata = (event) => {
+        const videoElement = event.target;
+        const duration = videoElement.duration;
+        const contentId = selectedContent?.id;
+    
+        if (contentId && progress[contentId]) {
+            let startTime = (progress[contentId].progress / 100) * duration;
+
+            if (Math.abs(videoElement.currentTime - startTime) > 1) {
+                console.log(`Setting video time for content ${contentId}:`, {
+                    progress: progress[contentId].progress,
+                    duration,
+                    startTime,
+                });
+                videoElement.currentTime = startTime;
+            }
+        }
+    };
+    
+    
+    useEffect(() => {
+        if (selectedContent?.id && videoRef.current) {
+            const videoElement = videoRef.current;
+            const duration = videoElement.duration;
+            if (duration && progress[selectedContent.id]) {
+                let startTime = (progress[selectedContent.id].progress / 100) * duration;
+                
+                if (Math.abs(videoElement.currentTime - startTime) > 1) {
+                    console.log(`Applying saved progress to video: ${startTime}s`);
+                    videoElement.currentTime = startTime;
+                }
+            }
+        }
+    }, [selectedContent]); 
+
 
     const goToNextLesson = () => {
         const topics = Object.values(groupedContent).flat();
