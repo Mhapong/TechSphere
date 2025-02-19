@@ -108,6 +108,7 @@ const EditProfile = () => {
         email: Email,
         first_name: First_Name,
         last_name: Last_Name,
+        background: background,
       });
       alert("อัปเดตข้อมูลสำเร็จ!");
       navigate(-1);
@@ -266,37 +267,42 @@ const EditProfile = () => {
             />
           </div>
         </div>
-        {User.role &&
-          User.role.name === "Lecturer" &&
-          User.background?.history && (
-            <div className="p-2">
-              <div>
-                <textarea
-                  id="background"
-                  name="background"
-                  rows="5"
-                  placeholder="background lecturer"
-                  value={background?.history || "None"}
-                  onChange={(e) =>
-                    setBackground((prev) => ({
-                      ...prev,
-                      history: e.target.value,
-                    }))
-                  }
-                  className="block w-full h-48 rounded-md border-gray-300 shadow-sm focus:border-[#8c0327] focus:ring-[#8c0327] focus:ring-opacity-50 p-2"
-                  style={{ backgroundColor: "#f6f6f6", whiteSpace: "pre-wrap" }}
-                ></textarea>
-              </div>
+        {User.role && User.role.name === "Lecturer" && (
+          <div className="p-2">
+            <div>
+              <textarea
+                id="background"
+                name="background"
+                rows="5"
+                placeholder="background lecturer"
+                value={background}
+                onChange={(e) => setBackground(e.target.value)}
+                // onChange={(e) =>
+                //   setBackground((prev) => ({
+                //     ...prev,
+                //     history: e.target.value,
+                //   }))
+                // }
+                className="block w-full h-48 rounded-md border-gray-300 shadow-sm focus:border-[#8c0327] focus:ring-[#8c0327] focus:ring-opacity-50 p-2"
+                style={{ backgroundColor: "#f6f6f6", whiteSpace: "pre-wrap" }}
+              ></textarea>
             </div>
-          )}
+          </div>
+        )}
 
         {/* Registration Button */}
-        <div className="col-span-full mt-6 p-2">
+        <div className="col-span-full mt-6 p-2  grid grid-cols-1 md:grid-cols-2 gap-6">
+          <button
+            className="block w-full bg-[#3b3f44] hover:bg-[#000000] text-white font-bold py-3 px-4 rounded-full"
+            onClick={() => navigate(-1)}
+          >
+            ยกเลิกการบันทึก
+          </button>
           <button
             type="submit"
             className="block w-full bg-[#8c0327] hover:bg-[#6b0220] text-white font-bold py-3 px-4 rounded-full"
           >
-            Submit Edit Profile
+            สร้าง/บันทึกคอร์สใหม่
           </button>
         </div>
       </form>

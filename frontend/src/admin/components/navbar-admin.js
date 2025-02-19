@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { AuthContext } from "../../context/Auth.context";
 import logo from "./Image/TECHSPHERE.png";
 import usericon from "./Image/user-icon.webp";
@@ -10,6 +10,7 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
 import Groups3Icon from "@mui/icons-material/Groups3";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import ax from "../../conf/ax";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -20,6 +21,20 @@ export default function NavAdmin() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const { state: ContextState, logout } = useContext(AuthContext);
   const { user } = ContextState;
+  const [Count, setCount] = useState(null);
+
+  useEffect(() => {
+    const fetchCount = async () => {
+      try {
+        const response = await ax.get(`counts`);
+        setCount(response.data.counts);
+      } catch (e) {
+        console.log("Error", e);
+      }
+    };
+    fetchCount();
+  }, []);
+
   const NavMenu = [
     {
       name: "หน้าแรก",
@@ -39,28 +54,28 @@ export default function NavAdmin() {
       name: "คอร์สทั้งหมด",
       href: "/view",
       current: true,
-      key: "1",
+      key: `${Count ? `${Count.course}` : "0"}`,
       icon: <StorageIcon />,
     },
     {
       name: "อาจารย์ทั้งหมด",
       href: "/lecturer",
       current: true,
-      key: "1",
+      key: `${Count ? `${Count.users.Lecturer}` : "0"}`,
       icon: <Groups3Icon />,
     },
     {
       name: "นักเรียนทั้งหมด",
       href: "/student",
       current: true,
-      key: "1",
+      key: `${Count ? `${Count.users.User}` : "0"}`,
       icon: <PeopleAltIcon />,
     },
     {
       name: "การเงิน",
       href: "/finance",
       current: true,
-      key: "",
+      key: `${Count ? `${Count["confirm-purchase"]}` : ""}`,
       icon: <PaymentIcon />,
     },
     {
