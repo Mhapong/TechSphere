@@ -1,227 +1,349 @@
-import React, { useEffect, useState, useContext } from "react";
+"use client";
+
+import { useEffect, useState, useContext } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { FaChalkboardTeacher } from "react-icons/fa";
-import ax from "../../conf/ax";
 import { useCart } from "../../context/Cart.context";
 import { AuthContext } from "../../context/Auth.context";
-import { Image } from "@mui/icons-material";
-import { FaStar, FaClock, FaShoppingCart } from "react-icons/fa";
+import {
+  FaStar,
+  FaClock,
+  FaShoppingCart,
+  FaPlay,
+  FaInfinity,
+  FaMobileAlt,
+  FaCertificate,
+  FaChevronDown,
+  FaChevronUp,
+} from "react-icons/fa";
+import { motion } from "framer-motion";
+import ax from "../../conf/ax";
 
-export default function ViewCourse(props) {
+export default function ViewCourse() {
   const navigate = useNavigate();
   const { state } = useContext(AuthContext);
   const { addToCart, cartItems } = useCart();
   const { name, documenId } = useParams();
-  const [course, setCourse] = useState([]);
-  const [showLoginModal, setshowLoginModal] = useState(false);
+  const [course, setCourse] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [openSections, setOpenSections] = useState({}); // ✅ จัดการ state ของ dropdown แต่ละหัวข้อ
   const baseURL = "http://localhost:1337";
 
   const fetchCourse = async () => {
     try {
       const response = await ax.get(
-        `courses?filters[documentId][$eq]=${documenId}&populate=*`
+        `courses?filters[documentId][$eq]=${documenId}&populate[0]=topic.content&populate[1]=lecturer_owner&populate[2]=rating`
       );
       const now_course = response.data.data;
       setCourse(now_course[0]);
       console.log(now_course[0]);
+      console.log(now_course[0].topic);
     } catch (err) {
-      console.log(err);
+      setError(err);
+      console.error(err);
+    } finally {
+      setLoading(false);
     }
-  };
-
-  const handleAddToCart = (course) => {
-    addToCart({ ...course, course_id: course.documentId });
-    console.log(cartItems);
   };
 
   useEffect(() => {
     fetchCourse();
+    console.log(course);
   }, []);
 
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>Error loading course details.</div>;
+  if (!course) return <div>No course found.</div>;
+
+  const isCourseInCart = cartItems.some((item) => item.id === course.id);
+
+  const toggleSection = (index) => {
+    setOpenSections((prev) => ({
+      ...prev,
+      [index]: !prev[index], // ✅ Toggle เปิด/ปิด
+    }));
+  };
+
   return (
-    <html class="">
-      <div class="bg-white pb-8">
-        <div class="container mx-auto px-4 py-8">
-          <div className="max-w-5xl mx-auto grid md:grid-cols-2 gap-8">
-            {/* <!-- Product Images --> */}
-            <div className="relative">
-              {course.image &&
-                (course.image[0] !== null ? (
-                  <img
-                    src={`${baseURL}${course.image[0].url}`}
-                    alt="Product Image"
-                    class="size-96 mx-auto rounded-lg shadow-md mb-4"
-                  />
-                ) : (
-                  <Image
-                    alt="Product Image"
-                    class="object-contain w-full h-[270px] fill"
-                  />
-                ))}
-              {/* class="w-full h-auto rounded-lg shadow-md mb-4"
-              id="mainImage" */}
-            </div>
-
-            {/* <div>
-              <img
-                src="https://images.unsplash.com/photo-1505751171710-1f6d0ace5a85?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w0NzEyNjZ8MHwxfHNlYXJjaHwxMnx8aGVhZHBob25lfGVufDB8MHx8fDE3MjEzMDM2OTB8MA&ixlib=rb-4.0.3&q=80&w=1080"
-                alt="Thumbnail 1"
-                class="size-16 sm:size-20 object-cover rounded-md cursor-pointer opacity-60 hover:opacity-100 transition duration-300"
-                onclick="changeImage(this.src)"
-              />
-              <img
-                src="https://images.unsplash.com/photo-1484704849700-f032a568e944?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w0NzEyNjZ8MHwxfHNlYXJjaHw0fHxoZWFkcGhvbmV8ZW58MHwwfHx8MTcyMTMwMzY5MHww&ixlib=rb-4.0.3&q=80&w=1080"
-                alt="Thumbnail 2"
-                class="size-16 sm:size-20 object-cover rounded-md cursor-pointer opacity-60 hover:opacity-100 transition duration-300"
-                onclick="changeImage(this.src)"
-              />
-              <img
-                src="https://images.unsplash.com/photo-1496957961599-e35b69ef5d7c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w0NzEyNjZ8MHwxfHNlYXJjaHw4fHxoZWFkcGhvbmV8ZW58MHwwfHx8MTcyMTMwMzY5MHww&ixlib=rb-4.0.3&q=80&w=1080"
-                alt="Thumbnail 3"
-                class="size-16 sm:size-20 object-cover rounded-md cursor-pointer opacity-60 hover:opacity-100 transition duration-300"
-                onclick="changeImage(this.src)"
-              />
-              <img
-                src="https://images.unsplash.com/photo-1528148343865-51218c4a13e6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w0NzEyNjZ8MHwxfHNlYXJjaHwzfHxoZWFkcGhvbmV8ZW58MHwwfHx8MTcyMTMwMzY5MHww&ixlib=rb-4.0.3&q=80&w=1080"
-                alt="Thumbnail 4"
-                class="size-16 sm:size-20 object-cover rounded-md cursor-pointer opacity-60 hover:opacity-100 transition duration-300"
-                onclick="changeImage(this.src)"
-              />
-            </div>
-          </div> */}
-
-            {/* <!-- Product Details --> */}
-            <div>
-              <h2 class="text-3xl font-bold mb-2">{course.Name}</h2>
-              <p class="text-gray-600">SKU: {course.documentId}</p>
-              <div class="flex items-center mb-4">
-                <div className="flex items-center mt-3 text-yellow-400">
-                  <FaStar /> <FaStar /> <FaStar /> <FaStar />
-                  <FaStar className="text-gray-300" />
-                  <span className="ml-2 text-gray-700">4.8 (320 รีวิว)</span>
-                </div>
-              </div>
-              <div className="flex items-center text-blue-500 mt-3">
-                <FaClock className="mr-2" /> ระยะเวลาเรียน 3 ชั่วโมง
-              </div>
-              {/* {course.lecturer_owner !== null ? (
-                <div className="flex items-center text-green-900 mt-3">
-                  <FaChalkboardTeacher className="mr-2" /> ครูผู้สอน :{" "}
-                  {course.lecturer_owner}
-                </div>
-              ) : (
-                <div className="flex items-center text-red-900 mt-3">
-                  <FaChalkboardTeacher className="mr-2" /> ครูผู้สอน :
-                  ไม่มีครูผู้สอนระบุ
-                </div>
-              )} */}
-
-              <div className="mt-6">
-                {/* <span className="text-xl font-semibold text-green-500">
-                  {course.Price}฿
-                </span> */}
-                <span class="text-2xl font-bold mr-2">{course.Price}฿</span>
-                {/* <span className="text-gray-400 line-through ml-2">฿ 990</span> */}
-              </div>
-
-              <div class="flex space-x-4 mb-6">
-                {/* <button
-                  class="mt-4 bg-blue-600 text-white px-6 py-3 rounded-lg flex items-center hover:bg-blue-700 cursor-pointer"
-                  onClick={() =>
-                    !state.isLoggedIn
-                      ? navigate("/login")
-                      : handleAddToCart(course)
-                  }
-                >
-                  <FaShoppingCart className="mr-2" /> */}
-                {cartItems.some((item) => item.id === course.id) ? (
-                  <button
-                    class="mt-6 w-full text-center items-center justify-center bg-gray-200 text-gray-700 px-6 py-3 rounded-lg flex cursor-not-allowed"
-                    onClick={() =>
-                      !state.isLoggedIn
-                        ? navigate("/login")
-                        : handleAddToCart(course)
-                    }
-                  >
-                    Already in cart
-                  </button>
-                ) : (
-                  <button
-                    class="mt-6 w-full text-center items-center justify-center bg-blue-600 text-white px-6 py-3 rounded-lg flex hover:bg-blue-700 cursor-pointer"
-                    onClick={() =>
-                      !state.isLoggedIn
-                        ? navigate("/login")
-                        : handleAddToCart(course)
-                    }
-                  >
-                    <FaShoppingCart className="mr-2" />
-                    Add to Cart
-                  </button>
-                )}
-                {/* </button> */}
-                {/* <button class="bg-gray-200 flex gap-2 items-center  text-gray-800 px-6 py-2 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke-width="1.5"
-                    stroke="currentColor"
-                    class="size-6"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"
+    <div className="bg-white min-h-screen">
+      {/* Hero Section */}
+      <div className="bg-gradient-to-tl from-teal-800 to-black text-white py-20">
+        <div className="container mx-auto px-4 flex overflow-visible">
+          <div className="md:flex">
+            <div className="md:w-2/3 pr-8">
+              <h1 className="text-3xl font-bold mb-4">{course.Name}</h1>
+              <p className="text-xl mb-4">{course.Description}</p>
+              <div className="flex items-center mb-4">
+                <div className="flex text-yellow-400 mr-2">
+                  {[...Array(5)].map((_, i) => (
+                    <FaStar
+                      key={i}
+                      className={i < 4 ? "text-yellow-400" : "text-gray-400"}
                     />
-                  </svg>
-                  Wishlist
-                </button> */}
+                  ))}
+                </div>
+                <span className="mr-2">4.8</span>
+                <span className="text-gray-400">(320 รีวิว)</span>
               </div>
-
-              {/* <div>
-              <h3 class="text-lg font-semibold mb-2">Key Features:</h3>
-              <ul class="list-disc list-inside text-gray-700">
-                <li>Industry-leading noise cancellation</li>
-                <li>30-hour battery life</li>
-                <li>Touch sensor controls</li>
-                <li>Speak-to-chat technology</li>
-              </ul>
-            </div> */}
+              <div className="flex items-center mb-4">
+                <span className="mr-4">จำนวนผู้เรียน 1,234 คน</span>
+              </div>
+              <div className="flex items-center mb-4">
+                <span className="flex items-center">
+                  <FaClock className="mr-2" /> ระยะเวลาเรียน {course.Time_Usage}{" "}
+                  ชั่วโมง
+                </span>
+              </div>
+              <div className="mb-4">
+                <span className="mr-2">สร้างโดย</span>
+                <a className="text-green-500 hover:underline">
+                  ชื่อผู้สอน:{" "}
+                  {course.lecturer_owner
+                    ? `${course.lecturer_owner.first_name} ${course.lecturer_owner.last_name}`
+                    : " ไม่ระบุ "}
+                </a>
+              </div>
+              <div className="flex items-center">
+                <span className="mr-2">อัพเดทล่าสุด:</span>
+                <span>{new Date().toLocaleDateString()}</span>
+              </div>
             </div>
-          </div>
-        </div>
-        {function changeImage(src) {
-          document.getElementById("mainImage").src = src;
-        }}
-        {/* Course Description */}
-        <div className="max-w-5xl mx-auto mt-2">
-          <h2 className="text-3xl font-bold text-gray-900">เกี่ยวกับคอร์ส</h2>
-          <p className="mt-4 text-gray-700">{course.Description}</p>
-        </div>
+            {/* Right Column */}
 
-        {/* Reviews Section */}
-        <div className="max-w-5xl mx-auto mt-12">
-          <h2 className="text-2xl font-semibold text-gray-900">
-            รีวิวจากผู้เรียน
-          </h2>
-
-          <div className="mt-4 bg-gray-100 p-4 rounded-lg shadow-md">
-            <p className="text-gray-800">
-              ⭐⭐⭐⭐⭐ <br />
-              "คอร์สนี้อธิบายได้ดีมาก เหมาะกับมือใหม่!"
-            </p>
-            <p className="text-sm text-gray-500 mt-2">- คุณสมชาย</p>
-          </div>
-
-          <div className="mt-4 bg-gray-100 p-4 rounded-lg shadow-md">
-            <p className="text-gray-800">
-              ⭐⭐⭐⭐ <br />
-              "มีตัวอย่างให้ทำตาม เข้าใจง่ายครับ"
-            </p>
-            <p className="text-sm text-gray-500 mt-2">- คุณมานะ</p>
+            <div className="md:w-1/3 relative">
+              <div className="sticky top-20 overflow-visible">
+                <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+                  <div className="h-48 w-full bg-gray-200 flex items-center justify-center">
+                    {course.image ? (
+                      <img
+                        src={`${baseURL}${course.image[0].url}`}
+                        alt={course.Name}
+                        className="object-cover w-full h-full rounded-t-lg"
+                      />
+                    ) : (
+                      <span className="text-gray-400">No Image</span>
+                    )}
+                  </div>
+                  <div className="p-6">
+                    <div className="text-3xl font-bold mb-4 text-indigo-700 text-end">
+                      {course.Price}฿
+                    </div>
+                    <button
+                      className={`w-full px-6 py-3 rounded-lg flex items-center justify-center text-white mb-4 ${
+                        isCourseInCart
+                          ? "bg-gray-300 cursor-not-allowed"
+                          : "bg-teal-500 hover:bg-teal-700"
+                      }`}
+                      onClick={() =>
+                        !state.isLoggedIn
+                          ? navigate("/login")
+                          : addToCart({
+                              ...course,
+                              course_id: course.documentId,
+                            })
+                      }
+                      disabled={isCourseInCart}
+                    >
+                      <FaShoppingCart className="mr-2" />
+                      {isCourseInCart ? "Already in cart" : "Add to Cart"}
+                    </button>
+                    <ul className="text-sm text-black">
+                      <li className="flex items-center mb-2 text-black">
+                        <FaInfinity className="mr-2" /> เรียนได้ตลอดชีพ
+                      </li>
+                      <li className="flex items-center mb-2">
+                        <FaMobileAlt className="mr-2 text-black" />{" "}
+                        เรียนได้ทุกอุปกรณ์
+                      </li>
+                      <li className="flex items-center mb-2">
+                        <FaCertificate className="mr-2 text-black" />{" "}
+                        ใบรับรองการจบหลักสูตร
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
-    </html>
+
+      {/* Main Content */}
+      <div className="container mx-auto px-4 py-12">
+        <div className="md:flex">
+          {/* Left Column */}
+          <div className="md:w-2/3 pr-8">
+            <div className="mb-8">
+              <h2 className="text-2xl font-bold mb-4">
+                สิ่งที่คุณจะได้เรียนรู้
+              </h2>
+              <ul className="grid grid-cols-2 gap-4">
+                {[
+                  "เรียนรู้ A",
+                  "เข้าใจ B",
+                  "ฝึกปฏิบัติ C",
+                  "สร้างโปรเจค D",
+                ].map((item, index) => (
+                  <li key={index} className="flex items-start">
+                    <FaPlay className="text-green-500 mt-1 mr-2" />
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="container mx-auto px-4 py-12">
+              <h2 className="text-2xl font-bold mb-4">เนื้อหาคอร์ส</h2>
+
+              {course.topic && course.topic.length > 0 ? (
+                course.topic.map((topic, index) => (
+                  <div
+                    key={index}
+                    className="mb-4 border border-gray-300 rounded-lg"
+                  >
+                    {/*หัวข้อที่กดขยาย/ย่อได้ */}
+                    <button
+                      className="w-full flex justify-between items-center p-4 bg-gray-100 hover:bg-gray-200 rounded-t-lg focus:outline-none"
+                      onClick={() => toggleSection(index)}
+                    >
+                      <span className="font-semibold">{topic.topic_title}</span>
+                      {openSections[index] ? (
+                        <FaChevronUp className="text-gray-600" />
+                      ) : (
+                        <FaChevronDown className="text-gray-600" />
+                      )}
+                    </button>
+
+                    {/*ส่วนเนื้อหาภายใน */}
+                    {openSections[index] && (
+                      <div className="p-4 bg-white">
+                        {topic.content ? (
+                          <ul className="list-none">
+                            {topic.content.map((content, contentIndex) => (
+                              <li
+                                key={contentIndex}
+                                className="flex items-center py-2 border-b last:border-none"
+                              >
+                                <FaPlay className="text-green-500 mr-2" />
+                                <span>
+                                  {"  "}
+                                  {content.content_title}
+                                </span>
+                              </li>
+                            ))}
+                          </ul>
+                        ) : (
+                          <p className="text-gray-500">ไม่มีเนื้อหา</p>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                ))
+              ) : (
+                <p>ไม่มีเนื้อหาคอร์ส</p>
+              )}
+            </div>
+
+            <div className="mb-8">
+              <h2 className="text-2xl font-bold mb-4">รายละเอียด</h2>
+              <p>{course.Description}</p>
+            </div>
+
+            <div>
+              <h2 className="text-2xl font-bold mb-4">รีวิวจากผู้เรียน</h2>
+              {["คุณสมชาย", "คุณมานะ"].map((reviewer, index) => (
+                <div
+                  key={index}
+                  className="bg-white p-4 rounded-lg shadow-md mb-4"
+                >
+                  <div className="flex text-yellow-400 mb-2">
+                    {[...Array(5)].map((_, i) => (
+                      <FaStar
+                        key={i}
+                        className={i < 4 ? "text-yellow-400" : "text-gray-400"}
+                      />
+                    ))}
+                  </div>
+                  <p className="text-gray-800 mb-2">
+                    "คอร์สนี้อธิบายได้ดีมาก เหมาะกับมือใหม่!"
+                  </p>
+                  <p className="text-sm text-gray-500">- {reviewer}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="md:w-1/3 relative">
+            <motion.div
+              initial={{
+                opacity: 0,
+                y: -20,
+              }}
+              exit={{
+                opacity: 0,
+              }}
+              whileInView={{
+                opacity: 1,
+                y: 0,
+              }}
+              transition={{
+                duration: 0.5,
+              }}
+              className="sticky top-20 overflow-visible"
+            >
+              <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+                <div className="h-48 w-full bg-gray-200 flex items-center justify-center">
+                  {course.image ? (
+                    <img
+                      src={`${baseURL}${course.image[0].url}`}
+                      alt={course.Name}
+                      className="object-cover w-full h-full rounded-t-lg"
+                    />
+                  ) : (
+                    <span className="text-gray-400">No Image</span>
+                  )}
+                </div>
+                <div className="p-6">
+                  <div className="text-3xl font-bold mb-4 text-indigo-700 text-end">
+                    {course.Price}฿
+                  </div>
+                  <button
+                    className={`w-full px-6 py-3 rounded-lg flex items-center justify-center text-white mb-4 ${
+                      isCourseInCart
+                        ? "bg-gray-300 cursor-not-allowed"
+                        : "bg-teal-400 hover:bg-teal-700"
+                    }`}
+                    onClick={() =>
+                      !state.isLoggedIn
+                        ? navigate("/login")
+                        : addToCart({
+                            ...course,
+                            course_id: course.documentId,
+                          })
+                    }
+                    disabled={isCourseInCart}
+                  >
+                    <FaShoppingCart className="mr-2" />
+                    {isCourseInCart ? "Already in cart" : "Add to Cart"}
+                  </button>
+                  <ul className="text-sm text-black">
+                    <li className="flex items-center mb-2 text-black">
+                      <FaInfinity className="mr-2" /> เรียนได้ตลอดชีพ
+                    </li>
+                    <li className="flex items-center mb-2">
+                      <FaMobileAlt className="mr-2 text-black" />{" "}
+                      เรียนได้ทุกอุปกรณ์
+                    </li>
+                    <li className="flex items-center mb-2">
+                      <FaCertificate className="mr-2 text-black" />{" "}
+                      ใบรับรองการจบหลักสูตร
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }
