@@ -402,6 +402,7 @@ export interface ApiCategoryCategory extends Struct.CollectionTypeSchema {
 export interface ApiChatChat extends Struct.CollectionTypeSchema {
   collectionName: 'chats';
   info: {
+    description: '';
     displayName: 'Chat';
     pluralName: 'chats';
     singularName: 'chat';
@@ -418,6 +419,8 @@ export interface ApiChatChat extends Struct.CollectionTypeSchema {
       Schema.Attribute.Private;
     massage: Schema.Attribute.String;
     publishedAt: Schema.Attribute.DateTime;
+    reading_status: Schema.Attribute.Enumeration<['read', 'unread']> &
+      Schema.Attribute.DefaultTo<'unread'>;
     request: Schema.Attribute.Relation<
       'manyToOne',
       'plugin::users-permissions.user'
@@ -467,7 +470,9 @@ export interface ApiConfirmPurchaseConfirmPurchase
       Schema.Attribute.Private;
     picture_purchase: Schema.Attribute.Media<'images' | 'files'>;
     publishedAt: Schema.Attribute.DateTime;
-    status_confirm: Schema.Attribute.Enumeration<['waiting', 'confirmed']> &
+    status_confirm: Schema.Attribute.Enumeration<
+      ['waiting', 'confirmed', 'unapproved']
+    > &
       Schema.Attribute.DefaultTo<'waiting'>;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -699,12 +704,13 @@ export interface ApiProgressProgress extends Struct.CollectionTypeSchema {
 export interface ApiReviewReview extends Struct.CollectionTypeSchema {
   collectionName: 'reviews';
   info: {
+    description: '';
     displayName: 'Review';
     pluralName: 'reviews';
     singularName: 'review';
   };
   options: {
-    draftAndPublish: true;
+    draftAndPublish: false;
   };
   attributes: {
     comment: Schema.Attribute.Text;

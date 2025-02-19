@@ -31,7 +31,8 @@
       "type": "enumeration",
       "enum": [
         "waiting",
-        "confirmed"
+        "confirmed",
+        "unapproved"
       ],
       "default": "waiting"
     },
