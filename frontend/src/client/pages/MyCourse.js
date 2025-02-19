@@ -6,44 +6,45 @@ import { motion } from "framer-motion";
 import { Image } from "@mui/icons-material";
 import networkpic from "../components/network.png";
 
-const ReviewModal = ({ 
-    isOpen, 
-    onClose, 
-    rating, 
-    setRating, 
-    comment, 
-    setComment, 
-    selectedCourse, 
-    user 
-  }) => {
+//รีวิวคอร์สเรียน
+const ReviewModal = ({
+    isOpen,
+    onClose,
+    rating,
+    setRating,
+    comment,
+    setComment,
+    selectedCourse,
+    user
+}) => {
     // ฟังก์ชันส่งรีวิว
     const handleSubmit = async (e) => {
-      e.preventDefault();
-      try {
-        const response = await ax.post("reviews?populate=*", {
-          data: {
-            star: rating,
-            comment,
-            review_id: selectedCourse?.id,
-            users_review: user?.id,
-          },
-        });
-  
-        console.log("Review Submitted:", response.data);
-  
-        // ปิด Modal และรีเซ็ตค่า
-        onClose();
-        setRating(5);
-        setComment("");
-        alert("Review submitted successfully!");
-      } catch (error) {
-        console.error("Error submitting review:", error);
-        alert("Failed to submit review, please try again.");
-      }
+        e.preventDefault();
+        try {
+            const response = await ax.post("reviews?populate=*", {
+                data: {
+                    star: rating,
+                    comment,
+                    review_id: selectedCourse?.id,
+                    users_review: user?.id,
+                },
+            });
+
+            console.log("Review Submitted:", response.data);
+
+            // ปิด Modal และรีเซ็ตค่า
+            onClose();
+            setRating(5);
+            setComment("");
+            alert("Review submitted successfully!");
+        } catch (error) {
+            console.error("Error submitting review:", error);
+            alert("Failed to submit review, please try again.");
+        }
     };
-  
+
     if (!isOpen) return null;
-  
+
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
@@ -92,6 +93,90 @@ const ReviewModal = ({
         </div>
     );
 };
+const TeacherReviewModal = ({
+    isOpen,
+    onClose,
+    rating,
+    setRating,
+    comment,
+    setComment,
+    selectedTeacher,
+    user
+}) => {
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        try {
+            const response = await ax.post("lecturer-reviews?populate=*", {
+                data: {
+                    star: rating,
+                    comment,
+                    review: user?.id,
+                    lecturer_review_id: user?.id,
+                },
+            });
+
+            console.log("Teacher Review Submitted:", response.data);
+
+            // ปิด Modal และรีเซ็ตค่า
+            onClose();
+            setRating(5);
+            setComment("");
+            alert("Teacher review submitted successfully!");
+        } catch (error) {
+            console.error("Error submitting teacher review:", error);
+            alert("Failed to submit teacher review, please try again.");
+        }
+    };
+
+    if (!isOpen) return null;
+
+    return (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+            <div className="bg-white rounded-lg shadow-md dark:bg-gray-700 p-6 max-w-md w-full relative">
+                {/* ปุ่มปิด Modal */}
+                <button
+                    onClick={onClose}
+                    className="absolute top-3 right-3 text-gray-400 hover:text-gray-900"
+                >
+                    ✖
+                </button>
+
+                {/* ฟอร์มให้ดาวและพิมพ์คอมเมนต์ */}
+                <h3 className="text-lg font-semibold mb-4 text-center">Rate & Review Teacher</h3>
+
+                {/* ให้ดาว 1-5 */}
+                <div className="flex justify-center mb-3">
+                    {[1, 2, 3, 4, 5].map((num) => (
+                        <button
+                            key={num}
+                            onClick={() => setRating(num)}
+                            className={`text-2xl mx-1 ${num <= rating ? "text-yellow-400" : "text-gray-300"}`}
+                        >
+                            ★
+                        </button>
+                    ))}
+                </div>
+
+                {/* ช่องพิมพ์คอมเมนต์ */}
+                <textarea
+                    placeholder="Write your review for teacher..."
+                    value={comment}
+                    onChange={(e) => setComment(e.target.value)}
+                    className="w-full p-2 mb-3 border rounded"
+                    rows="3"
+                ></textarea>
+
+                {/* ปุ่ม Submit */}
+                <button
+                    onClick={handleSubmit}
+                    className="w-full py-2 text-white bg-green-600 rounded-lg hover:bg-green-800"
+                >
+                    Submit Review
+                </button>
+            </div>
+        </div>
+    );
+};
 
 export default function MyCourse() {
     const [user, setUser] = useState(null);  // ข้อมูลผู้ใช้
@@ -105,6 +190,11 @@ export default function MyCourse() {
     const [rating, setRating] = useState(5);
     const [comment, setComment] = useState("");
     const navigate = useNavigate();
+    const [isTeacherReviewOpen, setIsTeacherReviewOpen] = useState(false);
+    const [selectedTeacher, setSelectedTeacher] = useState(null);
+    const [teacherRating, setTeacherRating] = useState(5);
+    const [teacherComment, setTeacherComment] = useState("");
+
 
     useEffect(() => {
         // ดึงข้อมูลผู้ใช้และคอร์สที่ผู้ใช้ลงทะเบียน
@@ -149,6 +239,13 @@ export default function MyCourse() {
         setSelectedCourse(course);
         setIsOpen(true);
     };
+
+    // ฟังก์ชันเปิด Teacher Review Modal
+    const handleTeacherReviewClick = (teacher) => {
+        setSelectedTeacher(teacher);
+        setIsTeacherReviewOpen(true);
+    };
+
 
     if (loading) return <div>Loading...</div>;  // กรณีที่ยังโหลดข้อมูล
     if (error) return <div>Error: {error.message}</div>;  // กรณีที่เกิดข้อผิดพลาด
@@ -222,6 +319,15 @@ export default function MyCourse() {
                                         className="px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-800"
                                     >
                                         รีวิวคอร์สเรียน
+                                    </button>
+                                </div>
+                                {/* ปุ่มกดเพื่อเปิด Modal */}
+                                <div className="flex justify-center mt-4">
+                                    <button
+                                        onClick={() => handleTeacherReviewClick(item)}
+                                        className="px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-800"
+                                    >
+                                        รีวิวอาจารย์ผู้สอน
                                     </button>
                                 </div>
                             </motion.div>
@@ -393,7 +499,17 @@ export default function MyCourse() {
                 selectedCourse={selectedCourse}
                 user={user}
             />
+            {/* Modal สำหรับรีวิวอาจารย์ */}
+            <TeacherReviewModal
+                isOpen={isTeacherReviewOpen}
+                onClose={() => setIsTeacherReviewOpen(false)}
+                rating={teacherRating}
+                setRating={setTeacherRating}
+                comment={teacherComment}
+                setComment={setTeacherComment}
+                selectedTeacher={selectedTeacher}
+                user={user}
+            />
         </div>
     );
 }
-//testpush
