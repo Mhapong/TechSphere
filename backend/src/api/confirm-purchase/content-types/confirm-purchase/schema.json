@@ -14,9 +14,9 @@
   "attributes": {
     "users_purchase": {
       "type": "relation",
-      "relation": "oneToOne",
+      "relation": "manyToOne",
       "target": "plugin::users-permissions.user",
-      "inversedBy": "user_confirm_purchase"
+      "inversedBy": "user_confirm_purchases"
     },
     "picture_purchase": {
       "type": "media",

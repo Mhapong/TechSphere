@@ -46,7 +46,11 @@ export default function Profile() {
             <div
               className="block lg:hidden rounded-full shadow-xl mx-auto -mt-16 h-48 w-48 bg-cover bg-center"
               style={{
-                backgroundImage: `url(${usericon})`,
+                backgroundImage: `url(${
+                  user.userProfile?.url
+                    ? `http://localhost:1337${user.userProfile.url}`
+                    : usericon
+                })`,
               }}
             ></div>
             <h1 className="text-6xl font-bold pt-8 lg:pt-0">
@@ -111,7 +115,7 @@ export default function Profile() {
                   ? `http://localhost:1337${user.userProfile.url}`
                   : usericon
               }
-              className="aspect-[9/16] object-cover rounded-lg shadow-2xl"
+              className="hidden sm:block aspect-[9/16] object-cover rounded-lg shadow-2xl"
               alt="Profile"
               style={{ width: "550px" }}
             />

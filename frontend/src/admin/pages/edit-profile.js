@@ -9,11 +9,16 @@ const EditProfile = () => {
   const [First_Name, setFirst_Name] = useState(User?.first_name || "");
   const [Last_Name, setLast_Name] = useState(User?.last_name || "");
   const [background, setBackground] = useState(User?.background || "");
+  // const [userProfile, setuserProfile] = useState(
+  //   User?.profile_picture[0]?.url || ""
+  // );
   const navigate = useNavigate();
   const { userid } = useParams();
   const [file, setFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
   const [uploading, setUploading] = useState(false);
+  const [showUpload, setShowUpload] = useState(false);
+  const API_URL = "http://localhost:1337";
 
   const fetchUser = async () => {
     try {
@@ -25,6 +30,21 @@ const EditProfile = () => {
       console.log("Error", e);
     }
   };
+
+  // useEffect(() => {
+  //   async function fetchProfileImage() {
+  //     try {
+  //       const res = await ax.get(`users/me`);
+  //       if (res.data.profileImage) {
+
+  //         setPreviewUrl(`${API_URL}${res.data.profileImage.url}`);
+  //       }
+  //     } catch (error) {
+  //       console.error("Error fetching profile image:", error);
+  //     }
+  //   }
+  //   fetchProfileImage();
+  // }, []);
 
   const handleFileChange = ({ target: { files } }) => {
     if (files?.length) {
@@ -60,7 +80,7 @@ const EditProfile = () => {
       files.append("files", file);
       files.append("name", `${User.username} avatar`);
 
-      const response = await ax.post("upload", files, {
+      const response = await ax.post("/upload", files, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
@@ -108,41 +128,56 @@ const EditProfile = () => {
       setFirst_Name(User.first_name || "");
       setLast_Name(User.last_name || "");
       setBackground(User.background || "");
+      // setuserProfile(User.setuserProfile?.url || "");
     }
   }, [User]);
 
+  // const GetPic
   return (
-    <div className="w-[800px] mx-auto mt-10 p-4">
+    <div className="w-[800px] mx-auto mt-12 p-4">
+      <h1 className="text-3xl font-bold text-black mb-6 flex items-center justify-center">
+        Edit Profile
+      </h1>
       <div className="p-2 grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
+        {previewUrl && !showUpload ? (
+          <div className="flex flex-col items-center">
+            <img
+              src={`${API_URL}${previewUrl}`}
+              alt="Profile"
+              className="w-32 h-32 rounded-full object-cover"
+            />
+            <button
+              onClick={() => setShowUpload(true)}
+              className="mt-2 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+            >
+              เปลี่ยนรูปภาพ
+            </button>
+          </div>
+        ) : (
           <label
             htmlFor="image-upload"
             className="block w-full h-48 border-2 border-dashed border-gray-300 rounded-md cursor-pointer flex flex-col items-center justify-center bg-[#f6f6f6] hover:bg-gray-50"
           >
             <div className="text-center">
-              <div className="mb-2">
-                <button
-                  type="button"
-                  className="bg-[#8c0327] hover:bg-[#6b0220] text-white rounded-full py-2 px-4"
-                >
-                  Select from the computer
-                </button>
-              </div>
+              <button
+                type="button"
+                className="bg-[#8c0327] hover:bg-[#6b0220] text-white rounded-full py-2 px-4"
+              >
+                Select from the computer
+              </button>
               <p className="text-gray-500">or drag photo here</p>
-              <p className="text-gray-500 text-sm mt-1">PNG, JPG, SVG</p>
+              <p className="text-gray-500 text-sm mt-1">PNG, JPG</p>
             </div>
+            <input
+              id="image-upload"
+              type="file"
+              accept="image/*"
+              onChange={handleFileChange}
+              className="sr-only"
+            />
           </label>
-          <input
-            id="image-upload"
-            name="image"
-            type="file"
-            accept="image/*"
-            onChange={handleFileChange}
-            className="sr-only"
-          />
-        </div>
+        )}
 
-        {/* แสดงรูปภาพตัวอย่าง */}
         {previewUrl && (
           <div className="mt-4">
             <img
@@ -153,20 +188,25 @@ const EditProfile = () => {
           </div>
         )}
 
-        {/* ปุ่มอัพโหลด */}
-        <div className="mt-4">
-          <button
-            onClick={handleImageUpload}
-            disabled={uploading}
-            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 disabled:bg-gray-400"
-          >
-            {uploading ? "กำลังอัพโหลด..." : "อัพโหลดรูปภาพ"}
-          </button>
-        </div>
-      </div>{" "}
-      <h1 className="text-3xl font-bold text-black mb-6 flex items-center justify-center">
-        Edit Profile
-      </h1>
+        {previewUrl && showUpload && (
+          <div className="mt-4">
+            <button
+              onClick={handleImageUpload}
+              disabled={uploading}
+              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 disabled:bg-gray-400"
+            >
+              {uploading ? "กำลังอัพโหลด..." : "อัพโหลดรูปภาพ"}
+            </button>
+            <button
+              onClick={() => setShowUpload(false)}
+              className="ml-2 bg-gray-400 text-white px-4 py-2 rounded hover:bg-gray-500"
+            >
+              ยกเลิก
+            </button>
+          </div>
+        )}
+      </div>
+
       <form className="grid grid-cols-1 gap-6" onSubmit={handleSubmit}>
         {/* Username */}
         <div className="p-2">

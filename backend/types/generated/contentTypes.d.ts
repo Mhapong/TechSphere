@@ -478,7 +478,7 @@ export interface ApiConfirmPurchaseConfirmPurchase
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     users_purchase: Schema.Attribute.Relation<
-      'oneToOne',
+      'manyToOne',
       'plugin::users-permissions.user'
     >;
   };
@@ -1292,8 +1292,8 @@ export interface PluginUsersPermissionsUser
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-    user_confirm_purchase: Schema.Attribute.Relation<
-      'oneToOne',
+    user_confirm_purchases: Schema.Attribute.Relation<
+      'oneToMany',
       'api::confirm-purchase.confirm-purchase'
     >;
     username: Schema.Attribute.String &

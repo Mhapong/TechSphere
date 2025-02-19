@@ -108,12 +108,6 @@
       "target": "api::course.course",
       "inversedBy": "user_owner"
     },
-    "user_confirm_purchase": {
-      "type": "relation",
-      "relation": "oneToOne",
-      "target": "api::confirm-purchase.confirm-purchase",
-      "mappedBy": "users_purchase"
-    },
     "progress_owned": {
       "type": "relation",
       "relation": "oneToMany",
@@ -143,6 +137,12 @@
       "relation": "oneToMany",
       "target": "api::review.review",
       "mappedBy": "users_review"
+    },
+    "user_confirm_purchases": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::confirm-purchase.confirm-purchase",
+      "mappedBy": "users_purchase"
     }
   }
 }
