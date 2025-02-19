@@ -1,7 +1,9 @@
-import { useEffect, useState } from "react";
+import React, { useState, useEffect, useContext } from "react";
+import { AuthContext } from "../../context/Auth.context";
 import ax from "../../conf/ax";
 // import { SearchIcon } from "@heroicons/react";
 import Confirm from "../components/Image/confirm.png";
+import Unapproved from "../components/Image/unapproved.png";
 import Error from "../components/Image/404.png";
 import {
   Dialog,
@@ -12,22 +14,83 @@ import {
 import { Edit, Search } from "@mui/icons-material";
 
 const FinanceOrder = () => {
+  const { state: ContextState } = useContext(AuthContext);
+  const { user } = ContextState;
   const [searchTerm, setSearchTerm] = useState("");
   const [payments, setPayments] = useState([]);
   const [open, setOpen] = useState(false);
   const [queryPayments, setQueryPayments] = useState("");
   const [currentData, setCurrentData] = useState(null);
+  const [detail, setDetail] = useState(null);
+  const [course, setCourse] = useState(null);
 
-  const openModal = (data) => {
+  const openModal = (data, doc) => {
     setCurrentData(data);
+    setDetail(doc);
     console.log("Open modal...");
     setOpen(true);
   };
 
   const closeModal = () => {
     setCurrentData(null);
+    setDetail(null);
     console.log("Closing modal...");
     setOpen(false);
+  };
+
+  const SendChat = async (value, selectedUser) => {
+    try {
+      await ax.post("chats?populate=*", {
+        data: {
+          massage: value,
+          sender: user.id,
+          request: selectedUser,
+        },
+      });
+    } catch (e) {
+      console.log("Error", e);
+    }
+  };
+
+  const Approve = async (value, status) => {
+    try {
+      await ax.put(`confirm-purchases/${value.documentId}`, {
+        data: {
+          status_confirm: status,
+        },
+      });
+      closeModal();
+
+      const courses = value.course_purchase
+        .map((course) => course.Name)
+        .join(", ");
+      const courseId = value.course_purchase.map((course) => course.id);
+      console.log(value.users_purchase.documentId);
+      console.log(courseId);
+      if (status === "confirmed") {
+        try {
+          await ax.put(`users/${value.users_purchase.id}`, {
+            owned_course: {
+              connect: [1, 2],
+            },
+          });
+        } catch (e) {
+          console.log(e);
+        }
+        SendChat(
+          `คอร์ส ${courses} ของคุณได้รับการอนุมัติแล้ว ตรวจสอบใน My Course ได้เลย`,
+          value.users_purchase.id
+        );
+      } else if (status === "unapproved") {
+        SendChat(
+          `คอร์ส ${courses} ของคุณไม่ได้รับการอนุมัติ กรุณาตรวจสอบการชำระเงินอีกครั้ง`,
+          value.users_purchase.id
+        );
+      }
+      fetchConfirmPurchase();
+    } catch (e) {
+      console.log("Error", e);
+    }
   };
 
   const handleSearch = () => {
@@ -96,7 +159,7 @@ const FinanceOrder = () => {
               value={queryPayments}
               onChange={(e) => setQueryPayments(e.target.value)}
             >
-              <option value="" disabled className="text-gray-500">
+              <option value="" className="text-gray-500">
                 เลือกสถานะ
               </option>
               <option value="Waiting" className="text-gray-700">
@@ -104,6 +167,9 @@ const FinanceOrder = () => {
               </option>
               <option value="Confirmed" className="text-gray-700">
                 เสร็จสิ้น
+              </option>
+              <option value="Unapproved" className="text-gray-700">
+                ไม่อนุมัติ
               </option>
             </select>
           </div>
@@ -115,10 +181,12 @@ const FinanceOrder = () => {
           filteredPayments.map((payment) => (
             <div
               key={payment.id}
-              className={`rounded-xl p-5 shadow-md transition-all duration-300 ${
+              className={`rounded-xl p-5 shadow-lg transition-all duration-300 transform hover:scale-105 ${
                 payment.status_confirm === "confirmed"
-                  ? "bg-gradient-to-r from-green-100 to-green-50 border-2 border-green-300"
-                  : "bg-gradient-to-r from-red-100 to-red-50 border-2 border-red-300"
+                  ? "bg-gradient-to-r from-green-50 to-green-100 border-2 border-green-200 hover:shadow-green-200/50"
+                  : payment.status_confirm === "unapproved"
+                  ? "bg-gradient-to-r from-red-50 to-red-100 border-2 border-red-200 hover:shadow-red-200/50"
+                  : "bg-gradient-to-r from-blue-50 to-blue-100 border-2 border-blue-200 hover:shadow-blue-200/50"
               }`}
             >
               <div className="flex justify-between items-start">
@@ -171,15 +239,26 @@ const FinanceOrder = () => {
                     style={{ width: "150px" }}
                   />
                 )}
+                {payment.status_confirm === "unapproved" && (
+                  // <div className="bg-green-700 text-white text-2xl px-3 py-1 rounded-full">
+                  //   ยืนยันการชำระเงินแล้ว
+                  // </div>
+                  <img
+                    src={Unapproved}
+                    className="px-3 py-1 rounded-full"
+                    alt="Confirm"
+                    style={{ width: "150px" }}
+                  />
+                )}
               </div>
               <div className="flex justify-between items-center mt-4">
-                <p className="text-sm">
+                <p className="text-lg">
                   จำนวนเงินที่ต้องชำระ : {payment.amount} บาท
                 </p>
                 {payment.status_confirm === "waiting" && (
                   <button
                     onClick={() => {
-                      openModal(payment.picture_purchase);
+                      openModal(payment.picture_purchase, payment);
                     }}
                     className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   >
@@ -249,14 +328,14 @@ const FinanceOrder = () => {
                 <button
                   type="button"
                   data-autofocus
-                  onClick={() => closeModal()}
+                  onClick={() => Approve(detail, "confirmed")}
                   className="inline-flex w-max justify-center rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-green-500 sm:ml-3 sm:w-auto"
                 >
                   อนุมัติ
                 </button>
                 <button
                   type="button"
-                  onClick={() => closeModal()}
+                  onClick={() => Approve(detail, "unapproved")}
                   className="inline-flex w-max justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-red-500 sm:ml-3 sm:w-auto"
                 >
                   ไม่อนุมัติ
