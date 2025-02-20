@@ -19,6 +19,7 @@ export default function ContentStudy() {
     const isCourseProgressFetched = useRef(false)
     const [overallProgress, setOverallProgress] = useState(0);
     const lastUpdatedProgress = useRef({});
+    const [videoDurations, setVideoDurations] = useState({});
 
     const fetchTopics = async () => {
         try {
@@ -62,7 +63,7 @@ export default function ContentStudy() {
                     "filters[progress_owner][id][$eq]": state.user.id,
                 },
             });
-    
+
             let progressData = progressResponse.data.data.reduce((acc, item) => {
                 if (item.content_progress && item.content_progress.id) {
                     acc[item.content_progress.id] = {
@@ -73,22 +74,22 @@ export default function ContentStudy() {
                 }
                 return acc;
             }, {});
-    
+
             console.log("Current progress data:", progressData);
-    
+
             const topicResponse = await ax.get(`${BASE_URL}/api/topics`, {
                 params: {
                     populate: "*",
-                    "filters[topic_id][documentId][$eq]": documentId, 
+                    "filters[topic_id][documentId][$eq]": documentId,
                 },
             });
-    
+
             const contentIds = topicResponse.data.data.flatMap(topic => topic.content.map(content => content.id));
-    
+
             const missingContents = contentIds.filter(id => !progressData[id]);
-    
+
             console.log("Missing content progress:", missingContents);
-    
+
             const newProgressEntries = await Promise.all(
                 missingContents.map(async (contentId) => {
                     const response = await ax.post(`${BASE_URL}/api/progresses`, {
@@ -99,22 +100,22 @@ export default function ContentStudy() {
                             course_of_progress: documentId,
                         },
                     });
-    
+
                     const newDocumentId = response.data.data.documentId;
-    
+
                     return { [contentId]: { documentId: newDocumentId, progress: 0, course_of_progress: documentId } };
                 })
             );
-    
+
             newProgressEntries.forEach(entry => {
                 progressData = { ...progressData, ...entry };
             });
-    
+
             console.log("Final progress data after adding missing entries:", progressData);
-    
+
             setProgress(progressData);
             calculateOverallProgress(progressData, documentId);
-    
+
         } catch (err) {
             console.error("Error fetching progress data:", err);
         }
@@ -124,7 +125,7 @@ export default function ContentStudy() {
     const fetchCourseProgresses = async () => {
         if (isCourseProgressFetched.current) return;
         isCourseProgressFetched.current = true;
-    
+
         try {
             console.log("Fetching course progress data...");
             const courseProgressResponse = await ax.get(`${BASE_URL}/api/course-progresses`, {
@@ -133,60 +134,51 @@ export default function ContentStudy() {
                     "filters[course_progress_owner][id][$eq]": state.user.id,
                 },
             });
-    
+
             let courseProgressData = courseProgressResponse.data.data.reduce((acc, item) => {
-                if (item.course_progress_name && item.course_progress_name.documentId) {  
-                    acc[item.course_progress_name.documentId] = {  
+                if (item.course_progress_name && item.course_progress_name.documentId) {
+                    acc[item.course_progress_name.documentId] = {
                         documentId: item.documentId,
                         course_progress: Number(item.course_progress) || 0,
-                        course_progress_name: item.course_progress_name.documentId,  
+                        course_progress_name: item.course_progress_name.documentId,
                     };
                 }
                 return acc;
             }, {});
-    
+
             console.log("Current course progress data:", courseProgressData);
-    
+
             const courseResponse = await ax.get(`${BASE_URL}/api/courses`, {
                 params: {
                     populate: "*",
-                    "filters[documentId][$eq]": documentId, 
+                    "filters[documentId][$eq]": documentId,
                 },
             });
-    
             console.log("Fetched course data:", courseResponse.data);
-    
             const courseDocumentIds = courseResponse.data.data.map(course => course.documentId);
-    
             console.log("Extracted course document IDs:", courseDocumentIds);
-    
             const missingCourses = courseDocumentIds.filter(docId => !courseProgressData[docId]);
-    
             console.log("Missing course progress:", missingCourses);
-    
             const newCourseProgressEntries = await Promise.all(
                 missingCourses.map(async (docId) => {
                     console.log(`Creating new course progress for documentId: ${docId}`);
-    
+
                     try {
                         const response = await ax.post(`${BASE_URL}/api/course-progresses`, {
                             data: {
-                                course_progress:  overallProgress || 0,
+                                course_progress: overallProgress || 0,
                                 course_progress_owner: state.user.id,
-                                course_progress_name: docId,  
+                                course_progress_name: docId,
                             },
                         });
-    
                         console.log("New course progress response:", response.data);
-    
                         const newDocumentId = response.data.data.documentId;
-    
-                        return { 
-                            [docId]: { 
-                                documentId: newDocumentId, 
-                                course_progress: overallProgress || 0, 
-                                course_progress_name: docId  
-                            } 
+                        return {
+                            [docId]: {
+                                documentId: newDocumentId,
+                                course_progress: overallProgress || 0,
+                                course_progress_name: docId
+                            }
                         };
                     } catch (error) {
                         console.error(`Error creating course progress for documentId ${docId}:`, error);
@@ -194,38 +186,38 @@ export default function ContentStudy() {
                     }
                 })
             );
-    
+
             newCourseProgressEntries.forEach(entry => {
                 courseProgressData = { ...courseProgressData, ...entry };
             });
-    
+
             console.log("Final course progress data after adding missing entries:", courseProgressData);
-    
-            setCourseProgress(courseProgressData);  
+
+            setCourseProgress(courseProgressData);
         } catch (err) {
             console.error("Error fetching course progress data:", err);
         }
     };
-    
-    
-    
+
+
+
     const updateProgress = async (contentId, newProgress, courseId) => {
         try {
             const existingProgress = progress[contentId];
-    
+
             console.log("🔍 Checking progress update condition:", {
                 contentId,
                 newProgress,
                 existingProgress
             });
-    
+
             if (existingProgress?.documentId && Math.abs(existingProgress.progress - newProgress) >= 1) {
                 console.log(`⏳ Updating progress for content ${contentId} - New progress: ${newProgress}%`);
-    
+
                 const response = await ax.put(`${BASE_URL}/api/progresses/${existingProgress.documentId}`, {
                     data: { progress: newProgress },
                 });
-    
+
                 console.log("✅ PUT request success:", response.data);
 
                 setProgress(prev => {
@@ -234,7 +226,7 @@ export default function ContentStudy() {
                         [contentId]: { ...prev[contentId], progress: newProgress }
                     };
                     console.log("📌 Updated progress state:", updatedProgress);
-    
+
                     calculateOverallProgress(updatedProgress, courseId);
                     return updatedProgress;
                 });
@@ -243,44 +235,44 @@ export default function ContentStudy() {
             console.error("❌ Error updating progress:", err.response?.data || err.message);
         }
     };
-    
+
     const calculateOverallProgress = (progressData, courseId) => {
         const filteredProgress = Object.values(progressData).filter(item => item.course_of_progress === courseId);
         const totalContents = filteredProgress.length;
-    
+
         if (totalContents === 0) {
             setOverallProgress(0);
             console.log("⚠️ No relevant content available for progress calculation.");
             return;
         }
-    
+
         const totalProgress = filteredProgress.reduce((sum, item) => sum + (item.progress || 0), 0);
         const averageProgress = Math.round(totalProgress / totalContents);
-    
+
         console.log(`📊 Calculated overall progress for course ${courseId}: ${averageProgress}%`);
-    
+
         if (Math.abs(overallProgress - averageProgress) >= 1) {
             setOverallProgress(averageProgress);
             updateCourseProgress(courseId, averageProgress);
         }
     };
-    
+
     const updateCourseProgress = async (courseId, newOverallProgress) => {
         try {
             const existingCourseProgress = courseProgress[courseId];
-    
+
             if (existingCourseProgress?.documentId) {
                 const previousProgress = existingCourseProgress.course_progress || 0;
-    
+
                 if (Math.abs(previousProgress - newOverallProgress) >= 1) {
                     console.log(`⏳ Updating course progress for course ${courseId} - New progress: ${newOverallProgress}%`);
-    
+
                     const response = await ax.put(`${BASE_URL}/api/course-progresses/${existingCourseProgress.documentId}`, {
                         data: { course_progress: newOverallProgress },
                     });
-    
+
                     console.log("✅ Course progress updated:", response.data);
-    
+
                     setCourseProgress(prev => ({
                         ...prev,
                         [courseId]: { ...prev[courseId], course_progress: newOverallProgress }
@@ -291,53 +283,88 @@ export default function ContentStudy() {
             console.error("❌ Error updating course progress:", err.response?.data || err.message);
         }
     };
-    
+
+    //ส่วนการจัดการ วิดีโอ
     const handleTimeUpdate = (event) => {
         const contentId = selectedContent?.id;
         if (!contentId) return;
-    
+
         const currentTime = event.target.currentTime;
         const duration = event.target.duration;
         const newProgress = Math.round((currentTime / duration) * 100);
-    
+
         console.log(`[handleTimeUpdate] contentId: ${contentId}, currentTime: ${currentTime}, newProgress: ${newProgress}%`);
-    
+
         if (newProgress !== progress[contentId]?.progress) {
             setProgress(prev => ({
                 ...prev,
                 [contentId]: { ...(prev[contentId] || {}), progress: newProgress }
             }));
         }
-    
+
         if (!lastUpdatedProgress.current[contentId] || newProgress !== lastUpdatedProgress.current[contentId]) {
             lastUpdatedProgress.current[contentId] = newProgress;
             console.log(`🔄 Updating progress for content ${contentId}: ${newProgress}%`);
             updateProgress(contentId, newProgress, documentId);
         }
-    
+
         const updatedProgress = { ...progress, [contentId]: { ...(progress[contentId] || {}), progress: newProgress } };
         calculateOverallProgress(updatedProgress, documentId);
     };
-    
+
     const handleVideoEnd = () => {
         const contentId = selectedContent?.id;
         if (!contentId) return;
-    
+
         setProgress(prev => ({
             ...prev,
             [contentId]: { ...(prev[contentId] || {}), progress: 100 }
         }));
-    
+
         updateProgress(contentId, 100, documentId);
     };
-    
-    
-    
+
+    const formatTime = (time) => {
+        if (isNaN(time) || time <= 0) return "00:00:00";
+
+        const hours = Math.floor(time / 3600);
+        const minutes = Math.floor((time % 3600) / 60);
+        const seconds = Math.floor(time % 60);
+
+        return [
+            hours.toString().padStart(2, "0"),
+            minutes.toString().padStart(2, "0"),
+            seconds.toString().padStart(2, "0")
+        ].join(":");
+    };
+    // ฟังก์ชันแปลงเวลา (hh:mm:ss -> วินาที)
+    const parseTimeString = (timeString) => {
+        const [hours, minutes, seconds] = timeString.split(":").map(Number);
+        return hours * 3600 + minutes * 60 + seconds;
+    };
+
+    const topicDurations = Object.entries(groupedContent).reduce((acc, [topic, contents]) => {
+        const totalSeconds = contents.reduce((sum, item) => {
+            const duration = videoDurations[item.id] || "00:00:00";
+            return sum + parseTimeString(duration);
+        }, 0);
+
+        const formattedDuration = formatTime(totalSeconds);
+        return { ...acc, [topic]: formattedDuration };
+    }, {});
+
+
     const handleLoadedMetadata = (event) => {
         const videoElement = event.target;
         const duration = videoElement.duration;
         const contentId = selectedContent?.id;
-    
+
+        if (contentId) {
+            setVideoDurations(prev => ({
+                ...prev,
+                [contentId]: formatTime(duration),
+            }));
+        }
         if (contentId && progress[contentId]) {
             let startTime = (progress[contentId].progress / 100) * duration;
 
@@ -351,34 +378,52 @@ export default function ContentStudy() {
             }
         }
     };
-    
-    
+
+
+
+
+
     useEffect(() => {
         if (selectedContent?.id && videoRef.current) {
             const videoElement = videoRef.current;
             const duration = videoElement.duration;
             if (duration && progress[selectedContent.id]) {
                 let startTime = (progress[selectedContent.id].progress / 100) * duration;
-                
+
                 if (Math.abs(videoElement.currentTime - startTime) > 1) {
                     console.log(`Applying saved progress to video: ${startTime}s`);
                     videoElement.currentTime = startTime;
                 }
             }
         }
-    }, [selectedContent]); 
+    }, [selectedContent]);
 
 
     const goToNextLesson = () => {
         const topics = Object.values(groupedContent).flat();
         const currentIndex = topics.findIndex((item) => item.id === selectedContent?.id);
-    
+
         if (currentIndex !== -1 && currentIndex < topics.length - 1) {
             setSelectedContent(topics[currentIndex + 1]);
         }
     };
-    
-    
+
+    const restartLesson = () => {
+        if (videoRef.current) {
+            videoRef.current.currentTime = 0;
+        }
+
+        if (selectedContent?.id) {
+            setProgress(prev => ({
+                ...prev,
+                [selectedContent.id]: { ...prev[selectedContent.id], progress: 0 }
+            }));
+            updateProgress(selectedContent.id, 0, documentId);
+        }
+    };
+
+
+
     useEffect(() => {
         fetchProgresses().then(() => {
             fetchTopics();
@@ -386,8 +431,8 @@ export default function ContentStudy() {
         });
     }, []);
 
-    
-    
+
+
 
 
     return (
@@ -396,39 +441,56 @@ export default function ContentStudy() {
                 {selectedContent && (
                     <section>
                         <h2 className="text-black text-2xl font-bold mb-4">{selectedContent.content_title}</h2>
-                        {selectedContent.video_url ? (
-                            <video
-                                ref={videoRef}
-                                width="100%"
-                                height="auto"
-                                controls
-                                controlsList="nodownload"
-                                className="mb-4"
-                                onLoadedMetadata={handleLoadedMetadata}
-                                onTimeUpdate={(e) => handleTimeUpdate(e, selectedContent.id)}
-                                onEnded={() => handleVideoEnd(selectedContent.id)}
-                            >
-                                <source src={selectedContent.video_url} type="video/mp4" />
-                            </video>
 
+                        {selectedContent.video_url ? (
+                            <div className="relative">
+                                <video
+                                    ref={videoRef}
+                                    width="100%"
+                                    height="auto"
+                                    controls
+                                    controlsList="nodownload"
+                                    className="mb-4"
+                                    onLoadedMetadata={handleLoadedMetadata}
+                                    onTimeUpdate={(e) => handleTimeUpdate(e, selectedContent.id)}
+                                    onEnded={() => handleVideoEnd(selectedContent.id)}
+                                >
+                                    <source src={selectedContent.video_url} type="video/mp4" />
+                                </video>
+
+                                {progress[selectedContent.id]?.progress === 100 && (
+                                    <div className="absolute top-0 left-0 w-full h-full flex flex-col justify-center items-center bg-gray-300/50">
+                                        <h1 className="mb-10 text-white text-3xl font-bold text-center">
+                                            จบบทเรียน {selectedContent.content_title}
+                                        </h1>
+
+                                        <div className="mt-4 flex gap-9">
+                                            <button
+                                                className="px-6 py-3 text-white text-lg font-bold rounded-full bg-gradient-to-r from-[#64c5d7] to-[#2563eb] hover:opacity-80"
+                                                onClick={() => restartLesson()}
+                                            >
+                                                ดูบทเรียนนี้อีกครั้ง
+                                            </button>
+                                            <button
+                                                className="px-6 py-3 text-white text-lg font-bold rounded-full bg-gradient-to-r from-[#64c5d7] to-[#2563eb] hover:opacity-80"
+                                                onClick={() => goToNextLesson()}
+                                            >
+                                                ไปบทเรียนถัดไป
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                )}
+                            </div>
                         ) : (
                             <p className="text-gray-500">ไม่มีวิดีโอ</p>
                         )}
+
                         <p className="text-gray-700">{selectedContent.detail}</p>
-
-                        {progress[selectedContent.id]?.progress === 100 && (
-                            <button
-                                className="mt-4 px-4 py-2 text-white rounded-full transition bg-gradient-to-r from-[#64c5d7] to-[#2563eb] hover:opacity-80"
-                                onClick={() => goToNextLesson()}
-                            >
-                                ไปบทเรียนถัดไป
-                            </button>
-
-                        )}
                     </section>
                 )}
-
             </div>
+
             <div className="w-[30%] bg-white p-6 overflow-y-auto">
                 <h2 className="text-lg font-bold text-xl mb-4">ความคืบหน้าของบทเรียน</h2>
                 <div className="w-full bg-gray-200 rounded-full dark:bg-gray-700 mt-2 mb-4">
@@ -447,7 +509,9 @@ export default function ContentStudy() {
                     {Object.keys(groupedContent).length > 0 ? (
                         Object.entries(groupedContent).map(([topic, contents]) => (
                             <li key={topic} className="mb-6">
-                                <h3 className="text-gray-600 text-m font-bold">{topic}</h3>
+                                <h3 className="text-gray-600 text-m font-bold">
+                                    {topic} <span className="text-gray-400 text-xs">({topicDurations[topic]})</span>
+                                </h3>
                                 <h6 className="text-gray-400 text-xs font-bold">จำนวน {contents.length} บทเรียน</h6>
                                 <ul className="ml-4 mt-2">
                                     {contents.map((item) => (
@@ -474,19 +538,23 @@ export default function ContentStudy() {
                                                 />
                                                 <div className="flex flex-col w-full">
                                                     <span>{item.content_title}</span>
-                                                    <div className="w-full bg-gray-200 rounded-full dark:bg-gray-700 mt-1">
-                                                        <div
-                                                            className="bg-blue-600 text-xs font-medium text-blue-100 text-center p-0.5 leading-none rounded-full"
-                                                            style={{
-                                                                width: `${progress[item.id]?.progress || 0}%`,
-                                                                background: `linear-gradient(to right, #64c5d7 , #2563eb)`,
-                                                            }}
-                                                        >
-                                                            {Math.round(progress[item.id]?.progress || 0)}%
+                                                    <div className="flex items-center justify-between w-full mt-1">
+                                                        <div className="w-3/4 bg-gray-200 rounded-full dark:bg-gray-700">
+                                                            <div
+                                                                className="bg-blue-600 text-xs font-medium text-blue-100 text-center p-0.5 leading-none rounded-full"
+                                                                style={{
+                                                                    width: `${progress[item.id]?.progress || 0}%`,
+                                                                    background: `linear-gradient(to right, #64c5d7 , #2563eb)`,
+                                                                }}
+                                                            >
+                                                                {Math.round(progress[item.id]?.progress || 0)}%
+                                                            </div>
                                                         </div>
+                                                        <span className="text-gray-500 ml-2">
+                                                            {videoDurations[item.id] || "00:00:00"}
+                                                        </span>
                                                     </div>
                                                 </div>
-
                                             </button>
                                         </li>
                                     ))}
@@ -497,6 +565,8 @@ export default function ContentStudy() {
                         <p className="text-gray-500">ไม่มีเนื้อหาวิดีโอ</p>
                     )}
                 </ul>
+
+
             </div>
         </div>
     );
