@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router";
 import ax from "../../conf/ax";
 import { Toaster, toast } from "sonner";
+import { Edit } from "@mui/icons-material";
 
 const AddTopic = () => {
   // State management for each form field
@@ -29,15 +30,8 @@ const AddTopic = () => {
     }
   }, [topicid, Value]);
   console.log(Topic);
-  const [category, setCategory] = useState([]);
-  const [lecturer, setLecturer] = useState("");
-  const [lecturerOwner, setlecturerOwner] = useState(null);
-  const [description, setDescription] = useState("");
   const [image, setImage] = useState(null);
   const [TimeUsageContent, setTimeUsageContent] = useState("");
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
-  const [contentTitle, setContentTitle] = useState("");
   const [detail, setDetail] = useState("");
   const Navigate = useNavigate();
   const [content, setContent] = useState("");
@@ -444,10 +438,17 @@ const AddTopic = () => {
                       </span>
                     </div>
                     <button
-                      onClick={handleAddContent}
+                      onClick={() => {
+                        Navigate(`/edit-content/${Value.documentId}`, {
+                          state: { Value: value },
+                        });
+                      }}
                       className="text-gray-500 hover:text-gray-700"
                     >
-                      <span className="text-sm">✏️</span>
+                      <span className="text-sm">
+                        {" "}
+                        <Edit />
+                      </span>
                     </button>
                   </div>
                 ))}

@@ -15,8 +15,6 @@ const AddCourse = () => {
   const [description, setDescription] = useState("");
   const [image, setImage] = useState(null);
   const [TimeUsage, setTimeUsage] = useState("");
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
   const [status, setStatus] = useState("");
   const [Price, setPrice] = useState("");
   const Navigate = useNavigate();
@@ -26,13 +24,15 @@ const AddCourse = () => {
       setTitle(Value.Name);
       setDescription(Value.Description);
       setPrice(Value.Price);
-      setStartDate(formatDateForInput(Value.start_date));
-      setEndDate(formatDateForInput(Value.end_date));
-
       setStatus(Value.status_coure);
       setTimeUsage(Value.Time_Usage);
       setlecturerOwner(Value.lecturer_owner?.id);
-      setCategory(Value.categories.map((category) => category.id));
+      setCategory(
+        Value.categories.map((category) => ({
+          id: category.id,
+          tag: category.tag,
+        }))
+      );
     }
   }, [Value]);
 
@@ -41,16 +41,26 @@ const AddCourse = () => {
     const date = new Date(dateString);
     return date.toISOString().slice(0, 16);
   };
+
   const handleSelectChange = (e) => {
     const selectedValues = Array.from(e.target.selectedOptions).map(
       (option) => ({
-        id: option.value,
-        name: option.getAttribute("data-name"),
+        id: String(option.value), // แปลง id เป็น string
+        tag: option.getAttribute("data-name"),
       })
     );
-    setCategory((prevCategory) => [
-      ...new Set([...prevCategory, ...selectedValues]),
-    ]);
+
+    setCategory((prevCategory) => {
+      const prevArray = Array.isArray(prevCategory) ? prevCategory : [];
+
+      const idSet = new Set(prevArray.map((item) => String(item.id)));
+
+      const newCategories = selectedValues.filter(
+        (item) => !idSet.has(String(item.id))
+      );
+
+      return [...prevArray, ...newCategories];
+    });
   };
 
   const handleRemoveCategory = (value) => {
@@ -62,7 +72,6 @@ const AddCourse = () => {
     e.preventDefault();
     try {
       const categoryid = category.map((item) => item.id);
-      // let response;
       if (Value) {
         const response = await ax.put(
           `courses/${Value.documentId}?populate=*`,
@@ -70,8 +79,6 @@ const AddCourse = () => {
             data: {
               Name: title,
               Description: description,
-              start_date: startDate,
-              end_date: endDate,
               categories: categoryid,
               Time_Usage: TimeUsage,
               Price: Price,
@@ -90,8 +97,6 @@ const AddCourse = () => {
           data: {
             Name: title,
             Description: description,
-            start_date: startDate,
-            end_date: endDate,
             categories: categoryid,
             Time_Usage: TimeUsage,
             Price: Price,
@@ -313,7 +318,7 @@ const AddCourse = () => {
                 multiple
                 value={category}
                 onChange={handleSelectChange}
-                className="block w-full h-32  px-4 py-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[#8c0327] focus:border-[#8c0327] transition-all duration-300 ease-in-out hover:bg-gray-50"
+                className="block w-full h-36  px-4 py-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[#8c0327] focus:border-[#8c0327] transition-all duration-300 ease-in-out hover:bg-gray-50"
                 style={{ backgroundColor: "#f6f6f6" }}
               >
                 {allcategory &&
@@ -333,7 +338,7 @@ const AddCourse = () => {
                     key={value.id}
                     className="inline-flex bg-gray-200 rounded-full px-3 py-0 text-sm font-semibold text-gray-700 mr-2 mb-2 mt-0"
                   >
-                    {value.name}
+                    {value.tag}
                     <button
                       type="button"
                       onClick={() => handleRemoveCategory(value.id)}
@@ -355,7 +360,7 @@ const AddCourse = () => {
                 htmlFor="title"
                 className="block text-sm font-medium text-gray-700"
               >
-                เลือกประเภทของคอร์ส (เลือกได้หลายประเภท) :
+                เลือกรูปภาพหน้าปกของคอร์สเรียน :
               </label>
               <label
                 htmlFor="image-upload"
@@ -425,85 +430,6 @@ const AddCourse = () => {
               className="block w-full rounded-md border-gray-300 shadow-sm focus:border-[#8c0327] focus:ring-[#8c0327] focus:ring-opacity-50 h-12"
               style={{ backgroundColor: "#f6f6f6" }}
             />
-          </div>
-        </div>
-
-        {/* Start Date and End Date */}
-        <div className="p-2 grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Start Date */}
-          <div>
-            <label
-              htmlFor="title"
-              className="block text-sm font-medium text-gray-700"
-            >
-              เวลาเริ่มต้นใช้งานคอร์ส :
-            </label>
-            <div className="flex items-center bg-[#f6f6f6] rounded-md p-2">
-              <span className="flex-shrink-0 flex items-center mr-3 text-gray-500">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="w-5 h-5"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M5 3v2M19 3v2M5 10h14M4 21h16a1 1 0 001-1V8a1 1 0 00-1-1H4a1 1 0 00-1 1v12a1 1 0 001 1z"
-                  ></path>
-                </svg>
-                <span className="ml-2">Start Date</span>
-              </span>
-              <input
-                type="datetime-local"
-                id="start-date"
-                name="start-date"
-                value={startDate}
-                onChange={(e) => setStartDate(e.target.value)}
-                className="block w-full rounded-md border-gray-300 shadow-sm focus:border-[#8c0327] focus:ring-[#8c0327] focus:ring-opacity-50 p-2"
-                style={{ backgroundColor: "#f6f6f6" }}
-              />
-            </div>
-          </div>
-
-          {/* End Date */}
-          <div>
-            <label
-              htmlFor="title"
-              className="block text-sm font-medium text-gray-700"
-            >
-              เวลาสิ้นสุดการใช้งานคอร์ส :
-            </label>
-            <div className="flex items-center bg-[#f6f6f6] rounded-md p-2">
-              <span className="flex-shrink-0 flex items-center mr-3 text-gray-500">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="w-5 h-5"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M5 3v2M19 3v2M5 10h14M4 21h16a1 1 0 001-1V8a1 1 0 00-1-1H4a1 1 0 00-1 1v12a1 1 0 001 1z"
-                  ></path>
-                </svg>
-                <span className="ml-2">End Date</span>
-              </span>
-              <input
-                type="datetime-local"
-                id="end-date"
-                name="end-date"
-                value={endDate}
-                onChange={(e) => setEndDate(e.target.value)}
-                className="block w-full rounded-md border-gray-300 shadow-sm focus:border-[#8c0327] focus:ring-[#8c0327] focus:ring-opacity-50 p-2"
-                style={{ backgroundColor: "#f6f6f6" }}
-              />
-            </div>
           </div>
         </div>
 

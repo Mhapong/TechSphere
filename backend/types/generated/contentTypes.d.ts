@@ -630,40 +630,6 @@ export interface ApiCourseCourse extends Struct.CollectionTypeSchema {
   };
 }
 
-export interface ApiLecturerBackgroundLecturerBackground
-  extends Struct.CollectionTypeSchema {
-  collectionName: 'lecturer_backgrounds';
-  info: {
-    description: '';
-    displayName: 'Lecturer_Background';
-    pluralName: 'lecturer-backgrounds';
-    singularName: 'lecturer-background';
-  };
-  options: {
-    draftAndPublish: false;
-  };
-  attributes: {
-    createdAt: Schema.Attribute.DateTime;
-    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-    history: Schema.Attribute.Text;
-    lecturer_background: Schema.Attribute.Relation<
-      'oneToMany',
-      'plugin::users-permissions.user'
-    >;
-    locale: Schema.Attribute.String & Schema.Attribute.Private;
-    localizations: Schema.Attribute.Relation<
-      'oneToMany',
-      'api::lecturer-background.lecturer-background'
-    > &
-      Schema.Attribute.Private;
-    publishedAt: Schema.Attribute.DateTime;
-    updatedAt: Schema.Attribute.DateTime;
-    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-  };
-}
-
 export interface ApiLecturerReviewLecturerReview
   extends Struct.CollectionTypeSchema {
   collectionName: 'lecturer_reviews';
@@ -1288,10 +1254,7 @@ export interface PluginUsersPermissionsUser
     draftAndPublish: false;
   };
   attributes: {
-    background: Schema.Attribute.Relation<
-      'manyToOne',
-      'api::lecturer-background.lecturer-background'
-    >;
+    background: Schema.Attribute.Text;
     blocked: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
     chat: Schema.Attribute.Relation<'oneToMany', 'api::chat.chat'>;
     chat_recieved: Schema.Attribute.Relation<'oneToMany', 'api::chat.chat'>;
@@ -1383,7 +1346,6 @@ declare module '@strapi/strapi' {
       'api::content.content': ApiContentContent;
       'api::course-progress.course-progress': ApiCourseProgressCourseProgress;
       'api::course.course': ApiCourseCourse;
-      'api::lecturer-background.lecturer-background': ApiLecturerBackgroundLecturerBackground;
       'api::lecturer-review.lecturer-review': ApiLecturerReviewLecturerReview;
       'api::progress.progress': ApiProgressProgress;
       'api::review.review': ApiReviewReview;

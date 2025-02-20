@@ -22,42 +22,51 @@ const Chat = ({ open, close }) => {
   // Fetch users from Strapi
   useEffect(() => {
     const interval = setInterval(() => {
-      fetchChat(); // ✅ รีเฟรชข้อมูลทุก 1 วินาที
-    }, 1000);
+      fetchChat();
+    }, 3000);
 
-    return () => clearInterval(interval); // ✅ เคลียร์ interval เมื่อ component ถูก unmount
-  }, []);
+    return () => clearInterval(interval);
+  }, [data]);
+
+  useEffect(() => {
+    if (selectedUser && data.length > 0) {
+      openchat(selectedUser);
+    }
+  }, [data]);
 
   const fetchChat = async () => {
     try {
       const response = await ax.get(
         `chats?filters[$or][0][sender][id][$eq]=${user.id}&filters[$or][1][request][id][$eq]=${user.id}&populate=*`
       );
-      console.log(response.data.data);
       setData(response.data.data);
       const senders = response.data.data.reduce((acc, item) => {
-        // ตรวจสอบว่ามี id นี้ใน accumulator หรือไม่
         const existingSender = acc.find(
-          (sender) => sender.id === item.sender.id
+          (sender) =>
+            sender.id === item.sender.id || sender.id === item.request.id
         );
-
-        if (item.sender.id !== user.id) {
+        if (item.sender.id === user.id || item.request.id === user.id) {
           if (existingSender) {
             existingSender.reading_status = item.reading_status;
           } else {
             acc.push({
-              id: item.sender.id,
-              first_name: item.sender.first_name,
-              last_name: item.sender.last_name,
+              id: item.sender.id === user.id ? item.request.id : item.sender.id,
+              first_name:
+                item.sender.id === user.id
+                  ? item.request.first_name
+                  : item.sender.first_name,
+              last_name:
+                item.sender.id === user.id
+                  ? item.request.last_name
+                  : item.sender.last_name,
               reading_status: item.reading_status,
-              massage: item.massage,
+              message: item.message,
             });
           }
         }
 
         return acc;
       }, []);
-      console.log(senders);
       setUsers(senders);
     } catch (error) {
       console.error("Error fetching users:", error);
@@ -65,8 +74,7 @@ const Chat = ({ open, close }) => {
   };
 
   const [input, setInput] = useState(""); // Input state
-  const [isTyping, setIsTyping] = useState(false); // Typing status state
-  const [isModalOpen, setIsModalOpen] = useState(false); // Modal open state
+  const [isTyping, setIsTyping] = useState(false);
   const [SendMassage, setSendMassage] = useState(null);
 
   const openchat = (value) => {
@@ -122,10 +130,6 @@ const Chat = ({ open, close }) => {
     );
   };
 
-  const handleInputChange = (e) => {
-    setInput(e.target.value);
-  };
-
   const onSubmit = async (e) => {
     e.preventDefault();
     setIsTyping(true);
@@ -139,8 +143,8 @@ const Chat = ({ open, close }) => {
           request: selectedUser.id,
         },
       });
-      setInput(""); // Clear the input field
       setIsTyping(false); // Set typing status to false after submission
+      setSendMassage("");
       fetchChat();
     } catch (e) {
       console.log("Error", e);

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext } from "react";
 import { AuthContext } from "../../context/Auth.context";
 // import { BarChart } from "@mui/x-charts/BarChart";
 import { Line } from "react-chartjs-2";
+import ax from "../../conf/ax";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -58,6 +59,20 @@ const options = {
 const HomeAdmin = () => {
   const { state: ContextState } = useContext(AuthContext);
   const { user } = ContextState;
+  const [Count, setCount] = useState(null);
+
+  useEffect(() => {
+    const fetchCount = async () => {
+      try {
+        const response = await ax.get(`counts`);
+        setCount(response.data.counts);
+      } catch (e) {
+        console.log("Error", e);
+      }
+    };
+    fetchCount();
+  }, []);
+
   return (
     <div className="bg-indigo-50 min-h-screen overflow-x-hidden">
       {/* Main Content */}
@@ -78,7 +93,9 @@ const HomeAdmin = () => {
           <div className="flex-1 bg-blue-100 border border-blue-200 rounded-xl p-6 animate-fade-in">
             <h2 className="text-3xl md:text-4xl text-blue-900">
               ตรวจสอบสถานะการจ่ายเงิน <br />
-              <strong>รอตรวจสอบ : 1</strong>
+              <strong>
+                รอตรวจสอบ : {Count ? `${Count["confirm-purchase"]}` : "0"}
+              </strong>
             </h2>
             <a
               href="/finance"
@@ -99,7 +116,9 @@ const HomeAdmin = () => {
               จำนวนคอร์สทั้งหมดของ TechSphere
             </h3>
             <p className="text-9xl md:text-7xl text-blue-900 mt-4 flex justify-center">
-              <strong className="text-9xl">23</strong>
+              <strong className="text-9xl">
+                {Count ? `${Count.course}` : 0}
+              </strong>
               <h3 className="flex items-end">คอร์ส</h3>
             </p>
           </div>
@@ -111,7 +130,9 @@ const HomeAdmin = () => {
               นักเรียนทั้งหมดของ TechSphere
             </h3>
             <p className="text-9xl md:text-7xl text-blue-900 mt-4 flex justify-center">
-              <strong className="text-9xl">2</strong>
+              <strong className="text-9xl">
+                {Count ? `${Count.users.User}` : 0}
+              </strong>
               <h3 className="flex items-end">คน</h3>
             </p>
           </div>
@@ -123,7 +144,9 @@ const HomeAdmin = () => {
               อาจารย์ผู้สอนทั้งหมดของ TechSphere
             </h3>
             <p className="text-9xl md:text-7xl text-blue-900 mt-4 flex justify-center">
-              <strong className="text-9xl">3</strong>
+              <strong className="text-9xl">
+                {Count ? `${Count.users.Lecturer}` : 0}
+              </strong>
               <h3 className="flex items-end">คน</h3>
             </p>
           </div>

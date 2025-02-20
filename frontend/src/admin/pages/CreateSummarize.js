@@ -154,7 +154,7 @@ export default function CourseDetails() {
             <p className="text-gray-600">{Course.Description}</p>
           </div>
           <p className="text-gray-600">
-            จำนวนผู้เรียน.ในคอร์สทั้งหมด :
+            จำนวนผู้เรียนในคอร์สทั้งหมด :
             {Course.user_owner ? ` ${Course.user_owner.length}` : " 0"} คน
           </p>
         </div>
@@ -211,7 +211,7 @@ export default function CourseDetails() {
       </div>
 
       {/* Action Buttons */}
-      <div className="mt-8 flex justify-end gap-4">
+      {/* <div className="mt-8 flex justify-end gap-4">
         <button
           onClick={() => Navigate(-1)}
           className="rounded-md border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
@@ -221,7 +221,7 @@ export default function CourseDetails() {
         <button className="px-4 py-2 text-sm font-medium bg-[#8c0327] text-white rounded-md hover:bg-[#6c021f]">
           บันทึก
         </button>
-      </div>
+      </div> */}
     </div>
   );
 }
