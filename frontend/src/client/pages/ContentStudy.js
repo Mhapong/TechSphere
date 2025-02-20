@@ -502,7 +502,7 @@ export default function ContentStudy() {
                                 </video>
 
                                 {progress[selectedContent.id]?.progress === 100 && (
-                                    <div className="absolute top-0 left-0 w-full h-full flex flex-col justify-center items-center bg-gray-300/50">
+                                    <div className="absolute top-0 left-0 w-full h-full flex flex-col justify-center items-center bg-gray-800/90">
                                         <h1 className="mb-10 text-white text-3xl font-bold text-center">
                                             จบบทเรียน {selectedContent.content_title}
                                         </h1>
