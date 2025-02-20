@@ -45,7 +45,6 @@ const ReviewModal = ({
 
     if (!isOpen) return null;
 
-
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
             <div className="bg-white rounded-lg shadow-md dark:bg-gray-700 p-6 max-w-md w-full relative">
@@ -93,6 +92,7 @@ const ReviewModal = ({
         </div>
     );
 };
+
 const TeacherReviewModal = ({
     isOpen,
     onClose,
@@ -194,7 +194,7 @@ export default function MyCourse() {
     const [selectedTeacher, setSelectedTeacher] = useState(null);
     const [teacherRating, setTeacherRating] = useState(5);
     const [teacherComment, setTeacherComment] = useState("");
-
+    const [progress, setProgress] = useState({});
 
     useEffect(() => {
         // ดึงข้อมูลผู้ใช้และคอร์สที่ผู้ใช้ลงทะเบียน
@@ -227,12 +227,46 @@ export default function MyCourse() {
         setLoading(false);  // ปรับสถานะการโหลดเป็น false หลังจากดึงข้อมูลเรียบร้อย
     }, []);
 
+    useEffect(() => {
+        if (!user) return;
+        const fetchCourseProgresses = async () => {
+            try {
+                const response = await ax.get(
+                    "http://localhost:1337/api/course-progresses?populate=*",
+                    {
+                        params: {
+                            "filters[course_progress_owner][id][$eq]": user.id,
+                        },
+                    }
+                );
+                // แปลงข้อมูลให้เป็น object โดยใช้ course documentId เป็น key
+                const courseProgressData = response.data.data.reduce((acc, item) => {
+                    if (
+                        item.course_progress_name &&
+                        item.course_progress_name.documentId
+                    ) {
+                        acc[item.course_progress_name.documentId] =
+                            Number(item.course_progress) || 0;
+                    }
+                    return acc;
+                }, {});
+                console.log("✅ Course Progress Data:", courseProgressData);
+                setProgress(courseProgressData);
+            } catch (error) {
+                console.error("🚨 Error fetching course progress:", error);
+            }
+        };
+
+        fetchCourseProgresses();
+    }, [user]);
+
     const handleSearch = (e) => {
         setQuery(e.target.value);
     };
 
+    // ป้องกันกรณีที่ course.Name อาจจะ undefined
     const filteredCourses = ownedCourses.filter((course) =>
-        course.Name.toLowerCase().includes(query.toLowerCase())
+        (course.Name || "").toLowerCase().includes(query.toLowerCase())
     );
 
     const handleReviewClick = (course) => {
@@ -240,12 +274,10 @@ export default function MyCourse() {
         setIsOpen(true);
     };
 
-    // ฟังก์ชันเปิด Teacher Review Modal
     const handleTeacherReviewClick = (teacher) => {
         setSelectedTeacher(teacher);
         setIsTeacherReviewOpen(true);
     };
-
 
     if (loading) return <div>Loading...</div>;  // กรณีที่ยังโหลดข้อมูล
     if (error) return <div>Error: {error.message}</div>;  // กรณีที่เกิดข้อผิดพลาด
@@ -301,15 +333,18 @@ export default function MyCourse() {
                                             ? `${item.lecturer_owner.first_name} ${item.lecturer_owner.last_name}`
                                             : "ไม่มีผู้สอน"}
                                     </p>
+                                    <p className="text-gray-500 text-xs">
+                                        สิ้นสุด: {item.end_date ? item.end_date : "ไม่ระบุ"}
+                                    </p>
                                 </div>
 
                                 {/* % การเรียน */}
                                 <div className="w-full bg-gray-200 rounded-full dark:bg-gray-700">
                                     <div
                                         className="bg-blue-600 text-xs font-medium text-blue-100 text-center p-0.5 leading-none rounded-full"
-                                        style={{ width: '45%' }}
+                                        style={{ width: `${progress[item.documentId] || 0}%` }}
                                     >
-                                        45%
+                                        {progress[item.documentId] || 0}%
                                     </div>
                                 </div>
                                 {/* ปุ่มกดเพื่อเปิด Modal */}
