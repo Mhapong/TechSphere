@@ -21,6 +21,7 @@ const navigation = [
   { name: "Sign in", href: "/login", current: true },
   { name: "Sign up", href: "/sign-up", current: true },
   { name: "View", href: "/view", current: true },
+  { name: "Check Status", href: "/checkstatus", current: true },
 ];
 
 function classNames(...classes) {
@@ -149,6 +150,14 @@ export default function Nav() {
                         className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                       >
                         View
+                      </a>
+                    </MenuItem>
+                    <MenuItem>
+                      <a
+                        href="/checkstatus"
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      >
+                        Check Status
                       </a>
                     </MenuItem>
                     <MenuItem>

@@ -38,6 +38,7 @@ import CourseStudentTable from "./admin/pages/CourseViewStudent.js";
 import PaymentSucceed from "./client/pages/paymentSucceedPage.js";
 import Chat from "./admin/components/chat.js";
 import EditContent from "./admin/pages/EditContent.js";
+import CheckCourseStatus from "./client/pages/CheckCourseStatus.js";
 
 function App() {
   const { state } = useContext(AuthContext);
@@ -67,6 +68,7 @@ function App() {
               <Route path="/test" element={<Test />} />
               <Route path="/purchase" element={<BuyProduct />} />
               <Route path="/payment-succeed" element={<PaymentSucceed />} />
+              <Route path="/checkstatus" element={<CheckCourseStatus />} />
               {/* <Route path="*" element={<PageNotFound />} /> */}
             </Routes>
             <Footer />
