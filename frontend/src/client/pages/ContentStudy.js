@@ -1,13 +1,14 @@
 import React, { useContext, useEffect, useState, useRef } from "react";
 import { AuthContext } from "../../context/Auth.context";
 import ax from "../../conf/ax";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import video_FinishStudy from "../components/video_FinishStudy.png";
 import video_NeverStudy from "../components/video_NeverStudy.png";
 import video_Studying from "../components/video_Studying.png";
 
 export default function ContentStudy() {
     const { state } = useContext(AuthContext);
+    const navigate = useNavigate();
     const [groupedContent, setGroupedContent] = useState({});
     const [selectedContent, setSelectedContent] = useState(null);
     const { documentId } = useParams();
@@ -200,7 +201,7 @@ export default function ContentStudy() {
     };
 
 
-
+    //ส่วนจัดการ update ข้อมูล progress
     const updateProgress = async (contentId, newProgress, courseId) => {
         try {
             const existingProgress = progress[contentId];
@@ -284,6 +285,14 @@ export default function ContentStudy() {
         }
     };
 
+    useEffect(() => {
+        fetchProgresses().then(() => {
+            fetchTopics();
+            fetchCourseProgresses();
+        });
+    }, []);
+
+
     //ส่วนการจัดการ วิดีโอ
     const handleTimeUpdate = (event) => {
         const contentId = selectedContent?.id;
@@ -337,8 +346,8 @@ export default function ContentStudy() {
             seconds.toString().padStart(2, "0")
         ].join(":");
     };
-    // ฟังก์ชันแปลงเวลา (hh:mm:ss -> วินาที)
-    const parseTimeString = (timeString) => {
+
+    const parseTimeString = (timeString) => { // ฟังก์ชันแปลงเวลา (hh:mm:ss -> วินาที)
         const [hours, minutes, seconds] = timeString.split(":").map(Number);
         return hours * 3600 + minutes * 60 + seconds;
     };
@@ -359,54 +368,94 @@ export default function ContentStudy() {
         const duration = videoElement.duration;
         const contentId = selectedContent?.id;
 
-        if (contentId) {
-            setVideoDurations(prev => ({
-                ...prev,
-                [contentId]: formatTime(duration),
-            }));
-        }
-        if (contentId && progress[contentId]) {
+        if (!contentId) return;
+
+        setVideoDurations(prev => ({
+            ...prev,
+            [contentId]: formatTime(duration),
+        }));
+
+        if (progress[contentId]) {
             let startTime = (progress[contentId].progress / 100) * duration;
 
-            if (Math.abs(videoElement.currentTime - startTime) > 1) {
-                console.log(`Setting video time for content ${contentId}:`, {
-                    progress: progress[contentId].progress,
-                    duration,
-                    startTime,
-                });
-                videoElement.currentTime = startTime;
-            }
+            setTimeout(() => {
+                if (Math.abs(videoElement.currentTime - startTime) > 1) {
+                    console.log(`🔄 ตั้งค่าเวลาเริ่มต้นสำหรับวิดีโอ ${contentId}: ${startTime}s`);
+                    videoElement.currentTime = startTime;
+                }
+            }, 100);
         }
     };
-
-
-
 
 
     useEffect(() => {
-        if (selectedContent?.id && videoRef.current) {
+        if (selectedContent && videoRef.current) {
             const videoElement = videoRef.current;
-            const duration = videoElement.duration;
-            if (duration && progress[selectedContent.id]) {
-                let startTime = (progress[selectedContent.id].progress / 100) * duration;
 
-                if (Math.abs(videoElement.currentTime - startTime) > 1) {
-                    console.log(`Applying saved progress to video: ${startTime}s`);
+            videoElement.src = selectedContent.video_url;
+            videoElement.load();
+
+            videoElement.onloadedmetadata = () => {
+                const duration = videoElement.duration;
+                if (duration && progress[selectedContent.id]) {
+                    let startTime = (progress[selectedContent.id].progress / 100) * duration;
+
+                    console.log(`Setting video start time for ${selectedContent.id}: ${startTime}s`);
                     videoElement.currentTime = startTime;
                 }
-            }
+            };
         }
     }, [selectedContent]);
 
+    useEffect(() => {
+        const fetchVideoDurations = async () => {
+            const durations = {};
+    
+            for (const topic of Object.values(groupedContent)) {
+                for (const content of topic) {
+                    if (content.video_url) {
+                        const video = document.createElement("video");
+                        video.src = content.video_url;
+                        video.preload = "metadata";
+    
+                        await new Promise((resolve) => {
+                            video.onloadedmetadata = () => {
+                                durations[content.id] = formatTime(video.duration);
+                                resolve();
+                            };
+                            video.onerror = () => {
+                                durations[content.id] = "00:00:00"; // ถ้าโหลดไม่ได้
+                                resolve();
+                            };
+                        });
+                    }
+                }
+            }
+    
+            setVideoDurations(durations);
+        };
+    
+        fetchVideoDurations();
+    }, [groupedContent]);
+    
 
+
+    //ส่วนจัดการการเลือกลำดับของบทเรียน
     const goToNextLesson = () => {
-        const topics = Object.values(groupedContent).flat();
-        const currentIndex = topics.findIndex((item) => item.id === selectedContent?.id);
-
-        if (currentIndex !== -1 && currentIndex < topics.length - 1) {
-            setSelectedContent(topics[currentIndex + 1]);
+        const topics = Object.values(groupedContent).flat(); // รวมทุกบทเรียน
+        if (!topics.length) return;
+    
+        let currentIndex = topics.findIndex(item => item.id === selectedContent.id);
+        
+        // หาเนื้อหาที่ progress < 100%
+        let nextIndex = (currentIndex + 1) % topics.length;
+        while (progress[topics[nextIndex].id]?.progress === 100 && nextIndex !== currentIndex) {
+            nextIndex = (nextIndex + 1) % topics.length;
         }
+    
+        setSelectedContent(topics[nextIndex]);
     };
+    
 
     const restartLesson = () => {
         if (videoRef.current) {
@@ -422,16 +471,10 @@ export default function ContentStudy() {
         }
     };
 
-
-
-    useEffect(() => {
-        fetchProgresses().then(() => {
-            fetchTopics();
-            fetchCourseProgresses();
-        });
-    }, []);
-
-
+    const exitLesson = () => {
+        console.log("ออกจากบทเรียนนี้...");
+        navigate("/my-course");
+    };
 
 
 
@@ -471,16 +514,27 @@ export default function ContentStudy() {
                                             >
                                                 ดูบทเรียนนี้อีกครั้ง
                                             </button>
-                                            <button
-                                                className="px-6 py-3 text-white text-lg font-bold rounded-full bg-gradient-to-r from-[#64c5d7] to-[#2563eb] hover:opacity-80"
-                                                onClick={() => goToNextLesson()}
-                                            >
-                                                ไปบทเรียนถัดไป
-                                            </button>
+
+                                            {overallProgress === 100 ? (
+                                                <button
+                                                    className="px-6 py-3 text-white text-lg font-bold rounded-full bg-gradient-to-r from-[#64c5d7] to-[#2563eb] hover:opacity-80"
+                                                    onClick={() => exitLesson()}
+                                                >
+                                                    ออกจากบทเรียนนี้
+                                                </button>
+                                            ) : (
+                                                <button
+                                                    className="px-6 py-3 text-white text-lg font-bold rounded-full bg-gradient-to-r from-[#64c5d7] to-[#2563eb] hover:opacity-80"
+                                                    onClick={() => goToNextLesson()}
+                                                >
+                                                    ไปบทเรียนถัดไป
+                                                </button>
+                                            )}
+
                                         </div>
                                     </div>
-
                                 )}
+
                             </div>
                         ) : (
                             <p className="text-gray-500">ไม่มีวิดีโอ</p>
@@ -523,7 +577,11 @@ export default function ContentStudy() {
                                                         ? "text-blue-500 font-bold text-xs"
                                                         : "text-gray-400 text-xs"
                                                     }`}
-                                                onClick={() => setSelectedContent(item)}
+                                                onClick={() => {
+                                                    console.log("Selected Item:", item);
+                                                    setSelectedContent(item);
+                                                }}
+
                                             >
                                                 <img
                                                     src={
@@ -565,8 +623,6 @@ export default function ContentStudy() {
                         <p className="text-gray-500">ไม่มีเนื้อหาวิดีโอ</p>
                     )}
                 </ul>
-
-
             </div>
         </div>
     );
