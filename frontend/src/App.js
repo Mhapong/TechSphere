@@ -37,6 +37,7 @@ import FinanceOrder from "./admin/pages/Finance.js";
 import CourseStudentTable from "./admin/pages/CourseViewStudent.js";
 import PaymentSucceed from "./client/pages/paymentSucceedPage.js";
 import Chat from "./admin/components/chat.js";
+import EditContent from "./admin/pages/EditContent.js";
 
 function App() {
   const { state } = useContext(AuthContext);
@@ -97,6 +98,10 @@ function App() {
               <Route path="/" element={<HomeAdmin />} />
               <Route path="/create-course" element={<AddCourse />} />
               <Route path="/create-topic/:topicid" element={<AddTopic />} />
+              <Route
+                path="/edit-content/:contentid"
+                element={<EditContent />}
+              />
               <Route
                 path="/create-summarize/:courseid"
                 element={<CourseDetails />}

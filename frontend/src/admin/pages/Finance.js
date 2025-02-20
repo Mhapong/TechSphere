@@ -71,7 +71,7 @@ const FinanceOrder = () => {
         try {
           await ax.put(`users/${value.users_purchase.id}`, {
             owned_course: {
-              connect: [1, 2],
+              connect: courseId,
             },
           });
         } catch (e) {
