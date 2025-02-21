@@ -3,12 +3,20 @@ import ax from "../../conf/ax";
 import usericon from "../components/Image/user-icon.webp";
 // import { Rating, Card, CardBody, Typography } from "@material-tailwind/react";
 import { useNavigate } from "react-router";
-import { Add, Delete } from "@mui/icons-material";
+import { Edit, Delete } from "@mui/icons-material";
+import {
+  Dialog,
+  DialogBackdrop,
+  DialogPanel,
+  DialogTitle,
+} from "@headlessui/react";
+import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 
 const StudentTable = () => {
   const [Student, setStudent] = useState([]);
   const Navigate = useNavigate();
   const [queryStudent, setQueryStudent] = useState("");
+  const [open, setOpen] = useState(false);
 
   const filteredStudent = queryStudent
     ? Student.filter(
@@ -18,20 +26,27 @@ const StudentTable = () => {
       )
     : Student;
 
-  useEffect(() => {
-    // Fetch team values from Strapi
-    const fetchStudent = async () => {
-      try {
-        const response = await ax.get(
-          "users?filters[role][name][$eq]=User&populate=*"
-        );
-        console.log(response.data);
-        setStudent(response.data);
-      } catch (error) {
-        console.error("Error fetching team members:", error);
-      }
-    };
+  const handleRowDeleted = async (itemId) => {
+    try {
+      await ax.delete(`users/${itemId}`);
+      fetchStudent();
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
+  const fetchStudent = async () => {
+    try {
+      const response = await ax.get(
+        "users?filters[role][name][$eq]=User&populate=*"
+      );
+      setStudent(response.data);
+    } catch (error) {
+      console.error("Error fetching team members:", error);
+    }
+  };
+
+  useEffect(() => {
     fetchStudent();
   }, []);
 
@@ -116,7 +131,7 @@ const StudentTable = () => {
                       เงินรวม
                     </th>
                     <th scope="col" className="px-4 py-3">
-                      เพิ่มคอร์ส
+                      แก้ไขนักเรียน
                     </th>
                     <th scope="col" className="flex ml-3 px-4 py-3">
                       ลบ
@@ -172,15 +187,23 @@ const StudentTable = () => {
                       </td>
                       <td className="px-4 py-2 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                         <div className="flex items-center ml-1">
-                          <button className="ml-1 flex items-center justify-center w-9 h-9 rounded-full bg-blue-500 dark:bg-blue-600 text-white hover:bg-blue-600 dark:hover:bg-blue-500 transition-all duration-200">
-                            <Add className="w-5 h-5" />
+                          <button
+                            onClick={() => {
+                              Navigate(`/edit-profile/${value.id}`);
+                            }}
+                            className="ml-1 flex items-center justify-center w-9 h-9 rounded-full bg-blue-500 dark:bg-blue-600 text-white hover:bg-blue-600 dark:hover:bg-blue-500 transition-all duration-200"
+                          >
+                            <Edit className="w-5 h-5" />
                           </button>
                         </div>
                       </td>
 
                       <td className="px-4 py-2 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                         <div className="flex items-center">
-                          <button className="ml-1 flex items-center justify-center w-9 h-9 rounded-full bg-red-500 dark:bg-red-600 text-white hover:bg-red-600 dark:hover:bg-red-500 transition-all duration-200">
+                          <button
+                            onClick={() => setOpen(true)}
+                            className="ml-1 flex items-center justify-center w-9 h-9 rounded-full bg-red-500 dark:bg-red-600 text-white hover:bg-red-600 dark:hover:bg-red-500 transition-all duration-200"
+                          >
                             <Delete className="w-5 h-5" />
                           </button>
                         </div>
@@ -219,6 +242,64 @@ const StudentTable = () => {
           </nav>
         </div>
       </div>
+      <Dialog open={open} onClose={setOpen} className="relative z-10">
+        <DialogBackdrop
+          transition
+          className="fixed inset-0 bg-gray-500/75 transition-opacity data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in"
+        />
+
+        <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
+          <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+            <DialogPanel
+              transition
+              className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all data-closed:translate-y-4 data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in sm:my-8 sm:w-full sm:max-w-lg data-closed:sm:translate-y-0 data-closed:sm:scale-95"
+            >
+              <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                <div className="sm:flex sm:items-start">
+                  <div className="mx-auto flex size-12 shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:size-10">
+                    <ExclamationTriangleIcon
+                      aria-hidden="true"
+                      className="size-6 text-red-600"
+                    />
+                  </div>
+                  <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                    <DialogTitle
+                      as="h3"
+                      className="text-base font-semibold text-gray-900"
+                    >
+                      แจ้งเตือนการลบนักเรียน
+                    </DialogTitle>
+                    <div className="mt-2">
+                      <p className="text-sm text-gray-500">
+                        คุณแน่ใจแล้วหรือไม่ ว่าจะลบรายชื่อนักเรียนคนนี้?
+                        ข้อมูลที่ลบไปจะไม่สามารถกู้คืนได้อีก
+                        กรุณาตรวจสอบให้แน่ใจก่อนลบนักเรียน
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+                <button
+                  type="button"
+                  onClick={() => setOpen(false)}
+                  className="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-red-500 sm:ml-3 sm:w-auto"
+                >
+                  ยืนยันการลบ
+                </button>
+                <button
+                  type="button"
+                  data-autofocus
+                  onClick={() => setOpen(false)}
+                  className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 shadow-xs ring-gray-300 ring-inset hover:bg-gray-50 sm:mt-0 sm:w-auto"
+                >
+                  ยกเลิก
+                </button>
+              </div>
+            </DialogPanel>
+          </div>
+        </div>
+      </Dialog>
     </section>
   );
 };

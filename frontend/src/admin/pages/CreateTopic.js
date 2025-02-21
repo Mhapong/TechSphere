@@ -16,12 +16,9 @@ const AddTopic = () => {
   const [TimeUsage, setTimeUsage] = useState(Topic?.time || "");
   useEffect(() => {
     if (Value && Array.isArray(Value.topic)) {
-      console.log(topicid);
       setCourseTitle(Value.Name);
-      // ค้นหา topic ที่มี documentId ตรงกับ topicid
       const foundTopic = Value.topic.find((t) => t.documentId === topicid);
       if (foundTopic) {
-        console.log(foundTopic);
         setTopic(foundTopic);
         setTitle(foundTopic.topic_title);
         setTimeUsage(foundTopic.time);
@@ -29,14 +26,13 @@ const AddTopic = () => {
       }
     }
   }, [topicid, Value]);
-  console.log(Topic);
+
   const [image, setImage] = useState(null);
   const [TimeUsageContent, setTimeUsageContent] = useState("");
   const [detail, setDetail] = useState("");
   const Navigate = useNavigate();
   const [content, setContent] = useState("");
   const [openAddContent, setopenAddContent] = useState(false);
-  console.log(title, TimeUsage);
 
   const handleAddContent = () => {
     console.log("ADDCONTENT");
@@ -45,9 +41,7 @@ const AddTopic = () => {
 
   const fetchTopic = async (documentId) => {
     try {
-      console.log(Topic);
       const response = await ax.get(`topics/${documentId}?populate=*`);
-      console.log(response.data.data);
       setContent(response.data.data.content);
     } catch (e) {
       console.log(`Error`, e);
@@ -57,8 +51,6 @@ const AddTopic = () => {
   const handleSubmit = async (e, data) => {
     e.preventDefault();
     try {
-      console.log(Topic);
-      console.log("None");
       if (Topic) {
         console.log("Update");
         const response = await ax.put(`topics/${Topic.documentId}?populate=*`, {
@@ -107,7 +99,6 @@ const AddTopic = () => {
   const handleSubmitContent = async (e) => {
     e.preventDefault();
     try {
-      console.log("Here");
       const response = await ax.post(`contents?populate=*`, {
         data: {
           content_title: titleContent,
@@ -116,7 +107,6 @@ const AddTopic = () => {
           detail: detail,
         },
       });
-      console.log(response);
       toast.success("บันทึกข้อมูลเนื้อหาสำเร็จ!", {
         // position: "top-center",
         duration: 5000,

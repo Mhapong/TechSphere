@@ -28,7 +28,6 @@ const LecturerAll = () => {
         const response = await ax.get(
           "users?filters[role][name][$eq]=Lecturer&populate=*"
         );
-        console.log(response.data);
         setLecturer(response.data);
       } catch (error) {
         console.error("Error fetching team members:", error);

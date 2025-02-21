@@ -2,6 +2,13 @@ import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router";
 import ax from "../../conf/ax";
 import { Toaster, toast } from "sonner";
+import datapic from "../../client/components/data.png";
+import webpic from "../../client/components/web-100.png";
+import gamepic from "../../client/components/game.png";
+import hardwarepic from "../../client/components/hardware.png";
+import networkpic from "../../client/components/network.png";
+import morepic from "../../client/components/more.png";
+import Select from "react-select";
 
 const AddCourse = () => {
   // State management for each form field
@@ -18,7 +25,16 @@ const AddCourse = () => {
   const [status, setStatus] = useState("");
   const [Price, setPrice] = useState("");
   const Navigate = useNavigate();
-  console.log(Value);
+
+  const categories = [
+    { label: "Web Develop", value: 2, img: webpic },
+    { label: "Data Analysis", value: 6, img: datapic },
+    { label: "IoT & Hardware", value: 4, img: hardwarepic },
+    { label: "Network", value: 5, img: networkpic },
+    { label: "Game Develop", value: 3, img: gamepic },
+    { label: "AI", value: 1, img: morepic },
+  ];
+
   useEffect(() => {
     if (Value && Array.isArray(Value.topic)) {
       setTitle(Value.Name);
@@ -42,17 +58,18 @@ const AddCourse = () => {
     return date.toISOString().slice(0, 16);
   };
 
-  const handleSelectChange = (e) => {
-    const selectedValues = Array.from(e.target.selectedOptions).map(
-      (option) => ({
-        id: String(option.value), // แปลง id เป็น string
-        tag: option.getAttribute("data-name"),
-      })
-    );
+  const handleSelectChange = (selectedOptions) => {
+    const selectedArray = Array.isArray(selectedOptions)
+      ? selectedOptions
+      : [selectedOptions];
+
+    const selectedValues = selectedArray.map((option) => ({
+      id: String(option.value),
+      tag: option.label,
+    }));
 
     setCategory((prevCategory) => {
       const prevArray = Array.isArray(prevCategory) ? prevCategory : [];
-
       const idSet = new Set(prevArray.map((item) => String(item.id)));
 
       const newCategories = selectedValues.filter(
@@ -146,7 +163,6 @@ const AddCourse = () => {
   const fetchCategory = async () => {
     try {
       const response = await ax.get(`categories`);
-      // console.log(response.data.data);
       setallCategory(response.data.data);
     } catch (e) {
       console.log("Error", e);
@@ -158,7 +174,6 @@ const AddCourse = () => {
       const response = await ax.get(
         `users?filters[role][name][$eq]=Lecturer&populate=*`
       );
-      // console.log(response.data);
       setLecturer(response.data);
     } catch (e) {
       console.log("Error", e);
@@ -312,7 +327,20 @@ const AddCourse = () => {
             </label>
             <div className="p-2">
               {/* <p className="mt-0">เลือกประเภทของคอร์ส:</p> */}
-              <select
+              <Select
+                options={categories}
+                value={categories.find((c) => c.value === category.id)}
+                onChange={handleSelectChange}
+                placeholder="เลือกประเภท"
+                className="text-gray-700 flex-auto"
+                getOptionLabel={(e) => (
+                  <div className="flex items-center">
+                    <img src={e.img} alt={e.label} className="w-6 h-6 mr-2" />
+                    {e.label}
+                  </div>
+                )}
+              />
+              {/* <select
                 id="category"
                 name="category"
                 multiple
@@ -331,7 +359,7 @@ const AddCourse = () => {
                       {index + 1}. {value.tag}
                     </option>
                   ))}
-              </select>
+              </select> */}
               <div className="mt-2">
                 {category.map((value) => (
                   <div

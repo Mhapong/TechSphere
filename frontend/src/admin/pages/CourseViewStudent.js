@@ -1,10 +1,8 @@
 import React, { useEffect, useState } from "react";
-import ax from "../../conf/ax";
+// import ax from "../../conf/ax";
 import usericon from "../components/Image/user-icon.webp";
-import { Rating, Card, CardBody, Typography } from "@material-tailwind/react";
 import { useLocation, useNavigate } from "react-router";
-import { Edit, Add, Delete } from "@mui/icons-material";
-import { handleBreakpoints } from "@mui/system";
+import { Delete } from "@mui/icons-material";
 
 const CourseStudentTable = () => {
   const [Student, setStudent] = useState([]);
@@ -12,7 +10,6 @@ const CourseStudentTable = () => {
   const location = useLocation();
   const { Value } = location.state || {};
   useEffect(() => {
-    console.log(Value);
     setStudent(Value.user_owner);
   }, []);
 
@@ -36,7 +33,6 @@ const CourseStudentTable = () => {
   // };
 
   //   useEffect(() => {
-  //     // Fetch team values from Strapi
   //     const fetchStudent = async () => {
   //       try {
   //         const response = await ax.get(

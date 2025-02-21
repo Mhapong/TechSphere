@@ -10,7 +10,6 @@ export default function CourseDetails() {
   const fetchCoures = async () => {
     try {
       const response = await ax.get(`courses/${courseid}?populate=*`);
-      console.log(response.data.data);
       setCourse(response.data.data);
     } catch (e) {
       console.log("Error", e);
@@ -211,17 +210,17 @@ export default function CourseDetails() {
       </div>
 
       {/* Action Buttons */}
-      {/* <div className="mt-8 flex justify-end gap-4">
+      <div className="mt-8 flex justify-self-end w-3/12">
         <button
+          className="block w-full bg-[#3b3f44] hover:bg-[#000000] text-white font-bold py-3 px-4 rounded-full"
           onClick={() => Navigate(-1)}
-          className="rounded-md border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
         >
-          ยกเลิก
+          ย้อนกลับ
         </button>
-        <button className="px-4 py-2 text-sm font-medium bg-[#8c0327] text-white rounded-md hover:bg-[#6c021f]">
+        {/* <button className="px-4 py-2 text-sm font-medium bg-[#8c0327] text-white rounded-md hover:bg-[#6c021f]">
           บันทึก
-        </button>
-      </div> */}
+        </button> */}
+      </div>
     </div>
   );
 }

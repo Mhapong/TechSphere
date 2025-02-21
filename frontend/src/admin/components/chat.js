@@ -13,25 +13,29 @@ import {
 import { XMarkIcon } from "@heroicons/react/24/outline";
 
 const Chat = ({ open, close }) => {
-  const [users, setUsers] = useState([]); // State for users
-  const [selectedUser, setSelectedUser] = useState(null); // State for selected user
+  const [users, setUsers] = useState([]);
+  const [selectedUser, setSelectedUser] = useState(null);
   const [data, setData] = useState(null);
-  const [messages, setMessages] = useState([]); // State for messages
+  const [messages, setMessages] = useState([]);
   const { state: ContextState } = useContext(AuthContext);
   const { user } = ContextState;
-  // Fetch users from Strapi
-  useEffect(() => {
-    const interval = setInterval(() => {
-      fetchChat();
-    }, 3000);
-
-    return () => clearInterval(interval);
-  }, [data]);
 
   useEffect(() => {
+    fetchChat();
     if (selectedUser && data.length > 0) {
       openchat(selectedUser);
     }
+  }, []);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      fetchChat();
+      if (selectedUser && data.length > 0) {
+        openchat(selectedUser);
+      }
+    }, 2000);
+
+    return () => clearInterval(interval);
   }, [data]);
 
   const fetchChat = async () => {
@@ -73,13 +77,10 @@ const Chat = ({ open, close }) => {
     }
   };
 
-  const [input, setInput] = useState(""); // Input state
   const [isTyping, setIsTyping] = useState(false);
   const [SendMassage, setSendMassage] = useState(null);
 
   const openchat = (value) => {
-    console.log(value);
-    console.log(data);
     setSelectedUser(value);
     const massagedata = data
       .filter(
@@ -100,7 +101,6 @@ const Chat = ({ open, close }) => {
         };
       })
       .sort((a, b) => a.createdAt - b.createdAt); // เรียงตามเวลา (เก่า -> ใหม่)
-    console.log(massagedata);
     setMessages(massagedata);
   };
 
@@ -133,8 +133,6 @@ const Chat = ({ open, close }) => {
   const onSubmit = async (e) => {
     e.preventDefault();
     setIsTyping(true);
-    console.log(SendMassage);
-    // setMessages((prevMessages) => [...prevMessages, input]); // Adding new message to the list
     try {
       await ax.post("chats?populate=*", {
         data: {
@@ -143,7 +141,7 @@ const Chat = ({ open, close }) => {
           request: selectedUser.id,
         },
       });
-      setIsTyping(false); // Set typing status to false after submission
+      setIsTyping(false);
       setSendMassage("");
       fetchChat();
     } catch (e) {
@@ -166,7 +164,8 @@ const Chat = ({ open, close }) => {
     >
       <DialogBackdrop
         transition-opacity
-        className="fixed inset-0 bg-gray-500/75 transition-opacity pointer-events-none"
+        // className="fixed inset-0 bg-gray-500/75 transition-opacity pointer-events-none"
+        className="fixed inset-0 bg-black bg-opacity-60 transition-opacity pointer-events-none"
         aria-hidden="true"
       />
 
