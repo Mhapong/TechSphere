@@ -6,32 +6,77 @@ import {
   Typography,
   Button,
   Tooltip,
-  IconButton,
 } from "@material-tailwind/react";
 import React, { useEffect, useState } from "react";
 import ax from "../../conf/ax";
+import datapic from "../../client/components/data.png";
+import webpic from "../../client/components/web-100.png";
+import gamepic from "../../client/components/game.png";
+import hardwarepic from "../../client/components/hardware.png";
+import networkpic from "../../client/components/network.png";
+import morepic from "../../client/components/more.png";
+import allpic from "../components/Image/All.png";
 // import ReactMarkdown from "react-markdown";
 import { useNavigate } from "react-router";
 // import remarkGfm from "remark-gfm";
 import CourseEx from "../components/Image/htmlcssJS.webp";
-// import datapic from "../components/data.png";
-// import webpic from "../components/web-100.png";
-// import gamepic from "../components/game.png";
-// import hardwarepic from "../components/hardware.png";
-// import networkpic from "../components/network.png";
-// import morepic from "../components/more.png";
-// import homepic from "../components/home-page.png";
+import Select from "react-select";
 
 export function CourseView() {
   const [Course, setCourse] = useState([]);
   const Navigate = useNavigate();
   const [queryCourse, setQueryCourse] = useState("");
 
-  const filteredCourse = queryCourse
-    ? Course.filter((value) =>
-        value.Name.toLowerCase().includes(queryCourse.toLowerCase())
-      )
-    : Course;
+  const categories = [
+    { name: "ALL", img: allpic, path: "ALL" },
+    { name: "Web Develop", img: webpic, path: "Web Develop" },
+    { name: "Data Analysis", img: datapic, path: "Data Analysis" },
+    { name: "IoT & Hardware", img: hardwarepic, path: "Hardware" },
+    { name: "Network", img: networkpic, path: "Network" },
+    { name: "Game Develop", img: gamepic, path: "Game Develop" },
+    { name: "AI", img: morepic, path: "AI" },
+  ];
+
+  const [selectedCategory, setSelectedCategory] = useState(null);
+
+  const categoryOptions = categories.map((cat) => ({
+    value: cat.name,
+    label: (
+      <div className="flex items-center space-x-2">
+        <img
+          src={cat?.img}
+          alt={cat.name}
+          className="w-8 h-8 object-cover rounded-full"
+        />
+        <span>{cat.name}</span>
+      </div>
+    ),
+  }));
+
+  const filteredCourse =
+    queryCourse || selectedCategory
+      ? Course.filter((value) => {
+          if (selectedCategory === "ALL") {
+            return true; // คืนค่าทุกคอร์ส
+          }
+
+          // ถ้าไม่มีค่า queryCourse ให้แสดงเฉพาะหมวดหมู่ที่เลือก
+          if (!queryCourse) {
+            return value.categories.some((cat) => cat.tag === selectedCategory);
+          }
+
+          // if (selectedCategory === "ALL") {
+          //   console.log("Entering 'ALL' condition"); // แสดงว่าเข้ามาในเงื่อนไข 'ALL'
+          //   return value.Name.toLowerCase().includes(queryCourse.toLowerCase());
+          // }
+
+          return (
+            value.Name.toLowerCase().includes(queryCourse.toLowerCase()) ||
+            value.categories.some((cat) => cat.tag === selectedCategory)
+          );
+        })
+      : Course;
+
   useEffect(() => {
     // Fetch team values from Strapi
     const fetchCourse = async () => {
@@ -53,7 +98,7 @@ export function CourseView() {
   }, []);
   return (
     <div className="w-[1200px] mx-96 mt-11 p-8 ml-80 px-4 max-w-screen-2xl lg:px-12">
-      <div className="mx-auto max-w-screen-sm text-center mb-8 lg:mb-16">
+      <div className="mx-auto max-w-screen-sm md:max-w-screen-md lg:max-w-screen-lg xl:max-w-screen-xl text-center mb-8 lg:mb-16">
         <h2 className="mb-4 text-4xl tracking-tight font-extrabold text-gray-900 dark:text-white">
           คอร์สเรียนทั้งหมด
         </h2>
@@ -61,7 +106,10 @@ export function CourseView() {
           คอร์สเรียนทั้งหมดที่มีใน TechSphere ทั้งหมด {Course.length} คอร์ส
         </p>
         <div className="flex justify-center items-center space-x-3 bg-white p-4 rounded-lg shadow-md border border-gray-200">
-          <label htmlFor="search" className="text-gray-700 text-lg font-medium">
+          <label
+            htmlFor="search"
+            className="text-gray-700 text-lg font-medium w-1/12"
+          >
             ค้นหา :
           </label>
           <input
@@ -69,17 +117,24 @@ export function CourseView() {
             title="ค้นหา"
             type="text"
             placeholder="ค้นหาโดยชื่อคอร์สเรียน"
-            className="flex-1 bg-gray-100 focus:bg-white h-10 w-72 border border-gray-300 rounded-lg px-4 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+            className="flex-none w-8/12 bg-gray-100 focus:bg-white h-10  border border-gray-300 rounded-lg px-4 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
             value={queryCourse}
             onChange={(e) => setQueryCourse(e.target.value)}
           />
+          <Select
+            options={categoryOptions}
+            value={categoryOptions.find(
+              (option) => option.value === queryCourse
+            )}
+            onChange={(selectedOption) => {
+              setSelectedCategory(selectedOption.value);
+            }}
+            placeholder="เลือกประเภท"
+            className="text-gray-700 flex-auto w-3/12"
+            classNamePrefix="custom-select"
+          />
         </div>
       </div>
-      {/* <div className="relative   items-center">
-          <div
-            id="slider"
-            className=" h-full w-full my-7 grid grid-cols-3 gap-2 items-center place-content-center scrollbar-hide"
-          > */}
       <div>
         {filteredCourse.length > 0 ? (
           <div className="h-full w-full my-7 grid grid-cols-3 gap-10 items-stretch place-content-center scrollbar-hide">
@@ -89,21 +144,6 @@ export function CourseView() {
                   <CardHeader floated={false} color="blue-gray">
                     <img src={CourseEx} alt="ui/ux review check" />
                     <div className="to-bg-black-10 absolute inset-0 h-full w-full bg-gradient-to-tr from-transparent via-transparent to-black/60 " />
-                    {/* <IconButton
-                  size="sm"
-                  color="red"
-                  variant="text"
-                  className="!absolute top-4 right-4 rounded-full"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    fill="currentColor"
-                    className="h-6 w-6"
-                  >
-                    <path d="M11.645 20.91l-.007-.003-.022-.012a15.247 15.247 0 01-.383-.218 25.18 25.18 0 01-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0112 5.052 5.5 5.5 0 0116.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 01-4.244 3.17 15.247 15.247 0 01-.383.219l-.022.012-.007.004-.003.001a.752.752 0 01-.704 0l-.003-.001z" />
-                  </svg>
-                </IconButton> */}
                   </CardHeader>
 
                   <CardBody>
@@ -149,22 +189,17 @@ export function CourseView() {
                           >
                             {value.tag}
                             <Tooltip content={value.tag}>
-                              <span className="cursor-pointer grid rounded-full border border-gray-900/5 bg-gray-900/5 p-3 text-gray-900 transition-colors hover:border-gray-900/10 hover:bg-gray-900/10 hover:!opacity-100 group-hover:opacity-70 ml-2">
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  viewBox="0 0 24 24"
-                                  fill="currentColor"
-                                  className="h-5 w-5"
-                                >
-                                  <path d="M12 7.5a2.25 2.25 0 100 4.5 2.25 2.25 0 000-4.5z" />
-                                  <path
-                                    fillRule="evenodd"
-                                    d="M1.5 4.875C1.5 3.839 2.34 3 3.375 3h17.25c1.035 0 1.875.84 1.875 1.875v9.75c0 1.036-.84 1.875-1.875 1.875H3.375A1.875 1.875 0 011.5 14.625v-9.75zM8.25 9.75a3.75 3.75 0 117.5 0 3.75 3.75 0 01-7.5 0zM18.75 9a.75.75 0 00-.75.75v.008c0 .414.336.75.75.75h.008a.75.75 0 00.75-.75V9.75a.75.75 0 00-.75-.75h-.008zM4.5 9.75A.75.75 0 015.25 9h.008a.75.75 0 01.75.75v.008a.75.75 0 01-.75.75H5.25a.75.75 0 01-.75-.75V9.75z"
-                                    clipRule="evenodd"
-                                  />
-                                  <path d="M2.25 18a.75.75 0 000 1.5c5.4 0 10.63.722 15.6 2.075 1.19.324 2.4-.558 2.4-1.82V18.75a.75.75 0 00-.75-.75H2.25z" />
-                                </svg>
-                              </span>
+                              <div key={value.id}>
+                                <img
+                                  src={
+                                    categories.find(
+                                      (cat) => cat.name === value.tag
+                                    )?.img
+                                  }
+                                  alt={value.tag}
+                                  className="ml-1 w-[1rem] h-[1rem] object-cover rounded-full"
+                                />
+                              </div>
                             </Tooltip>
                           </div>
                         ))}

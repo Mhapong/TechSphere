@@ -24,42 +24,12 @@ ChartJS.register(
   Legend
 );
 
-const data = {
-  labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
-  datasets: [
-    {
-      label: "Income",
-      data: [1200, 1500, 1800, 1700, 1900, 2100, 2300], //จำลองก่อนนะ
-      backgroundColor: "rgba(75, 192, 192, 0.2)",
-      borderColor: "rgba(43, 63, 229, 0.8)",
-      borderWidth: 2,
-    },
-  ],
-};
-
-const options = {
-  responsive: true,
-  // maintainAspectRatio: false,
-  plugins: {
-    title: {
-      display: true,
-      text: "Daily Income and Expenses",
-    },
-  },
-  scales: {
-    x: {
-      type: "category",
-    },
-    y: {
-      beginAtZero: true,
-    },
-  },
-};
-
 const HomeAdmin = () => {
   const { state: ContextState } = useContext(AuthContext);
   const { user } = ContextState;
   const [Count, setCount] = useState(null);
+  const [PurchaseAmount, setPurchaseAmount] = useState([]);
+  const [PurchaseDay, setPurchaseDay] = useState([]);
 
   useEffect(() => {
     const fetchCount = async () => {
@@ -72,6 +42,61 @@ const HomeAdmin = () => {
     };
     fetchCount();
   }, []);
+
+  useEffect(() => {
+    const fetchPurchase = async () => {
+      try {
+        const response = await ax.get(`confirm-purchases?populate=*`);
+        const confirmedData = response.data.data
+          .filter((item) => item.status_confirm === "confirmed")
+          .map((item) => ({
+            amount: item.amount,
+            date: new Date(item.updatedAt).toLocaleDateString("th-TH"), // แปลงเป็น วัน/เดือน/ปี
+          }));
+
+        // แยกเป็นสองตัวแปร
+        const amounts = confirmedData.map((item) => item.amount);
+        const dates = confirmedData.map((item) => item.date);
+        setPurchaseAmount(amounts);
+        setPurchaseDay(dates);
+      } catch (e) {
+        console.log("Error", e);
+      }
+    };
+    fetchPurchase();
+  }, []);
+
+  const data = {
+    labels: PurchaseDay,
+    datasets: [
+      {
+        label: "Income",
+        data: PurchaseAmount,
+        backgroundColor: "rgba(75, 192, 192, 0.2)",
+        borderColor: "rgba(43, 63, 229, 0.8)",
+        borderWidth: 2,
+      },
+    ],
+  };
+
+  const options = {
+    responsive: true,
+    // maintainAspectRatio: false,
+    plugins: {
+      title: {
+        display: true,
+        text: "Daily Income and Expenses",
+      },
+    },
+    scales: {
+      x: {
+        type: "category",
+      },
+      y: {
+        beginAtZero: true,
+      },
+    },
+  };
 
   return (
     <div className="bg-indigo-50 min-h-screen overflow-x-hidden">
