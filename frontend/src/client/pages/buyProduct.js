@@ -1,71 +1,34 @@
+"use client";
+
 import { useContext, useEffect, useState } from "react";
 import QRCode from "qrcode";
 import generatePayload from "promptpay-qr";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
-import {
-  Button,
-  Dialog,
-  DialogBody,
-  DialogFooter,
-  DialogHeader,
-} from "@material-tailwind/react";
-import ax from "../../conf/ax";
+import { useLocation, useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/Auth.context";
 import { useCart } from "../../context/Cart.context";
+import ax from "../../conf/ax";
 
 export default function BuyProduct() {
   const { state } = useContext(AuthContext);
   const { removeFromCart } = useCart();
   const location = useLocation();
+  const navigate = useNavigate();
   const promptPayNumber = "0922695522";
   const amount = location.state.total;
-  const [courseId, setCourseId] = useState({});
+
   const [qrCode, setQrCode] = useState(null);
   const [openModal, setOpenModal] = useState(false);
-  const [reciept, setReciept] = useState();
-  console.log(location.state);
-  const navigate = useNavigate();
+  const [receipt, setReceipt] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState(null);
 
-  const handleOpenModal = () => {
-    setOpenModal(!openModal);
-  };
-
-  function handleChange(e) {
-    console.log(e.target.files);
-    setReciept(URL.createObjectURL(e.target.files[0]));
-    console.log(reciept);
-  }
-
-  console.log(state.user.id);
-
-  const handleComfirmPurchease = async () => {
-    try {
-      if (!location.state?.course_id) {
-        console.error("Error: course_id is missing");
-        return;
-      }
-
-      const response = await ax.post("confirm-purchases?populate=*", {
-        data: {
-          users_purchase: [state.user.id],
-          amount: location.total,
-          course_purchase: location.state.course_id,
-        },
-      });
-      location.state.course_id.forEach((id) => removeFromCart(id.id));
-      console.log(response);
-      navigate("/payment-succeed");
-    } catch (err) {
-      console.error("Error:", err.response || err.message);
-    }
-  };
+  useEffect(() => {
+    generateQRCode();
+  }, []);
 
   const generateQRCode = async () => {
-    if (!promptPayNumber || !amount) return alert("โปรดป้อนข้อมูลให้ครบ!");
-    if (parseFloat(amount) < 0)
-      return alert("จำนวนเงินต้องมากกว่าหรือเท่ากับ 0 บาท!");
+    if (!promptPayNumber || !amount) return;
 
-    let formattedNumber;
+    let formattedNumber = promptPayNumber;
     if (promptPayNumber.length === 10) {
       formattedNumber = promptPayNumber.replace(
         /(\d{3})(\d{3})(\d{4})/,
@@ -76,71 +39,147 @@ export default function BuyProduct() {
         /(\d{1})(\d{4})(\d{5})(\d{2})/,
         "$1-$2-$3-$4"
       );
-    } else {
-      return alert("รหัสพร้อมเพย์ไม่ถูกต้อง!");
     }
 
     const payload = generatePayload(formattedNumber, {
-      amount: parseFloat(amount),
+      amount: Number.parseFloat(amount),
     });
     const qrImage = await QRCode.toDataURL(payload, { width: 300 });
     setQrCode(qrImage);
   };
 
-  useEffect(() => generateQRCode, []);
+  const handleOpenModal = () => setOpenModal(!openModal);
+
+  const handleChange = (event) => {
+    const file = event.target.files[0];
+    if (file && (file.type === "image/png" || file.type === "image/jpeg")) {
+      setReceipt(file);
+      setPreviewUrl(URL.createObjectURL(file));
+    }
+  };
+
+  const handleConfirmPurchase = async () => {
+    if (!location.state?.course_id || !receipt) {
+      console.error("Error: course_id is missing or no receipt uploaded");
+      return;
+    }
+
+    try {
+      const files = new FormData();
+      files.append("files", receipt);
+      files.append(
+        "name",
+        `${state.username}_${location.state.course_id}_receipt`
+      );
+
+      const receiptUpload = await ax.post("/upload", files, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
+      const {
+        data: [{ id, url }],
+      } = receiptUpload;
+
+      await ax.post("confirm-purchases?populate=*", {
+        data: {
+          users_purchase: state.user.id,
+          email: state.email,
+          amount: location.state.total,
+          course_purchase: [location.state.course_id],
+          picture_purchase: [{ id, url }],
+        },
+      });
+
+      location.state.course_id.forEach((id) => removeFromCart(id.id));
+      navigate("/payment-succeed");
+    } catch (error) {
+      console.error("Error:", error.response || error.message);
+    }
+  };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen p-4 bg-gray-100">
-      <div className="w-full max-w-md p-6 bg-white rounded-lg shadow-md">
-        <h1 className="text-xl font-bold text-center mb-4">
-          จำนวนเงินที่ต้องชำระ: {location.state.total} ฿
-        </h1>
-        {qrCode && (
-          <div className="mt-4 flex flex-col items-center">
-            <img src={qrCode} alt="QR Code" className="w-64 h-64" />
-            <a
-              href={qrCode}
-              download="promptpay_qr.png"
-              className="mt-2 text-blue-500 underline"
-            >
-              ดาวน์โหลด QR Code
-            </a>
+    <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4">
+      <div className="max-w-md w-full space-y-8 bg-white p-6 rounded-xl shadow-lg">
+        <div className="text-center">
+          <h2 className="mt-6 text-3xl font-extrabold text-gray-900">
+            PromptPay Payment
+          </h2>
+          <p className="mt-2 text-sm text-gray-600">Scan the QR code to pay</p>
+        </div>
+
+        <div className="mt-8 space-y-6">
+          <div className="rounded-md shadow-sm -space-y-px">
+            <div className="flex flex-col items-center">
+              <p className="mb-4 text-lg font-medium text-gray-900">
+                จำนวนที่ต้องชำระ: ฿{amount}
+              </p>
+              {qrCode && (
+                <div className="bg-white p-4 rounded-lg shadow-md">
+                  <img
+                    src={qrCode || "/placeholder.svg"}
+                    alt="QR Code"
+                    className="w-64 h-64"
+                  />
+                </div>
+              )}
+              <a
+                href={qrCode}
+                download="promptpay_qr.png"
+                className="mt-4 text-sm font-medium text-indigo-600 hover:text-indigo-500"
+              >
+                Download QR Code
+              </a>
+            </div>
           </div>
-        )}
-        <button
-          data-dialog-target="modal"
-          class=" mx-auto mt-6 center  rounded-md bg-slate-800 bg-green-800 text-white py-2 px-4 border border-transparent text-center text-sm transition-all shadow-md hover:shadow-lg focus:bg-slate-700 focus:shadow-none active:bg-slate-700 hover:bg-slate-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none ml-2"
-          type="button"
-          onClick={handleOpenModal}
-        >
-          ส่งใบเสร็จโอนเงิน
-        </button>
-        <Dialog open={openModal} handler={handleOpenModal}>
-          <DialogHeader>โปรดใส่รูปใบเสร็จ</DialogHeader>
-          <DialogBody>
-            <input type="file" onChange={handleChange} required />
-            <img src={reciept} className="h-96 mx-auto" />
-          </DialogBody>
-          <DialogFooter>
-            <Button
-              variant="text"
-              color="red"
+
+          <div>
+            <button
               onClick={handleOpenModal}
-              className="mr-1"
+              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
             >
-              <span>Cancel</span>
-            </Button>
-            <Button
-              variant="gradient"
-              color="green"
-              type="submit"
-              onClick={handleComfirmPurchease}
-            >
-              <span>Confirm</span>
-            </Button>
-          </DialogFooter>
-        </Dialog>
+              Upload Payment Receipt
+            </button>
+          </div>
+        </div>
       </div>
+
+      {openModal && (
+        <div className="fixed inset-0 z-30 bg-black/75 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center place-content-center">
+          <div className="relative bg-white rounded-lg shadow-xl max-w-md w-full mx-4 py-auto">
+            <div className="p-6">
+              <h3 className="text-lg font-medium text-gray-900 mb-4">
+                Upload Payment Receipt
+              </h3>
+              <input
+                type="file"
+                onChange={handleChange}
+                className="mb-4 w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
+              />
+              {previewUrl && (
+                <img
+                  src={previewUrl || "/placeholder.svg"}
+                  alt="Receipt preview"
+                  className="max-h-80 mx-auto mb-4"
+                />
+              )}
+              <div className="mt-6 flex justify-end space-x-3">
+                <button
+                  onClick={handleOpenModal}
+                  className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-300"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleConfirmPurchase}
+                  className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                >
+                  Confirm Purchase
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

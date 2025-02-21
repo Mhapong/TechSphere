@@ -61,7 +61,7 @@ function App() {
               />
               <Route path="/about" element={<About />} />
               <Route
-                path="/view-product/:name/:documenId"
+                path="/view-product/:name/:documentId"
                 element={<ViewCourse />}
               />
               <Route path="/test" element={<Test />} />
@@ -133,7 +133,7 @@ function App() {
             <Route path="/my-course" element={<Mycourse />} />
             <Route path="/explore" element={<Explore />} />
             <Route
-              path="/view-product/:name/:documenId"
+              path="/view-product/:name/:documentId"
               element={<ViewCourse />}
             />
             <Route path="/about" element={<About />} />

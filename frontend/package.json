@@ -29,6 +29,7 @@
     "react-responsive-carousel": "^3.2.23",
     "react-router-dom": "^6.28.1",
     "react-scripts": "^5.0.1",
+    "react-select": "^5.10.0",
     "react-use": "^17.6.0",
     "sonner": "^1.7.4",
     "tailwind-scrollbar-hide": "^2.0.0"

@@ -1,10 +1,9 @@
 import React, { useContext, useEffect } from "react";
-import { Button } from "@mui/material";
 import { Card, CardBody, Typography } from "@material-tailwind/react";
 import { useState } from "react";
-import Nav from "../components/navbar";
 import { AuthContext } from "../../context/Auth.context";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 import datapic from "../components/data.png";
 import webpic from "../components/web-100.png";
 import gamepic from "../components/game.png";
@@ -13,15 +12,7 @@ import networkpic from "../components/network.png";
 import morepic from "../components/more.png";
 import homepic from "../components/home-page.png";
 import ax from "../../conf/ax";
-import { Image } from "@mui/icons-material";
-import { useNavigate } from "react-router-dom";
 import no_image from "../components/No_Image_Available.jpeg";
-import Footer from "../components/footer";
-// import { IoIosArrowDropleftCircle, IoIosArrowDroprightCircle } from "react-icons/io";
-// import axios from "axios";
-
-// axios.defaults.baseURL =
-//   process.env.REACT_APP_BASE_URL || "http://localhost:1337";
 
 export default function Home() {
   const navigate = useNavigate();
@@ -93,6 +84,7 @@ export default function Home() {
         </div>
       </div>
 
+      {/* แบ่ง section */}
       <section className="mx-60">
         {/* headerหมวดหมู่คอร์ส*/}
         <div className="mt-5">
@@ -117,7 +109,7 @@ export default function Home() {
                 className="inline-block mx-2 h-full overflow-visible"
               >
                 <Card
-                  className="h-fit my-3 cursor-pointer overflow-visible z-30 flex flex-col shadow-md shadow-blue-100 ring-2 ring-black ring-"
+                  className="h-fit my-3 cursor-pointer overflow-visible flex flex-col shadow-md shadow-blue-100 ring-2 ring-black ring-"
                   onClick={() => navigate("/")}
                 >
                   <CardBody className="flex-none h-24 justify-center self-center place-content-center">
@@ -139,194 +131,101 @@ export default function Home() {
           <h2 className="text-2xl">คอร์สเรียนยอดนิยม</h2>
         </div>
         <div
-          div
           id="slider"
-          className="flex h-[32rem] min-w-full overflow-x-auto overflow-y-visible scroll-y scroll my-7 scroll-smooth whitespace-nowrap gap-10 items-center place-content-center scrollbar-hide"
+          className="flex h-[32rem] min-w-full overflow-visible scroll-y scroll my-7 scroll-smooth whitespace-nowrap gap-10 items-center place-content-center scrollbar-hide"
         >
-          {courseData !== null ? (
-            courseData.map((items) => (
-              <motion.div
-                animate={{}}
-                whileHover={{ scale: 1.1 }}
-                class=" min-w-80 border border-blue-200 rounded-lg shadow-md p-4"
-                onClick={() =>
-                  navigate(`/view-product/${items.Name}/${items.documentId}/`)
-                }
-              >
-                {/* <!-- Discount Badge --> */}
-                <div class="relative">
-                  <span class="absolute top-2 left-2 bg-orange-400 text-white text-xs font-semibold px-2 py-1 rounded-full">
-                    -20%
-                  </span>
-                  {/* <!-- Wishlist Icon --> */}
-                  <button class="absolute top-2 right-2 w-8 h-8 bg-white rounded-full shadow flex items-center justify-center">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      class="h-4 w-4 text-gray-600"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      stroke-width="2"
-                    >
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"
-                      />
-                    </svg>
-                  </button>
-                  {/* <!-- Product Image --> */}
-                  <div>
-                    {items.image !== null ? (
-                      <img
-                        src={`${baseURL}${items.image[0].url}`}
-                        alt="Product Image"
-                        class="object-contain w-full h-[270px] fill rounded-lg"
-                      />
-                    ) : (
-                      <Image
-                        alt="Product Image"
-                        class="object-contain w-full h-[270px] fill"
-                      />
-                    )}
-                  </div>
-
-                  {/* <!-- Quick Actions --> */}
-                  {/* <div class="absolute inset-x-0 bottom-4 flex justify-center space-x-2">
-                  <button class="bg-white px-3 py-1 text-sm text-gray-700 rounded-full shadow">
-                    Quick View
-                  </button>
-                  <button class="bg-white px-3 py-1 text-sm text-gray-700 rounded-full shadow">
-                    Quick Order
-                  </button>
-                </div> */}
-                </div>
-
-                {/* <!-- Product Details --> */}
-                <div class="mt-4">
-                  <p class="text-black text-lg font-semibold line-clamp-[calc(var(--characters)/20)] h-full w-full">
-                    {items.Name}
-                  </p>
-                  {items.lecturer_owner !== null ? (
-                    <p class="uppercase text-green-600 text-xs font-medium">
-                      {/* {items.lecturer_owner.first_name}{" "}
-                      {items.lecturer_owner.last_name} */}
-                    </p>
-                  ) : (
-                    <p class="uppercase text-green-600 text-xs font-medium">
-                      ไม่มีผู้สอน
-                    </p>
-                  )}
-
-                  {/* <!-- Ratings --> */}
-
-                  <div class="flex space-x-1 text-orange-500 text-sm mt-1">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      class="h-4 w-4"
-                      fill="currentColor"
-                      viewBox="0 0 20 20"
-                    >
-                      <path d="M9.049 2.927C9.349 2.2 10.651 2.2 10.951 2.927l1.558 3.779 4.004.37c.85.079 1.194 1.139.572 1.724l-2.922 2.658.87 3.917c.181.816-.68 1.448-1.419 1.034L10 13.01l-3.614 1.96c-.74.414-1.6-.218-1.419-1.034l.87-3.917-2.922-2.658c-.622-.585-.278-1.645.572-1.724l4.004-.37L9.049 2.927z" />
-                    </svg>
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      class="h-4 w-4"
-                      fill="currentColor"
-                      viewBox="0 0 20 20"
-                    >
-                      <path d="M9.049 2.927C9.349 2.2 10.651 2.2 10.951 2.927l1.558 3.779 4.004.37c.85.079 1.194 1.139.572 1.724l-2.922 2.658.87 3.917c.181.816-.68 1.448-1.419 1.034L10 13.01l-3.614 1.96c-.74.414-1.6-.218-1.419-1.034l.87-3.917-2.922-2.658c-.622-.585-.278-1.645.572-1.724l4.004-.37L9.049 2.927z" />
-                    </svg>
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      class="h-4 w-4"
-                      fill="currentColor"
-                      viewBox="0 0 20 20"
-                    >
-                      <path d="M9.049 2.927C9.349 2.2 10.651 2.2 10.951 2.927l1.558 3.779 4.004.37c.85.079 1.194 1.139.572 1.724l-2.922 2.658.87 3.917c.181.816-.68 1.448-1.419 1.034L10 13.01l-3.614 1.96c-.74.414-1.6-.218-1.419-1.034l.87-3.917-2.922-2.658c-.622-.585-.278-1.645.572-1.724l4.004-.37L9.049 2.927z" />
-                    </svg>
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      class="h-4 w-4"
-                      fill="currentColor"
-                      viewBox="0 0 20 20"
-                    >
-                      <path d="M9.049 2.927C9.349 2.2 10.651 2.2 10.951 2.927l1.558 3.779 4.004.37c.85.079 1.194 1.139.572 1.724l-2.922 2.658.87 3.917c.181.816-.68 1.448-1.419 1.034L10 13.01l-3.614 1.96c-.74.414-1.6-.218-1.419-1.034l.87-3.917-2.922-2.658c-.622-.585-.278-1.645.572-1.724l4.004-.37L9.049 2.927z" />
-                    </svg>
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      class="h-4 w-4 text-gray-300"
-                      fill="currentColor"
-                      viewBox="0 0 20 20"
-                    >
-                      <path d="M9.049 2.927C9.349 2.2 10.651 2.2 10.951 2.927l1.558 3.779 4.004.37c.85.079 1.194 1.139.572 1.724l-2.922 2.658.87 3.917c.181.816-.68 1.448-1.419 1.034L10 13.01l-3.614 1.96c-.74.414-1.6-.218-1.419-1.034l.87-3.917-2.922-2.658c-.622-.585-.278-1.645.572-1.724l4.004-.37L9.049 2.927z" />
-                    </svg>
-                  </div>
-
-                  {/* <!-- Pricing --> */}
-                  <div class="flex items-end justify-between">
-                    <div class="flex items-baseline space-x-2 mt-2">
-                      <span class="text-blue-600 text-xl font-semibold">
-                        {items.Price == null
-                          ? "ยังไม่กำหนดราคา"
-                          : `${items.Price} THB`}
+          {courseData && courseData.length === 0 ? (
+            <div className="flex flex-col items-center justify-center h-64">
+              <h1 className="text-3xl font-extrabold text-gray-600">
+                ❌ ไม่พบคอร์สที่ต้องการ
+              </h1>
+              <p className="text-gray-500 mt-2">
+                ลองเปลี่ยนหมวดหมู่หรือช่วงราคา แล้วค้นหาอีกครั้ง
+              </p>
+            </div>
+          ) : (
+            <motion.div
+              className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+            >
+              {courseData.map((course) => (
+                <motion.div
+                  key={course.documentId}
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  <div
+                    className="border rounded-lg shadow-lg cursor-pointer"
+                    onClick={() =>
+                      navigate(
+                        `/view-product/${course.Name}/${course.documentId}/`
+                      )
+                    }
+                  >
+                    <div className="relative h-48 w-full bg-gray-200 flex items-center justify-center">
+                      {course.image ? (
+                        <img
+                          src={`${baseURL}${course.image[0].url}`}
+                          alt={course.Name}
+                          className="object-cover w-full h-full rounded-t-lg"
+                        />
+                      ) : (
+                        <span className="text-gray-400">No Image</span>
+                      )}
+                    </div>
+                    <div className="p-4">
+                      <h3 className="text-lg font-bold line-clamp-2">
+                        {course.Name}
+                      </h3>
+                      <p className="text-gray-600 line-clamp-1">
+                        {course.Description
+                          ? course.Description
+                          : "ไม่มีคำอธิบาย"}
+                      </p>
+                      <p className="text-blue-700 mt-1">
+                        ⏳ ระยะเวลาเรียน: {course.Time_Usage} ชั่วโมง
+                      </p>
+                      <p className="text-green-700">
+                        👨‍🏫 ผู้สอน:{" "}
+                        {course.lecturer_owner !== null
+                          ? `${
+                              course.lecturer_owner?.first_name || "ไม่มีชื่อ"
+                            } ${
+                              course.lecturer_owner?.last_name || "ไม่มีนามสกุล"
+                            }`
+                          : "ไม่ระบุ"}
+                      </p>
+                      {/* <p className="text-gray-500">
+                                  📅 เวลาหมดอายุ{" "}
+                                  {new Date(course.start_date).toLocaleDateString()} ถึง{" "}
+                                  {new Date(course.end_date).toLocaleDateString()}
+                                </p> */}
+                      <span className="text-amber-700 mt-2">
+                        ⭐{" "}
+                        {course.rating === 0
+                          ? "ยังไม่มีรีวิว"
+                          : `(${
+                              course.rating && course.rating.length
+                            } reviews)`}{" "}
                       </span>
-                      <span class="text-gray-400 text-sm line-through">
-                        {items.Price * 1.2} THB
+                      <span className="text-end ml-2">
+                        ขายแล้ว: {course.user_owner.length}
                       </span>
                     </div>
-                    <button class="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center shadow text-white">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="20"
-                        height="20"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="2"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        class="icon icon-tabler icons-tabler-outline icon-tabler-shopping-cart"
-                      >
-                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                        <path d="M6 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" />
-                        <path d="M17 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" />
-                        <path d="M17 17h-11v-14h-2" />
-                        <path d="M6 5l14 1l-1 7h-13" />
-                      </svg>
-                    </button>
+                    <div className="p-4 border-t flex  justify-end">
+                      <span className="text-xl font-bold text-primary">
+                        {course.Price} ฿
+                      </span>
+                    </div>
                   </div>
-                </div>
-              </motion.div>
-
-              // <Card class="max-w-sm bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
-              //   <a href="#">
-              //     <img class="rounded-t-lg" src="/docs/images/blog/image-1.jpg" alt="" />
-              //   </a>
-              //   <div class="p-5">
-              //     <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">{items.Price}</h5>
-
-              //     <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">Here are the biggest enterprise technology acquisitions of 2021 so far, in reverse chronological order.</p>
-              //     <a href="#" class="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-              //       Read more
-              //       <svg class="rtl:rotate-180 w-3.5 h-3.5 ms-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
-              //         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5h12m0 0L9 1m4 4L9 9" />
-              //       </svg>
-              //     </a>
-              //   </div>
-              // </Card>
-            ))
-          ) : (
-            <span>ไม่มีคอร์สในระบบ</span>
+                </motion.div>
+              ))}
+            </motion.div>
           )}
         </div>
       </section>
     </html>
   );
 }
-
-// import ButtonAppBar from "../admin/components/Navbar";
-
-// export default function Home() {
-//   return (
-// }
