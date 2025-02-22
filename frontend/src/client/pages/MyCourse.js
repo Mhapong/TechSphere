@@ -15,11 +15,25 @@ const ReviewModal = ({
     comment,
     setComment,
     selectedCourse,
-    user
+    user,
+    setHasReviewedCourses,
+    readOnly = false,
+    hasReviewedCourses = {},
 }) => {
-    // ฟังก์ชันส่งรีวิว
     const handleSubmit = async (e) => {
         e.preventDefault();
+        if (readOnly) {
+            onClose();
+            return;
+        }
+
+        // เช็กว่าผู้ใช้เคยรีวิวคอร์สนี้ไปแล้วหรือยัง
+        if (hasReviewedCourses[selectedCourse?.id]) {
+            alert("คุณได้รีวิวคอร์สนี้ไปแล้ว!");
+            onClose();  // ปิด Modal ถ้ามีการรีวิวแล้ว
+            return;
+        }
+
         try {
             const response = await ax.post("reviews?populate=*", {
                 data: {
@@ -32,7 +46,12 @@ const ReviewModal = ({
 
             console.log("Review Submitted:", response.data);
 
-            // ปิด Modal และรีเซ็ตค่า
+            // อัปเดตสถานะว่ารีวิวแล้ว
+            setHasReviewedCourses((prev) => ({
+                ...prev,
+                [selectedCourse.id]: { rating, comment },  // อัปเดตรีวิวที่ได้ส่งไป
+            }));
+
             onClose();
             setRating(5);
             setComment("");
@@ -42,6 +61,7 @@ const ReviewModal = ({
             alert("Failed to submit review, please try again.");
         }
     };
+
 
     if (!isOpen) return null;
 
@@ -57,14 +77,16 @@ const ReviewModal = ({
                 </button>
 
                 {/* ฟอร์มให้ดาวและพิมพ์คอมเมนต์ */}
-                <h3 className="text-lg font-semibold mb-4 text-center">Rate & Review</h3>
+                <h3 className="text-lg font-semibold mb-4 text-center">
+                    {readOnly ? "Your Review" : "Rate & Review"}
+                </h3>
 
                 {/* ให้ดาว 1-5 */}
                 <div className="flex justify-center mb-3">
                     {[1, 2, 3, 4, 5].map((num) => (
                         <button
                             key={num}
-                            onClick={() => setRating(num)}
+                            onClick={() => !readOnly && setRating(num)}
                             className={`text-2xl mx-1 ${num <= rating ? "text-yellow-400" : "text-gray-300"}`}
                         >
                             ★
@@ -76,18 +98,21 @@ const ReviewModal = ({
                 <textarea
                     placeholder="Write your review..."
                     value={comment}
-                    onChange={(e) => setComment(e.target.value)}
+                    onChange={(e) => !readOnly && setComment(e.target.value)}
                     className="w-full p-2 mb-3 border rounded"
                     rows="3"
+                    readOnly={readOnly}
                 ></textarea>
 
                 {/* ปุ่ม Submit */}
-                <button
-                    onClick={handleSubmit}
-                    className="w-full py-2 text-white bg-green-600 rounded-lg hover:bg-green-800"
-                >
-                    Submit Review
-                </button>
+                {!readOnly && (
+                    <button
+                        onClick={handleSubmit}
+                        className="w-full py-2 text-white bg-green-600 rounded-lg hover:bg-green-800"
+                    >
+                        Submit Review
+                    </button>
+                )}
             </div>
         </div>
     );
@@ -101,23 +126,27 @@ const TeacherReviewModal = ({
     comment,
     setComment,
     selectedTeacher,
-    user
+    user,
+    readOnly = false,
 }) => {
     const handleSubmit = async (e) => {
         e.preventDefault();
+        if (readOnly) {
+            onClose();
+            return;
+        }
         try {
             const response = await ax.post("lecturer-reviews?populate=*", {
                 data: {
                     star: rating,
                     comment,
                     review: user?.id,
-                    lecturer_review_id: user?.id,
+                    lecturer_review_id: selectedTeacher?.id,
                 },
             });
 
             console.log("Teacher Review Submitted:", response.data);
 
-            // ปิด Modal และรีเซ็ตค่า
             onClose();
             setRating(5);
             setComment("");
@@ -142,14 +171,16 @@ const TeacherReviewModal = ({
                 </button>
 
                 {/* ฟอร์มให้ดาวและพิมพ์คอมเมนต์ */}
-                <h3 className="text-lg font-semibold mb-4 text-center">Rate & Review Teacher</h3>
+                <h3 className="text-lg font-semibold mb-4 text-center">
+                    {readOnly ? "Your Review" : "Rate & Review Teacher"}
+                </h3>
 
                 {/* ให้ดาว 1-5 */}
                 <div className="flex justify-center mb-3">
                     {[1, 2, 3, 4, 5].map((num) => (
                         <button
                             key={num}
-                            onClick={() => setRating(num)}
+                            onClick={() => !readOnly && setRating(num)}
                             className={`text-2xl mx-1 ${num <= rating ? "text-yellow-400" : "text-gray-300"}`}
                         >
                             ★
@@ -161,18 +192,21 @@ const TeacherReviewModal = ({
                 <textarea
                     placeholder="Write your review for teacher..."
                     value={comment}
-                    onChange={(e) => setComment(e.target.value)}
+                    onChange={(e) => !readOnly && setComment(e.target.value)}
                     className="w-full p-2 mb-3 border rounded"
                     rows="3"
+                    readOnly={readOnly}
                 ></textarea>
 
                 {/* ปุ่ม Submit */}
-                <button
-                    onClick={handleSubmit}
-                    className="w-full py-2 text-white bg-green-600 rounded-lg hover:bg-green-800"
-                >
-                    Submit Review
-                </button>
+                {!readOnly && (
+                    <button
+                        onClick={handleSubmit}
+                        className="w-full py-2 text-white bg-green-600 rounded-lg hover:bg-green-800"
+                    >
+                        Submit Review
+                    </button>
+                )}
             </div>
         </div>
     );
@@ -195,6 +229,8 @@ export default function MyCourse() {
     const [teacherRating, setTeacherRating] = useState(5);
     const [teacherComment, setTeacherComment] = useState("");
     const [progress, setProgress] = useState({});
+    const [hasReviewedTeacher, setHasReviewedTeacher] = useState(false);  // สถานะการรีวิวอาจารย์
+    const [hasReviewedCourses, setHasReviewedCourses] = useState({});
 
     useEffect(() => {
         // ดึงข้อมูลผู้ใช้และคอร์สที่ผู้ใช้ลงทะเบียน
@@ -260,9 +296,48 @@ export default function MyCourse() {
         fetchCourseProgresses();
     }, [user]);
 
-    const handleSearch = (e) => {
-        setQuery(e.target.value);
-    };
+    useEffect(() => {
+        const fetchAllReviews = async () => {
+            if (!user) return;
+
+            try {
+                const response = await ax.get("http://localhost:1337/api/reviews?populate=*");
+                console.log("API Response:", response.data);
+                const reviewedCourses = {};
+
+                response.data.data.forEach((review) => {
+                    if (review?.attributes?.review_id && review?.attributes?.users_review?.id === user.id) {
+                        reviewedCourses[review.attributes.review_id] = {
+                            rating: review.attributes.star,
+                            comment: review.attributes.comment,
+                        };
+                    }
+                });
+
+                console.log("🎯 Reviewed Courses Data:", reviewedCourses);
+
+                // บันทึกข้อมูลใน localStorage เพื่อให้มันอยู่หลังจากรีเฟรช
+                localStorage.setItem('hasReviewedCourses', JSON.stringify(reviewedCourses));
+
+                // อัปเดต state
+                setHasReviewedCourses(reviewedCourses);
+            } catch (error) {
+                console.error("Error fetching reviews:", error);
+            }
+        };
+
+        // ถ้ามีข้อมูลใน localStorage ก็สามารถโหลดมาใช้ได้
+        const storedReviews = localStorage.getItem('hasReviewedCourses');
+        if (storedReviews) {
+            setHasReviewedCourses(JSON.parse(storedReviews));
+        }
+
+        fetchAllReviews();
+    }, [user]);  // ตรวจสอบ user ทุกครั้งที่มีการเปลี่ยนแปลง
+
+
+
+
 
     // ป้องกันกรณีที่ course.Name อาจจะ undefined
     const filteredCourses = ownedCourses.filter((course) =>
@@ -270,13 +345,24 @@ export default function MyCourse() {
     );
 
     const handleReviewClick = (course) => {
+        // ตรวจสอบว่าเคยรีวิวคอร์สนี้หรือยัง
+        if (hasReviewedCourses[course.id]) {
+            alert("คุณได้รีวิวคอร์สนี้ไปแล้ว!");
+            return;
+        }
+
         setSelectedCourse(course);
         setIsOpen(true);
     };
 
+
     const handleTeacherReviewClick = (teacher) => {
         setSelectedTeacher(teacher);
         setIsTeacherReviewOpen(true);
+    };
+
+    const handleSearch = (e) => {
+        setQuery(e.target.value);
     };
 
     if (loading) return <div>Loading...</div>;  // กรณีที่ยังโหลดข้อมูล
@@ -305,7 +391,7 @@ export default function MyCourse() {
             {/* กรอบรอบทั้งหมด */}
             {filteredCourses.length > 0 ? (
                 <div className="border border-gray-300 p-5 rounded-xl shadow-lg">
-                    <h2 className="text-2xl font-bold">คอร์สของฉัน</h2>
+                    <h2 className="text-2xl font-bold">คอร์สของคุณ</h2>
                     <div
                         id="slider"
                         className="flex h-[32rem] w-full overflow-x-auto my-7 scroll-smooth whitespace-nowrap gap-10 items-center scrollbar-hide"
@@ -347,24 +433,41 @@ export default function MyCourse() {
                                         {progress[item.documentId] || 0}%
                                     </div>
                                 </div>
-                                {/* ปุ่มกดเพื่อเปิด Modal */}
-                                <div className="flex justify-center mt-4">
-                                    <button
-                                        onClick={() => handleReviewClick(item)}
-                                        className="px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-800"
-                                    >
-                                        รีวิวคอร์สเรียน
-                                    </button>
-                                </div>
-                                {/* ปุ่มกดเพื่อเปิด Modal */}
-                                <div className="flex justify-center mt-4">
-                                    <button
-                                        onClick={() => handleTeacherReviewClick(item)}
-                                        className="px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-800"
-                                    >
-                                        รีวิวอาจารย์ผู้สอน
-                                    </button>
-                                </div>
+                                {/* ปุ่มรีวิวคอร์สเรียน */}
+                                {progress[item.documentId] === 100 && (
+                                    hasReviewedCourses[item.id] ? (
+                                        <button
+                                            onClick={() => {
+                                                setSelectedCourse(item);
+                                                setRating(hasReviewedCourses[item.id].rating);
+                                                setComment(hasReviewedCourses[item.id].comment);
+                                                setIsOpen(true);
+                                            }}
+                                            className="px-4 py-2 text-white bg-green-600 rounded-lg hover:bg-green-800"
+                                        >
+                                            ดูรีวิวที่คุณส่งไป
+                                        </button>
+                                    ) : (
+                                        <button
+                                            onClick={() => handleReviewClick(item)}
+                                            className="px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-800"
+                                        >
+                                            รีวิวคอร์สเรียน
+                                        </button>
+                                    )
+                                )}
+
+                                {/* ปุ่มรีวิวอาจารย์ - แสดงเมื่อ progress = 100 */}
+                                {progress[item.documentId] === 100 && (
+                                    <div className="flex justify-center mt-4">
+                                        <button
+                                            onClick={() => handleTeacherReviewClick(item.lecturer_owner)}
+                                            className="px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-800"
+                                        >
+                                            รีวิวอาจารย์ผู้สอน
+                                        </button>
+                                    </div>
+                                )}
                             </motion.div>
                         ))}
                     </div>
@@ -373,167 +476,22 @@ export default function MyCourse() {
                 <p className="text-center text-gray-500 mt-5">ไม่พบคอร์สที่ค้นหา</p>
             )}
 
-            {/* กรณีไม่มีการลงทะเบียนใดๆ */}
-            {ownedCourses.length === 0 && (
-                <div>
-                    <blockquote className="text-xl italic font-semibold text-center text-gray-900 dark:text-white">
-                        <p>"คุณยังไม่มีการลงทะเบียนเรียน"</p>
-                    </blockquote>
-                    {/* คอร์สยอดนิยม */}
-                    <div>
-                        <h2 className="text-2xl font-bold mb-5">คอร์สเรียนยอดนิยม</h2>
-                    </div>
-                    <div
-                        id="slider"
-                        className="flex h-[32rem] min-w-full overflow-x-auto overflow-y-visible scroll-y scroll my-7 scroll-smooth whitespace-nowrap gap-10 items-center place-content-center scrollbar-hide"
-                    >
-                        {courseData.map((items) => (
-                            <motion.div
-                                key={items.id}
-                                whileHover={{ scale: 1.1 }}
-                                className="min-w-80 border border-blue-200 rounded-lg shadow-md p-4"
-                                onClick={() =>
-                                    navigate(`/view-product/${items.Name}/${items.documentId}/`)
-                                }
-                            >
-                                {/* <!-- Discount Badge --> */}
-                                <div className="relative">
-                                    <span className="absolute top-2 left-2 bg-orange-400 text-white text-xs font-semibold px-2 py-1 rounded-full">
-                                        -20%
-                                    </span>
-                                </div>
-                                {/* <!-- Wishlist Icon --> */}
-                                <button className="absolute top-2 right-2 w-8 h-8 bg-white rounded-full shadow flex items-center justify-center">
-                                    <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        className="h-4 w-4 text-gray-600"
-                                        fill="none"
-                                        viewBox="0 0 24 24"
-                                        stroke="currentColor"
-                                        strokeWidth="2"
-                                    >
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"
-                                        />
-                                    </svg>
-                                </button>
-                                {/* <!-- Product Image --> */}
-                                <div>
-                                    <Image
-                                        src="https://primecomputer.com.bd/wp-content/uploads/2024/07/oraimo-headphones.jpg"
-                                        alt="Product Image"
-                                        className="object-cover w-full h-[270px] rounded-lg"
-                                    />
-                                </div>
-                                {/* <!-- Product Details --> */}
-                                <div className="mt-4">
-                                    <p className="text-black text-lg font-semibold line-clamp-[calc(var(--characters)/20)] h-full w-full">
-                                        {items.Name}
-                                    </p>
-                                    {items.lecturer_owner !== null ? (
-                                        <p className="uppercase text-green-600 text-xs font-medium">
-                                            {items.lecturer_owner.first_name}{" "}
-                                            {items.lecturer_owner.last_name}
-                                        </p>
-                                    ) : (
-                                        <p className="uppercase text-green-600 text-xs font-medium">
-                                            ไม่มีผู้สอน
-                                        </p>
-                                    )}
-
-                                    {/* <!-- Ratings --> */}
-                                    <div className="flex space-x-1 text-orange-500 text-sm mt-1">
-                                        <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            className="h-4 w-4"
-                                            fill="currentColor"
-                                            viewBox="0 0 20 20"
-                                        >
-                                            <path d="M9.049 2.927C9.349 2.2 10.651 2.2 10.951 2.927ล1.558 3.779 4.004.37c.85.079 1.194 1.139.572 1.724ล-2.922 2.658.87 3.917c.181.816-.68 1.448-1.419 1.034L10 13.01ล-3.614 1.96c-.74.414-1.6-.218-1.419-1.034ล.87-3.917-2.922-2.658c-.622-.585-.278-1.645.572-1.724ล4.004-.37L9.049 2.927z" />
-                                        </svg>
-                                        <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            className="h-4 w-4"
-                                            fill="currentColor"
-                                            viewBox="0 0 20 20"
-                                        >
-                                            <path d="M9.049 2.927C9.349 2.2 10.651 2.2 10.951 2.927ล1.558 3.779 4.004.37c.85.079 1.194 1.139.572 1.724ล-2.922 2.658.87 3.917c.181.816-.68 1.448-1.419 1.034L10 13.01ล-3.614 1.96c-.74.414-1.6-.218-1.419-1.034ล.87-3.917-2.922-2.658c-.622-.585-.278-1.645.572-1.724ล4.004-.37L9.049 2.927z" />
-                                        </svg>
-                                        <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            className="h-4 w-4"
-                                            fill="currentColor"
-                                            viewBox="0 0 20 20"
-                                        >
-                                            <path d="M9.049 2.927C9.349 2.2 10.651 2.2 10.951 2.927ล1.558 3.779 4.004.37c.85.079 1.194 1.139.572 1.724ล-2.922 2.658.87 3.917c.181.816-.68 1.448-1.419 1.034L10 13.01ล-3.614 1.96c-.74.414-1.6-.218-1.419-1.034ล.87-3.917-2.922-2.658c-.622-.585-.278-1.645.572-1.724ล4.004-.37L9.049 2.927z" />
-                                        </svg>
-                                        <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            className="h-4 w-4"
-                                            fill="currentColor"
-                                            viewBox="0 0 20 20"
-                                        >
-                                            <path d="M9.049 2.927C9.349 2.2 10.651 2.2 10.951 2.927ล1.558 3.779 4.004.37c.85.079 1.194 1.139.572 1.724ล-2.922 2.658.87 3.917c.181.816-.68 1.448-1.419 1.034L10 13.01ล-3.614 1.96c-.74.414-1.6-.218-1.419-1.034ล.87-3.917-2.922-2.658c-.622-.585-.278-1.645.572-1.724ล4.004-.37L9.049 2.927z" />
-                                        </svg>
-                                        <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            className="h-4 w-4 text-gray-300"
-                                            fill="currentColor"
-                                            viewBox="0 0 20 20"
-                                        >
-                                            <path d="M9.049 2.927C9.349 2.2 10.651 2.2 10.951 2.927ล1.558 3.779 4.004.37c.85.079 1.194 1.139.572 1.724ล-2.922 2.658.87 3.917c.181.816-.68 1.448-1.419 1.034L10 13.01ล-3.614 1.96c-.74.414-1.6-.218-1.419-1.034ล.87-3.917-2.922-2.658c-.622-.585-.278-1.645.572-1.724ล4.004-.37L9.049 2.927z" />
-                                        </svg>
-                                    </div>
-
-                                    {/* <!-- Pricing --> */}
-                                    <div className="flex items-end justify-between">
-                                        <div className="flex items-baseline space-x-2 mt-2">
-                                            <span className="text-blue-600 text-xl font-semibold">
-                                                {items.Price} THB
-                                            </span>
-                                            <span className="text-gray-400 text-sm line-through">
-                                                {items.Price * 1.2} THB
-                                            </span>
-                                        </div>
-                                        <button className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center shadow text-white">
-                                            <svg
-                                                xmlns="http://www.w3.org/2000/svg"
-                                                width="20"
-                                                height="20"
-                                                viewBox="0 0 24 24"
-                                                fill="none"
-                                                stroke="currentColor"
-                                                strokeWidth="2"
-                                                strokeLinecap="round"
-                                                strokeLinejoin="round"
-                                                className="icon icon-tabler icons-tabler-outline icon-tabler-shopping-cart"
-                                            >
-                                                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                                                <path d="M6 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" />
-                                                <path d="M17 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" />
-                                                <path d="M17 17h-11v-14h-2" />
-                                                <path d="M6 5l14 1l-1 7h-13" />
-                                            </svg>
-                                        </button>
-                                    </div>
-                                </div>
-                            </motion.div>
-                        ))}
-                    </div>
-                </div>
-            )}
             <ReviewModal
                 isOpen={isOpen}
-                onClose={() => setIsOpen(false)}
+                onClose={() => {
+                    setIsOpen(false);
+                    setSelectedCourse(null); // เคลียร์ค่าเมื่อปิด
+                }}
                 rating={rating}
                 setRating={setRating}
                 comment={comment}
                 setComment={setComment}
                 selectedCourse={selectedCourse}
                 user={user}
+                setHasReviewedCourses={setHasReviewedCourses}
+                readOnly={selectedCourse ? !!hasReviewedCourses[selectedCourse.id] : false}
             />
+
             {/* Modal สำหรับรีวิวอาจารย์ */}
             <TeacherReviewModal
                 isOpen={isTeacherReviewOpen}
