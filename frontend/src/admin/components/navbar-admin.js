@@ -10,6 +10,7 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
 import Groups3Icon from "@mui/icons-material/Groups3";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import DiscountIcon from "@mui/icons-material/Discount";
 import ax from "../../conf/ax";
 
 export default function NavAdmin() {
@@ -23,7 +24,6 @@ export default function NavAdmin() {
     const fetchCount = async () => {
       try {
         const response = await ax.get(`counts`);
-        setCount(response.data.counts);
       } catch (e) {
         console.log("Error", e);
       }
@@ -45,6 +45,13 @@ export default function NavAdmin() {
       current: true,
       key: "",
       icon: <AddCircleOutlineIcon />,
+    },
+    {
+      name: "โปรโมชั่น",
+      href: "/promotion",
+      current: true,
+      key: `${Count ? `${Count["promotion"]}` : "0"}`,
+      icon: <DiscountIcon />,
     },
     {
       name: "คอร์สทั้งหมด",

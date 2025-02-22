@@ -10,6 +10,13 @@ module.exports = {
         );
       }
 
+      counts["promotion"] = await strapi.entityService.count(
+        "api::promotion.promotion",
+        {
+          filters: { status_promotion: "Activate" },
+        }
+      );
+
       counts["confirm-purchase"] = await strapi.entityService.count(
         "api::confirm-purchase.confirm-purchase",
         {
