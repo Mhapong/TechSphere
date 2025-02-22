@@ -38,6 +38,8 @@ import CourseStudentTable from "./admin/pages/CourseViewStudent.js";
 import PaymentSucceed from "./client/pages/paymentSucceedPage.js";
 import Chat from "./admin/components/chat.js";
 import EditContent from "./admin/pages/EditContent.js";
+import PromotionAdminPage from "./admin/pages/Promotion.js";
+import AddEditPromotion from "./admin/pages/AddEditPromotion.js";
 
 function App() {
   const { state } = useContext(AuthContext);
@@ -61,7 +63,7 @@ function App() {
               />
               <Route path="/about" element={<About />} />
               <Route
-                path="/view-product/:name/:documenId"
+                path="/view-product/:name/:documentId"
                 element={<ViewCourse />}
               />
               <Route path="/test" element={<Test />} />
@@ -98,6 +100,7 @@ function App() {
               <Route path="/" element={<HomeAdmin />} />
               <Route path="/create-course" element={<AddCourse />} />
               <Route path="/create-topic/:topicid" element={<AddTopic />} />
+              <Route path="/promotion/view" element={<AddEditPromotion />} />
               <Route
                 path="/edit-content/:contentid"
                 element={<EditContent />}
@@ -108,6 +111,7 @@ function App() {
               />
               <Route path="/view" element={<CourseView />} />
               <Route path="/view-student" element={<CourseStudentTable />} />
+              <Route path="/promotion" element={<PromotionAdminPage />} />
               <Route path="/lecturer" element={<LecturerAll />} />
               <Route path="/student" element={<StudentTable />} />
               <Route path="/finance" element={<FinanceOrder />} />
@@ -133,7 +137,7 @@ function App() {
             <Route path="/my-course" element={<Mycourse />} />
             <Route path="/explore" element={<Explore />} />
             <Route
-              path="/view-product/:name/:documenId"
+              path="/view-product/:name/:documentId"
               element={<ViewCourse />}
             />
             <Route path="/about" element={<About />} />

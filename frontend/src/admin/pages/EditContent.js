@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { useLocation, useNavigate, useParams } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 import ax from "../../conf/ax";
 import { Toaster, toast } from "sonner";
-import { Edit } from "@mui/icons-material";
 
 const EditContent = () => {
   const location = useLocation();
@@ -10,7 +9,7 @@ const EditContent = () => {
   const [title, setTitle] = useState(Value?.topic_title || "");
   const [TimeUsage, setTimeUsage] = useState(Value?.time || "");
   const [detail, setDetail] = useState(Value?.detail || "");
-  console.log(Value);
+
   useEffect(() => {
     if (Value) {
       setTitle(Value.content_title);

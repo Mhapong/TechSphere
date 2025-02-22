@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router";
+import { useLocation, useNavigate, useParams } from "react-router";
 import ax from "../../conf/ax.js";
+import { Toaster, toast } from "sonner";
 
 const EditProfile = () => {
   const [User, setUser] = useState("");
@@ -9,6 +10,7 @@ const EditProfile = () => {
   const [First_Name, setFirst_Name] = useState(User?.first_name || "");
   const [Last_Name, setLast_Name] = useState(User?.last_name || "");
   const [background, setBackground] = useState(User?.background || "");
+  const location = useLocation();
   // const [userProfile, setuserProfile] = useState(
   //   User?.profile_picture[0]?.url || ""
   // );
@@ -23,7 +25,6 @@ const EditProfile = () => {
   const fetchUser = async () => {
     try {
       const response = await ax.get(`users/${userid}?populate=*`);
-      console.log(response.data);
       setUser(response.data);
       setPreviewUrl(response.data.profile_picture[0].url);
     } catch (e) {
@@ -88,7 +89,6 @@ const EditProfile = () => {
       const {
         data: [{ id, url }],
       } = response;
-      console.log(id, url);
 
       await updateUserProfilePicture(id, url);
       setFile(null);
@@ -110,7 +110,17 @@ const EditProfile = () => {
         last_name: Last_Name,
         background: background,
       });
-      alert("อัปเดตข้อมูลสำเร็จ!");
+      toast.success("บันทึกข้อมูลคอร์สสำเร็จ!", {
+        // position: "top-center",
+        duration: 5000,
+        style: {
+          fontSize: "1.5rem",
+          padding: "20px",
+          fontWeight: "bold",
+          textAlign: "center",
+          borderRadius: "10px",
+        },
+      });
       navigate(-1);
     } catch (error) {
       console.error("Error updating user:", error);
@@ -136,6 +146,7 @@ const EditProfile = () => {
   // const GetPic
   return (
     <div className="w-[800px] mx-auto mt-12 p-4">
+      <Toaster />
       <h1 className="text-3xl font-bold text-black mb-6 flex items-center justify-center">
         Edit Profile
       </h1>
@@ -211,6 +222,12 @@ const EditProfile = () => {
       <form className="grid grid-cols-1 gap-6" onSubmit={handleSubmit}>
         {/* Username */}
         <div className="p-2">
+          <label
+            htmlFor="title"
+            className="block text-sm font-medium text-gray-700"
+          >
+            ชื่อผู้ใช้งาน :
+          </label>
           <input
             type="text"
             id="Username"
@@ -225,6 +242,12 @@ const EditProfile = () => {
 
         {/* Email */}
         <div className="p-2">
+          <label
+            htmlFor="title"
+            className="block text-sm font-medium text-gray-700"
+          >
+            Email ของผู้ใช้งาน :
+          </label>
           <input
             type="email"
             id="Email"
@@ -241,6 +264,12 @@ const EditProfile = () => {
         <div className="p-2 grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Organizer Name */}
           <div>
+            <label
+              htmlFor="title"
+              className="block text-sm font-medium text-gray-700"
+            >
+              ชื่อของผู้ใช้งาน :
+            </label>
             <input
               type="text"
               id="first_name"
@@ -255,6 +284,12 @@ const EditProfile = () => {
 
           {/* Organizer Email */}
           <div>
+            <label
+              htmlFor="title"
+              className="block text-sm font-medium text-gray-700"
+            >
+              นามสกุลของผู้ใช้งาน :
+            </label>
             <input
               type="text"
               id="last_name"
@@ -270,6 +305,12 @@ const EditProfile = () => {
         {User.role && User.role.name === "Lecturer" && (
           <div className="p-2">
             <div>
+              <label
+                htmlFor="title"
+                className="block text-sm font-medium text-gray-700"
+              >
+                รายละเอียดตัวเอง :
+              </label>
               <textarea
                 id="background"
                 name="background"
@@ -294,7 +335,10 @@ const EditProfile = () => {
         <div className="col-span-full mt-6 p-2  grid grid-cols-1 md:grid-cols-2 gap-6">
           <button
             className="block w-full bg-[#3b3f44] hover:bg-[#000000] text-white font-bold py-3 px-4 rounded-full"
-            onClick={() => navigate(-1)}
+            onClick={(e) => {
+              e.preventDefault();
+              navigate(-1);
+            }}
           >
             ยกเลิกการบันทึก
           </button>

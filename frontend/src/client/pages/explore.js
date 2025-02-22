@@ -1,56 +1,46 @@
+"use client";
+
 import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import no_image from "../components/No_Image_Available.jpeg";
-import axios from "axios";
-import ax from "../../conf/ax";
-import { Image } from "@mui/icons-material";
+import { motion } from "framer-motion";
 import { useCart } from "../../context/Cart.context";
-import Footer from "../components/footer";
-import { Option, Select } from "@material-tailwind/react";
+import ax from "../../conf/ax";
+import { Range, getTrackBackground } from "react-range";
+import { Carousel } from "react-responsive-carousel";
+import "react-responsive-carousel/lib/styles/carousel.min.css";
 
-// const categories = [
-//   "AI",
-//   "Web Develop",
-//   "Hardware",
-//   "Network",
-//   "Data Analysis",
-//   "Game Developer",
-// ];
-
-export default function Explore() {
+const Explore = () => {
   const [courseData, setCourseData] = useState([]);
   const [query, setQuery] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [selectedCategory, setSelectedCategory] = useState("");
   const [categories, setCategories] = useState([]);
+  const [priceRange, setPriceRange] = useState([0, 5000]);
   const { addToCart } = useCart();
   const navigate = useNavigate();
-  const baseURL = "http://localhost:1337";
+  const baseURL = process.env.REACT_APP_API_URL || "http://localhost:1337";
+
+  useEffect(() => {
+    fetchCategories();
+    fetchCourses();
+  }, []);
 
   const fetchCourses = async () => {
     try {
       const response = await ax.get(`courses?populate=*`);
-      console.log(response.data.data);
       setCourseData(response.data.data);
     } catch (err) {
-      console.log(err);
+      console.error(err);
     }
   };
 
   const fetchCategories = async () => {
     try {
       const response = await ax.get(`categories`);
-      console.log(response.data.data);
       setCategories(response.data.data);
     } catch (err) {
-      console.log(err);
+      console.error(err);
     }
   };
-
-  useEffect(() => {
-    fetchCategories();
-    fetchCourses();
-  }, []);
 
   const filteredCourses = courseData.filter((course) => {
     const matchesSearch = course.Name.toLowerCase().includes(
@@ -59,171 +49,193 @@ export default function Explore() {
     const matchesCategory = selectedCategory
       ? course.categories.some((cat) => cat.tag === selectedCategory)
       : true;
-
-    return matchesSearch && matchesCategory;
+    const matchesPrice =
+      course.Price >= priceRange[0] && course.Price <= priceRange[1];
+    return matchesSearch && matchesCategory && matchesPrice;
   });
 
   return (
-    <html>
-      <div className="flex">
-        {/* Sidebar */}
-        <motion.aside
-          initial={{ x: -100, opacity: 0 }}
-          animate={{ x: 0, opacity: 1 }}
-          transition={{ duration: 0.5 }}
-          className="w-1/4 p-4 bg-gray-100 min-h-screen"
-        >
-          <h2 className="text-xl font-bold my-2 ml-4">หมวดหมู่สินค้า</h2>
-          <Select
-            className="bg-white text-black rounded-lg"
-            label="เลือกหมวดหมู่"
-            value={selectedCategory}
-            onChange={(e) => setSelectedCategory(e)}
-          >
-            {categories.map((category) => (
-              <Option key={category} value={category.tag}>
-                {category.tag}
-              </Option>
-            ))}
-          </Select>
-          <ul className="mx-8">
-            {categories &&
-              categories.map((category) => (
-                <li
-                  key={category.tag}
-                  className={`p-2 cursor-pointer rounded-lg hover:bg-blue-200 ${
-                    selectedCategory === category.tag
-                      ? "bg-blue-400 text-white"
-                      : ""
-                  }`}
-                  onClick={() =>
-                    setSelectedCategory(
-                      category.tag === selectedCategory ? null : category.tag
-                    )
-                  }
-                >
-                  {category.tag}
-                </li>
-              ))}
-          </ul>
-        </motion.aside>
+    <div className="bg-gray-50 min-h-screen">
+      <Carousel
+        autoPlay
+        infiniteLoop
+        showThumbs={false}
+        showStatus={false}
+        interval={5000}
+        className="mb-8"
+      >
+        <div className="h-64 bg-blue-500 flex items-center justify-center">
+          <h2 className="text-4xl text-white font-bold">Featured Courses</h2>
+        </div>
+        <div className="h-64 bg-green-500 flex items-center justify-center">
+          <h2 className="text-4xl text-white font-bold">New Arrivals</h2>
+        </div>
+        <div className="h-64 bg-purple-500 flex items-center justify-center">
+          <h2 className="text-4xl text-white font-bold">Special Offers</h2>
+        </div>
+      </Carousel>
 
-        {/* Main Content */}
-        <div className="w-3/4 p-4">
-          {/* Search Bar */}
-          <div className="mb-4 flex items-center space-x-2">
+      <div className="container mx-auto px-4 py-4">
+        <div className="flex flex-col lg:flex-row gap-8">
+          <aside className="w-full lg:w-1/4 space-y-6">
+            <div>
+              <h2 className="text-lg font-semibold mb-2">Categories</h2>
+              <select
+                className="w-full p-2 border border-gray-300 rounded-md"
+                onChange={(e) => setSelectedCategory(e.target.value)}
+              >
+                <option value="">All Categories</option>
+                {categories.map((category) => (
+                  <option key={category.tag} value={category.tag}>
+                    {category.tag}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <h2 className="text-lg font-semibold mb-2">Price Range</h2>
+              <Range
+                step={100}
+                min={0}
+                max={5000}
+                values={priceRange}
+                onChange={(values) => setPriceRange(values)}
+                renderTrack={({ props, children }) => (
+                  <div
+                    {...props}
+                    className="w-full h-3 bg-gray-200 rounded-md"
+                    style={{
+                      background: getTrackBackground({
+                        values: priceRange,
+                        colors: ["#ccc", "#3b82f6", "#ccc"],
+                        min: 0,
+                        max: 5000,
+                      }),
+                    }}
+                  >
+                    {children}
+                  </div>
+                )}
+                renderThumb={({ props }) => (
+                  <div
+                    {...props}
+                    className="w-5 h-5 bg-blue-500 rounded-full shadow focus:outline-none"
+                  />
+                )}
+              />
+              <div className="flex justify-between text-sm mt-2">
+                <span>{priceRange[0]} THB</span>
+                <span>{priceRange[1]} THB</span>
+              </div>
+            </div>
+          </aside>
+
+          <main className="w-full lg:w-3/4">
             <input
               type="text"
               placeholder="ค้นหาโดยใช้ชื่อวิชา..."
-              className="w-full p-2 border border-gray-300 rounded-lg"
+              className="w-full p-2 border mb-6 rounded-lg"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
             />
-            <button className="p-2 bg-blue-500 text-white rounded-lg">
-              ค้นหา
-            </button>
-          </div>
 
-          <h1 className="text-4xl font-extrabold my-3">
-            ค้นหารายการ <span className="text-teal-600">{query}</span>
-          </h1>
-
-          {/* Course List */}
-          <motion.div
-            className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-          >
-            {filteredCourses.map((items) => (
+            <h1 className="text-3xl font-bold mb-6 ">
+              ค้นหารายการ <span className="text-primary ">{query}</span>
+            </h1>
+            {filteredCourses.length === 0 ? (
+              <div className="flex flex-col items-center justify-center h-64">
+                <h1 className="text-3xl font-extrabold text-gray-600">
+                  ❌ ไม่พบคอร์สที่ต้องการ
+                </h1>
+                <p className="text-gray-500 mt-2">
+                  ลองเปลี่ยนหมวดหมู่หรือช่วงราคา แล้วค้นหาอีกครั้ง
+                </p>
+              </div>
+            ) : (
               <motion.div
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                transition={{ duration: 0.1 }}
-                className="bg-white shadow-lg rounded-2xl overflow-hidden transition-all duration-300 h-[28rem] cursor-pointer"
-                onClick={() =>
-                  navigate(`/view-product/${items.Name}/${items.documentId}/`)
-                }
+                className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
               >
-                {/* Course Image */}
-                <div className="relative h-56">
-                  {items.image !== null ? (
-                    <img
-                      src={`${baseURL}${items.image[0].url}`}
-                      alt="Product Image"
-                      class="w-full h-56 object-cover"
-                    />
-                  ) : (
-                    <Image
-                      alt="Product Image"
-                      class="w-full h-56 object-cover"
-                    />
-                  )}
-                </div>
-
-                {/* Course Details */}
-                <div className="flex-row p-4">
-                  <h3 className="flex-auto text-lg font-semibold text-gray-800 mb-auto">
-                    {items.Name}
-                  </h3>
-                  {items.category}
-
-                  {/* Rating */}
-                  <div className="flex items-center space-x-1 text-yellow-500 mt-2">
-                    {"⭐".repeat(items.rating)}{" "}
-                    <span className="text-gray-500 text-sm">
-                      ({items.reviews} reviews)
-                    </span>
-                  </div>
-                  <div className="flex items-center text-amber-500 mt-2">
-                    <span className="text-lg font-bold">⭐ 4.9</span>
-                    <span className="text-gray-900 text-sm ml-2">
-                      {items.Time_Usage} ชั่วโมง
-                    </span>
-                  </div>
-
-                  {/* Price */}
-                  <div className="flex justify-between items-center mt-4">
-                    <div>
-                      <span className="text-xl font-bold text-blue-600">
-                        {items.Price} THB
-                      </span>
-                      {items.discount && (
-                        <span className="text-sm text-gray-400 line-through ml-2">
-                          {items.originalPrice} THB
+                {filteredCourses.map((course) => (
+                  <motion.div
+                    key={course.documentId}
+                    whileHover={{ scale: 1.03 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    <div
+                      className="border rounded-lg shadow-lg cursor-pointer"
+                      onClick={() =>
+                        navigate(
+                          `/view-product/${course.Name}/${course.documentId}/`
+                        )
+                      }
+                    >
+                      <div className="relative h-48 w-full bg-gray-200 flex items-center justify-center">
+                        {course.image ? (
+                          <img
+                            src={`${baseURL}${course.image[0].url}`}
+                            alt={course.Name}
+                            className="object-cover w-full h-full rounded-t-lg"
+                          />
+                        ) : (
+                          <span className="text-gray-400">No Image</span>
+                        )}
+                      </div>
+                      <div className="p-4">
+                        <h3 className="text-lg font-bold line-clamp-2">
+                          {course.Name}
+                        </h3>
+                        <p className="text-gray-600 line-clamp-1">
+                          {course.Description
+                            ? course.Description
+                            : "ไม่มีคำอธิบาย"}
+                        </p>
+                        <p className="text-blue-700 mt-1">
+                          ⏳ ระยะเวลาเรียน: {course.Time_Usage} ชั่วโมง
+                        </p>
+                        <p className="text-green-700">
+                          👨‍🏫 ผู้สอน:{" "}
+                          {course.lecturer_owner !== null
+                            ? `${
+                                course.lecturer_owner?.first_name || "ไม่มีชื่อ"
+                              } ${
+                                course.lecturer_owner?.last_name ||
+                                "ไม่มีนามสกุล"
+                              }`
+                            : "ไม่ระบุ"}
+                        </p>
+                        {/* <p className="text-gray-500">
+                                  📅 เวลาหมดอายุ{" "}
+                                  {new Date(course.start_date).toLocaleDateString()} ถึง{" "}
+                                  {new Date(course.end_date).toLocaleDateString()}
+                                </p> */}
+                        <span className="text-amber-700 mt-2">
+                          ⭐{" "}
+                          {course.rating === 0
+                            ? "ยังไม่มีรีวิว"
+                            : `(${course.rating.length} reviews)`}{" "}
                         </span>
-                      )}
+                        <span className="text-end ml-2">
+                          ขายแล้ว: {course.user_owner.length}
+                        </span>
+                      </div>
+                      <div className="p-4 border-t flex  justify-end">
+                        <span className="text-xl font-bold text-primary">
+                          {course.Price} ฿
+                        </span>
+                      </div>
                     </div>
-                  </div>
-                </div>
+                  </motion.div>
+                ))}
               </motion.div>
-              // <motion.div
-              //   key={items.id}
-              //   className="p-4 bg-white rounded-lg shadow-lg hover:shadow-2xl transition duration-300 cursor-pointer"
-              //   whileHover={{ scale: 1.05 }}
-              //   onClick={() =>
-              //     navigate(`/view-product/${items.Name}/${items.documentId}/`)
-              //   }
-              // >
-              //   {items.image !== null ? (
-              //     <img
-              //       src={`${baseURL}${items.image[0].url}`}
-              //       alt="Product Image"
-              //       class="object-contain w-full h-[270px] fill"
-              //     />
-              //   ) : (
-              //     <Image
-              //       alt="Product Image"
-              //       class="object-contain w-full h-[270px] fill"
-              //     />
-              //   )}
-              //   <h3 className="text-lg font-semibold">{items.Name}</h3>
-              //   <p className="text-gray-600">{items.Price} THB</p>
-              // </motion.div>
-            ))}
-          </motion.div>
+            )}
+          </main>
         </div>
       </div>
-    </html>
+    </div>
   );
-}
+};
+
+export default Explore;

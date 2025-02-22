@@ -1,0 +1,47 @@
+{
+  "kind": "collectionType",
+  "collectionName": "promotions",
+  "info": {
+    "singularName": "promotion",
+    "pluralName": "promotions",
+    "displayName": "Promotion",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "Code": {
+      "type": "string",
+      "required": true
+    },
+    "discount": {
+      "type": "integer",
+      "required": true
+    },
+    "detail": {
+      "type": "string"
+    },
+    "picture_promotion": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": [
+        "images",
+        "files"
+      ]
+    },
+    "end_date": {
+      "type": "date"
+    },
+    "status_promotion": {
+      "type": "enumeration",
+      "enum": [
+        "Activate",
+        "Deactivate"
+      ],
+      "default": "Deactivate"
+    }
+  }
+}

@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useContext } from "react";
 import { AuthContext } from "../../context/Auth.context";
 // import { BarChart } from "@mui/x-charts/BarChart";
-import { Line } from "react-chartjs-2";
 import ax from "../../conf/ax";
+import { Line } from "react-chartjs-2";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -12,6 +12,7 @@ import {
   Title,
   Tooltip,
   Legend,
+  Filler,
 } from "chart.js";
 
 ChartJS.register(
@@ -21,45 +22,16 @@ ChartJS.register(
   LineElement,
   Title,
   Tooltip,
-  Legend
+  Legend,
+  Filler
 );
-
-const data = {
-  labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
-  datasets: [
-    {
-      label: "Income",
-      data: [1200, 1500, 1800, 1700, 1900, 2100, 2300], //จำลองก่อนนะ
-      backgroundColor: "rgba(75, 192, 192, 0.2)",
-      borderColor: "rgba(43, 63, 229, 0.8)",
-      borderWidth: 2,
-    },
-  ],
-};
-
-const options = {
-  responsive: true,
-  // maintainAspectRatio: false,
-  plugins: {
-    title: {
-      display: true,
-      text: "Daily Income and Expenses",
-    },
-  },
-  scales: {
-    x: {
-      type: "category",
-    },
-    y: {
-      beginAtZero: true,
-    },
-  },
-};
 
 const HomeAdmin = () => {
   const { state: ContextState } = useContext(AuthContext);
   const { user } = ContextState;
   const [Count, setCount] = useState(null);
+  const [PurchaseAmount, setPurchaseAmount] = useState([]);
+  const [PurchaseDay, setPurchaseDay] = useState([]);
 
   useEffect(() => {
     const fetchCount = async () => {
@@ -72,6 +44,125 @@ const HomeAdmin = () => {
     };
     fetchCount();
   }, []);
+
+  useEffect(() => {
+    const fetchPurchase = async () => {
+      try {
+        const response = await ax.get(`confirm-purchases?populate=*`);
+        const confirmedData = response.data.data
+          .filter((item) => item.status_confirm === "confirmed")
+          .map((item) => ({
+            amount: item.amount,
+            date: new Date(item.updatedAt).toLocaleDateString("th-TH"),
+          }));
+
+        const totalPerDay = {};
+        confirmedData.forEach(({ amount, date }) => {
+          if (totalPerDay[date]) {
+            totalPerDay[date] += amount;
+          } else {
+            totalPerDay[date] = amount;
+          }
+        });
+
+        const dates = Object.keys(totalPerDay);
+        const amounts = Object.values(totalPerDay);
+
+        setPurchaseAmount(amounts);
+        setPurchaseDay(dates);
+      } catch (e) {
+        console.log("Error", e);
+      }
+    };
+    fetchPurchase();
+  }, []);
+
+  const data = {
+    labels: PurchaseDay,
+    datasets: [
+      {
+        label: "Income",
+        data: PurchaseAmount,
+        backgroundColor: (context) => {
+          const chart = context.chart;
+          const { ctx, chartArea } = chart;
+
+          if (!chartArea) return "rgba(75, 192, 192, 0.2)";
+
+          const gradient = ctx.createLinearGradient(
+            0,
+            chartArea.top,
+            0,
+            chartArea.bottom
+          );
+          gradient.addColorStop(0, "rgba(43, 63, 229, 0.5)");
+          gradient.addColorStop(1, "rgba(43, 63, 229, 0)");
+
+          return gradient;
+        },
+        borderColor: "rgba(43, 63, 229, 0.8)",
+        borderWidth: 3,
+        pointBackgroundColor: "rgba(43, 63, 229, 1)",
+        pointBorderColor: "#fff",
+        pointHoverRadius: 6,
+        pointRadius: 4,
+        pointHoverBackgroundColor: "#ff6384",
+        tension: 0.4, // ทำให้เส้นโค้งขึ้น
+        fill: true, // ให้มีเงาใต้กราฟ
+      },
+    ],
+  };
+
+  const options = {
+    responsive: true,
+    plugins: {
+      title: {
+        display: true,
+        text: "Daily Income and Expenses",
+        font: { size: 18, weight: "bold" },
+        color: "#333",
+        padding: 20,
+      },
+      tooltip: {
+        backgroundColor: "rgba(0, 0, 0, 0.8)",
+        titleColor: "#fff",
+        bodyColor: "#fff",
+        borderColor: "#fff",
+        borderWidth: 1,
+        cornerRadius: 5,
+      },
+      legend: {
+        display: true,
+        labels: {
+          color: "#333",
+          font: { size: 14 },
+          boxWidth: 20,
+          padding: 20,
+        },
+      },
+    },
+    scales: {
+      x: {
+        type: "category",
+        ticks: {
+          color: "#666",
+          font: { size: 12 },
+        },
+        grid: { display: false },
+      },
+      y: {
+        beginAtZero: true,
+        ticks: {
+          color: "#666",
+          font: { size: 12 },
+        },
+        grid: {
+          color: "rgba(200, 200, 200, 0.3)",
+          borderDash: [5, 5],
+        },
+      },
+    },
+  };
 
   return (
     <div className="bg-indigo-50 min-h-screen overflow-x-hidden">
@@ -158,7 +249,6 @@ const HomeAdmin = () => {
             style={{ animationDelay: "0.1s" }}
           >
             <div className="dataCard revenueCard">
-              {/* <div className="w-full max-w-2xl h-[400px] sm:h-[300px] mx-auto bg-white p-4 rounded-2xl shadow-lg"> */}
               <Line data={data} options={options} />
             </div>
           </div>
