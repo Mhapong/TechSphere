@@ -24,6 +24,7 @@ export default function NavAdmin() {
     const fetchCount = async () => {
       try {
         const response = await ax.get(`counts`);
+        setCount(response.data.counts);
       } catch (e) {
         console.log("Error", e);
       }
