@@ -2,13 +2,31 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import ax from "../../conf/ax";
 import DownloadDoneOutlinedIcon from "@mui/icons-material/DownloadDoneOutlined";
-import { Add } from "@mui/icons-material";
+import { Delete, Add } from "@mui/icons-material";
+import { motion } from "framer-motion";
+import {
+  Dialog,
+  DialogBackdrop,
+  DialogPanel,
+  DialogTitle,
+} from "@headlessui/react";
+import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 
 const PromotionAdminPage = () => {
   const [promotions, setPromotions] = useState([]);
   const navigate = useNavigate();
-
   const [queryPromotion, setQueryPromotion] = useState("");
+  const [open, setOpen] = useState(false);
+  const [DeletePromotion, setDeletePromotion] = useState([]);
+
+  const handleRowDeleted = async (itemId) => {
+    try {
+      await ax.delete(`promotions/${itemId}`);
+      fetchPromotions();
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   const filteredPromotions = queryPromotion
     ? promotions.filter((value) =>
@@ -16,17 +34,17 @@ const PromotionAdminPage = () => {
       )
     : promotions;
 
+  const fetchPromotions = async () => {
+    try {
+      const response = await ax.get("promotions?populate=*");
+      console.log(response.data.data);
+      setPromotions(response.data.data);
+    } catch (error) {
+      console.error("Error fetching promotions:", error);
+    }
+  };
   useEffect(() => {
     // Fetch promotions from Strapi
-    const fetchPromotions = async () => {
-      try {
-        const response = await ax.get("promotions?populate=*");
-        console.log(response.data.data);
-        setPromotions(response.data.data);
-      } catch (error) {
-        console.error("Error fetching promotions:", error);
-      }
-    };
 
     fetchPromotions();
   }, []);
@@ -70,96 +88,114 @@ const PromotionAdminPage = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-12 w-full lg:max-w-10xl">
         {filteredPromotions.length > 0 ? (
           filteredPromotions.map((promotion) => (
-            <div
+            <motion.div
               key={promotion.id}
-              className="max-w-lg mx-auto rounded-lg shadow-lg overflow-hidden lg:max-w-none lg:flex mb-8"
+              initial={{ y: -5, opacity: 0, scale: 1.1 }}
+              whileInView={{ y: 0, opacity: 1, scale: 1 }}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              exit={{ opacity: 0 }}
             >
-              <div className="flex-1 bg-white dark:bg-gray-800 px-6 py-8 lg:p-12">
-                <h3 className="text-2xl font-extrabold text-gray-900 dark:text-white sm:text-3xl">
-                  {promotion.Code}
-                </h3>
-                <p className="mt-6 text-base text-gray-600 dark:text-gray-300">
-                  {promotion.detail}
-                </p>
-                <div className="mt-8">
-                  <div className="flex items-center">
-                    <h4 className="flex-shrink-0 pr-4 bg-white dark:bg-gray-800 text-sm tracking-wider font-semibold uppercase text-rose-600">
-                      สถานะโปรโมชั่น
-                    </h4>
-                    <div className="flex-1 border-t-2 border-gray-200 dark:border-gray-700"></div>
-                  </div>
-                  <ul
-                    role="list"
-                    className="mt-8 space-y-5 lg:space-y-0 lg:grid lg:grid-cols-2 lg:gap-x-8 lg:gap-y-5"
-                  >
-                    <li className="flex items-start lg:col-span-1">
-                      <div className="flex-shrink-0">
-                        <DownloadDoneOutlinedIcon
-                          aria-hidden="true"
-                          className={`ml-1 flex items-center justify-center w-9 h-9 rounded-full 
+              <div
+                key={promotion.id}
+                className="max-w-lg mx-auto rounded-lg shadow-lg overflow-hidden lg:max-w-none lg:flex mb-8"
+              >
+                <button
+                  className="absolute top-2 right-2 bg-red-700 hover:bg-red-900 text-white font-bold py-1 px-3 rounded"
+                  onClick={() => {
+                    setOpen(true);
+                    setDeletePromotion(promotion.documentId);
+                  }}
+                >
+                  <Delete /> Delete
+                </button>
+                <div className="flex-1 bg-white dark:bg-gray-800 px-6 py-8 lg:p-12">
+                  <h3 className="text-2xl font-extrabold text-gray-900 dark:text-white sm:text-3xl">
+                    {promotion.Code}
+                  </h3>
+                  <p className="mt-6 text-base text-gray-600 dark:text-gray-300">
+                    {promotion.detail}
+                  </p>
+                  <div className="mt-8">
+                    <div className="flex items-center">
+                      <h4 className="flex-shrink-0 pr-4 bg-white dark:bg-gray-800 text-sm tracking-wider font-semibold uppercase text-rose-600">
+                        สถานะโปรโมชั่น
+                      </h4>
+                      <div className="flex-1 border-t-2 border-gray-200 dark:border-gray-700"></div>
+                    </div>
+                    <ul
+                      role="list"
+                      className="mt-8 space-y-5 lg:space-y-0 lg:grid lg:grid-cols-2 lg:gap-x-8 lg:gap-y-5"
+                    >
+                      <li className="flex items-start lg:col-span-1">
+                        <div className="flex-shrink-0">
+                          <DownloadDoneOutlinedIcon
+                            aria-hidden="true"
+                            className={`ml-1 flex items-center justify-center w-9 h-9 rounded-full 
                       ${
                         promotion.status_promotion === "Activate"
                           ? "bg-green-500 dark:bg-green-600 hover:bg-green-600 dark:hover:bg-green-500"
                           : "bg-red-500 dark:bg-red-600 hover:bg-red-600 dark:hover:bg-red-500"
                       } 
                       text-white transition-all duration-200`}
-                        />
-                      </div>
-                      <p className="ml-3 text-sm text-gray-700 dark:text-gray-300">
-                        {promotion.status_promotion}
-                      </p>
-                    </li>
+                          />
+                        </div>
+                        <p className="ml-3 text-sm text-gray-700 dark:text-gray-300">
+                          {promotion.status_promotion}
+                        </p>
+                      </li>
 
-                    <li className="flex items-start lg:col-span-1">
-                      <div className="flex-shrink-0">
-                        <DownloadDoneOutlinedIcon
-                          aria-hidden="true"
-                          className={`ml-1 flex items-center justify-center w-9 h-9 rounded-full 
+                      <li className="flex items-start lg:col-span-1">
+                        <div className="flex-shrink-0">
+                          <DownloadDoneOutlinedIcon
+                            aria-hidden="true"
+                            className={`ml-1 flex items-center justify-center w-9 h-9 rounded-full 
                       ${
                         new Date(promotion.end_date).getTime() <= Date.now()
                           ? "bg-red-500 dark:bg-red-600 hover:bg-red-600 dark:hover:bg-red-500"
                           : "bg-green-500 dark:bg-green-600 hover:bg-green-600 dark:hover:bg-green-500"
                       } 
                       text-white transition-all duration-200`}
-                        />
-                      </div>
-                      <p className="ml-3 text-sm text-gray-700 dark:text-gray-300">
-                        {new Date(promotion.end_date).getTime() <= Date.now()
-                          ? "โปรโมชั่นหมดอายุ"
-                          : "โปรโมชั่นยังไม่หมดอายุ"}
-                      </p>
-                    </li>
-                  </ul>
+                          />
+                        </div>
+                        <p className="ml-3 text-sm text-gray-700 dark:text-gray-300">
+                          {new Date(promotion.end_date).getTime() <= Date.now()
+                            ? "โปรโมชั่นหมดอายุ"
+                            : "โปรโมชั่นยังไม่หมดอายุ"}
+                        </p>
+                      </li>
+                    </ul>
+                  </div>
                 </div>
-              </div>
-              <div className="py-8 px-6 text-center bg-gradient-to-r from-purple-300 to-blue-400 dark:from-purple-700 dark:to-blue-800 lg:flex-shrink-0 lg:flex lg:flex-col lg:justify-center lg:p-12">
-                <p className="text-lg leading-6 font-medium text-gray-900 dark:text-white">
-                  เปอร์เซ็นต์การลด
-                </p>
-                <div className="mt-4 flex items-center justify-center">
-                  <span className="text-6xl font-bold text-gray-900 dark:text-white">
-                    {promotion.discount}
-                  </span>
-                  <span className="text-6xl font-bold text-gray-900 dark:text-white">
-                    %
-                  </span>
-                </div>
-                <div className="mt-6">
-                  <div class="rounded-md shadow">
-                    <a
-                      onClick={() =>
-                        navigate(`/promotion/view`, {
-                          state: { Value: promotion },
-                        })
-                      }
-                      class="flex items-center justify-center px-5 py-3 border border-transparent text-base font-medium rounded-md text-white bg-gray-800 dark:bg-gray-700 hover:bg-gray-900 dark:hover:bg-gray-600"
-                    >
-                      แก้ไขโปรโมชั่นนี้
-                    </a>
+                <div className="py-8 px-6 text-center bg-gradient-to-r from-purple-300 to-blue-400 dark:from-purple-700 dark:to-blue-800 lg:flex-shrink-0 lg:flex lg:flex-col lg:justify-center lg:p-12">
+                  <p className="text-lg leading-6 font-medium text-gray-900 dark:text-white">
+                    เปอร์เซ็นต์การลด
+                  </p>
+                  <div className="mt-4 flex items-center justify-center">
+                    <span className="text-6xl font-bold text-gray-900 dark:text-white">
+                      {promotion.discount}
+                    </span>
+                    <span className="text-6xl font-bold text-gray-900 dark:text-white">
+                      %
+                    </span>
+                  </div>
+                  <div className="mt-6">
+                    <div class="rounded-md shadow">
+                      <a
+                        onClick={() =>
+                          navigate(`/promotion/view`, {
+                            state: { Value: promotion },
+                          })
+                        }
+                        class="flex items-center justify-center px-5 py-3 border border-transparent text-base font-medium rounded-md text-white bg-gray-800 dark:bg-gray-700 hover:bg-gray-900 dark:hover:bg-gray-600"
+                      >
+                        แก้ไขโปรโมชั่นนี้
+                      </a>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
+            </motion.div>
           ))
         ) : (
           <div className="mx-auto my-7 flex items-center justify-center">
@@ -174,6 +210,68 @@ const PromotionAdminPage = () => {
           </div>
         )}
       </div>
+      <Dialog open={open} onClose={setOpen} className="relative z-10">
+        <DialogBackdrop
+          transition
+          className="fixed inset-0 bg-gray-500/75 transition-opacity data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in"
+        />
+
+        <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
+          <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+            <DialogPanel
+              transition
+              className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all data-closed:translate-y-4 data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in sm:my-8 sm:w-full sm:max-w-lg data-closed:sm:translate-y-0 data-closed:sm:scale-95"
+            >
+              <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                <div className="sm:flex sm:items-start">
+                  <div className="mx-auto flex size-12 shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:size-10">
+                    <ExclamationTriangleIcon
+                      aria-hidden="true"
+                      className="size-6 text-red-600"
+                    />
+                  </div>
+                  <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                    <DialogTitle
+                      as="h3"
+                      className="text-base font-semibold text-gray-900"
+                    >
+                      แจ้งเตือนการลบโปรโมชั่น
+                    </DialogTitle>
+                    <div className="mt-2">
+                      <p className="text-sm text-gray-500">
+                        คุณแน่ใจแล้วหรือไม่ ว่าจะลบโปรโมชั่นนี้?
+                        ข้อมูลที่ลบไปจะไม่สามารถกู้คืนได้อีก
+                        กรุณาตรวจสอบให้แน่ใจก่อนลบโปรโมชั่นนี้
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+                <button
+                  type="button"
+                  onClick={() => {
+                    handleRowDeleted(DeletePromotion);
+                    setDeletePromotion(null);
+                    setOpen(false);
+                  }}
+                  className="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-red-500 sm:ml-3 sm:w-auto"
+                >
+                  ยืนยันการลบ
+                </button>
+                <button
+                  type="button"
+                  data-autofocus
+                  onClick={() => setOpen(false)}
+                  className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 shadow-xs ring-gray-300 ring-inset hover:bg-gray-50 sm:mt-0 sm:w-auto"
+                >
+                  ยกเลิก
+                </button>
+              </div>
+            </DialogPanel>
+          </div>
+        </div>
+      </Dialog>
     </div>
   );
 };
