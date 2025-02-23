@@ -10,11 +10,9 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
 import Groups3Icon from "@mui/icons-material/Groups3";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import DiscountIcon from "@mui/icons-material/Discount";
 import ax from "../../conf/ax";
-
-function classNames(...classes) {
-  return classes.filter(Boolean).join(" ");
-}
+import conf from "../../conf/main";
 
 export default function NavAdmin() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -49,6 +47,13 @@ export default function NavAdmin() {
       current: true,
       key: "",
       icon: <AddCircleOutlineIcon />,
+    },
+    {
+      name: "โปรโมชั่น",
+      href: "/promotion",
+      current: true,
+      key: `${Count ? `${Count["promotion"]}` : "0"}`,
+      icon: <DiscountIcon />,
     },
     {
       name: "คอร์สทั้งหมด",
@@ -150,11 +155,24 @@ export default function NavAdmin() {
                   >
                     <span className="sr-only">Open user menu</span>
                     <img src={logo} className="h-8 me-3" alt="Logo" />
-                    <img
+                    {/* <img
                       src={usericon}
                       className="w-8 h-8 rounded-full"
                       alt="user photo"
-                    />
+                    /> */}
+                    {user.userProfile ? (
+                      <img
+                        className="w-8 h-8 rounded-full"
+                        src={`${conf.apiUrl}${user.userProfile.url}`}
+                        alt={`${user.username} Avatar`}
+                      />
+                    ) : (
+                      <img
+                        className="w-8 h-8 rounded-full"
+                        src={usericon}
+                        alt={`${user.username} Avatar`}
+                      />
+                    )}
                   </button>
                 </div>
                 {isDropdownOpen && (

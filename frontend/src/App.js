@@ -39,6 +39,9 @@ import PaymentSucceed from "./client/pages/paymentSucceedPage.js";
 import Chat from "./admin/components/chat.js";
 import EditContent from "./admin/pages/EditContent.js";
 import CheckCourseStatus from "./client/pages/CheckCourseStatus.js";
+import PromotionAdminPage from "./admin/pages/Promotion.js";
+import AddEditPromotion from "./admin/pages/AddEditPromotion.js";
+import EditFinance from "./admin/pages/EditFinance.js";
 
 function App() {
   const { state } = useContext(AuthContext);
@@ -62,7 +65,7 @@ function App() {
               />
               <Route path="/about" element={<About />} />
               <Route
-                path="/view-product/:name/:documenId"
+                path="/view-product/:name/:documentId"
                 element={<ViewCourse />}
               />
               <Route path="/test" element={<Test />} />
@@ -81,7 +84,7 @@ function App() {
           </>
         ) : userRole === "Lecturer" ? (
           <>
-            <Nav />
+            <NavAdmin />
             <Routes>
               <Route path="/" element={<HomeAdmin />} />
               {/* <Route path="*" element={<PageNotFound />} /> */}
@@ -100,6 +103,7 @@ function App() {
               <Route path="/" element={<HomeAdmin />} />
               <Route path="/create-course" element={<AddCourse />} />
               <Route path="/create-topic/:topicid" element={<AddTopic />} />
+              <Route path="/promotion/view" element={<AddEditPromotion />} />
               <Route
                 path="/edit-content/:contentid"
                 element={<EditContent />}
@@ -110,11 +114,16 @@ function App() {
               />
               <Route path="/view" element={<CourseView />} />
               <Route path="/view-student" element={<CourseStudentTable />} />
+              <Route path="/promotion" element={<PromotionAdminPage />} />
               <Route path="/lecturer" element={<LecturerAll />} />
               <Route path="/student" element={<StudentTable />} />
               <Route path="/finance" element={<FinanceOrder />} />
               <Route path="/user" element={<Profile />} />
               <Route path="/edit-profile/:userid" element={<EditProfile />} />
+              <Route
+                path="/edit-finance/:financeid"
+                element={<EditFinance />}
+              />
               <Route path="/sign-up" element={<SignUp />} />
             </Routes>
             <button
@@ -135,7 +144,7 @@ function App() {
             <Route path="/my-course" element={<Mycourse />} />
             <Route path="/explore" element={<Explore />} />
             <Route
-              path="/view-product/:name/:documenId"
+              path="/view-product/:name/:documentId"
               element={<ViewCourse />}
             />
             <Route path="/about" element={<About />} />

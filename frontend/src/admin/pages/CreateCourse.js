@@ -2,6 +2,14 @@ import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router";
 import ax from "../../conf/ax";
 import { Toaster, toast } from "sonner";
+import datapic from "../../client/components/data.png";
+import webpic from "../../client/components/web-100.png";
+import gamepic from "../../client/components/game.png";
+import hardwarepic from "../../client/components/hardware.png";
+import networkpic from "../../client/components/network.png";
+import morepic from "../../client/components/more.png";
+import Select from "react-select";
+import conf from "../../conf/main";
 
 const AddCourse = () => {
   // State management for each form field
@@ -13,12 +21,22 @@ const AddCourse = () => {
   const [lecturer, setLecturer] = useState("");
   const [lecturerOwner, setlecturerOwner] = useState(null);
   const [description, setDescription] = useState("");
-  const [image, setImage] = useState(null);
   const [TimeUsage, setTimeUsage] = useState("");
   const [status, setStatus] = useState("");
   const [Price, setPrice] = useState("");
   const Navigate = useNavigate();
-  console.log(Value);
+  const [image, setImage] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState(null);
+
+  const categories = [
+    { label: "Web Develop", value: 2, img: webpic },
+    { label: "Data Analysis", value: 6, img: datapic },
+    { label: "IoT & Hardware", value: 4, img: hardwarepic },
+    { label: "Network", value: 5, img: networkpic },
+    { label: "Game Develop", value: 3, img: gamepic },
+    { label: "AI", value: 1, img: morepic },
+  ];
+
   useEffect(() => {
     if (Value && Array.isArray(Value.topic)) {
       setTitle(Value.Name);
@@ -33,6 +51,10 @@ const AddCourse = () => {
           tag: category.tag,
         }))
       );
+      if (Value?.image) {
+        const imageUrl = `${conf.apiUrl}${Value?.image[0]?.url}`;
+        setPreviewUrl(imageUrl);
+      }
     }
   }, [Value]);
 
@@ -42,17 +64,18 @@ const AddCourse = () => {
     return date.toISOString().slice(0, 16);
   };
 
-  const handleSelectChange = (e) => {
-    const selectedValues = Array.from(e.target.selectedOptions).map(
-      (option) => ({
-        id: String(option.value), // แปลง id เป็น string
-        tag: option.getAttribute("data-name"),
-      })
-    );
+  const handleSelectChange = (selectedOptions) => {
+    const selectedArray = Array.isArray(selectedOptions)
+      ? selectedOptions
+      : [selectedOptions];
+
+    const selectedValues = selectedArray.map((option) => ({
+      id: String(option.value),
+      tag: option.label,
+    }));
 
     setCategory((prevCategory) => {
       const prevArray = Array.isArray(prevCategory) ? prevCategory : [];
-
       const idSet = new Set(prevArray.map((item) => String(item.id)));
 
       const newCategories = selectedValues.filter(
@@ -71,45 +94,67 @@ const AddCourse = () => {
   const handleSubmit = async (e, path) => {
     e.preventDefault();
     try {
+      let imageData = null;
+
+      if (image) {
+        const formData = new FormData();
+        formData.append("files", image);
+
+        const imageUploadResponse = await ax.post(`upload`, formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+
+        const {
+          data: [{ id, url }],
+        } = imageUploadResponse;
+
+        imageData = { id, url };
+        console.log("New image uploaded successfully:", url);
+      } else if (Value?.image) {
+        imageData = {
+          id: Value.image[0].id,
+          url: Value.image[0].url,
+        };
+        console.log("Using existing image:", imageData.url);
+      }
+
       const categoryid = category.map((item) => item.id);
+      const CourseData = {
+        Name: title,
+        Description: description,
+        categories: categoryid,
+        Time_Usage: TimeUsage,
+        Price: Price,
+        lecturer_owner: lecturerOwner,
+        status_coure: status,
+      };
+
+      if (imageData) {
+        CourseData.image = [imageData.id];
+      } else {
+        CourseData.image = null;
+      }
       if (Value) {
         const response = await ax.put(
           `courses/${Value.documentId}?populate=*`,
           {
-            data: {
-              Name: title,
-              Description: description,
-              categories: categoryid,
-              Time_Usage: TimeUsage,
-              Price: Price,
-              lecturer_owner: lecturerOwner,
-              status_coure: status,
-            },
+            data: CourseData,
           }
         );
         setTimeout(
           () => Navigate(`${path}/${response.data.data.documentId}`),
           500
         );
-        // setTopic(response.data.data);
       } else {
         const response = await ax.post(`courses?populate=*`, {
-          data: {
-            Name: title,
-            Description: description,
-            categories: categoryid,
-            Time_Usage: TimeUsage,
-            Price: Price,
-            lecturer_owner: lecturerOwner,
-            status_coure: status,
-          },
+          data: CourseData,
         });
         setTimeout(
           () => Navigate(`${path}/${response.data.data.documentId}`),
           500
         );
-        // setTopic(response.data.data);
       }
+
       console.log("Data successfully uploaded to Strapi!");
       toast.success("บันทึกข้อมูลคอร์สสำเร็จ!", {
         // position: "top-center",
@@ -135,18 +180,17 @@ const AddCourse = () => {
     }
   };
 
-  // Handle image upload
-  const handleImageUpload = (e) => {
-    const file = e.target.files[0];
-    if (file) {
+  const handleImageUpload = (event) => {
+    const file = event.target.files[0];
+    if (file && (file.type === "image/png" || file.type === "image/jpeg")) {
       setImage(file);
+      setPreviewUrl(URL.createObjectURL(file));
     }
   };
 
   const fetchCategory = async () => {
     try {
       const response = await ax.get(`categories`);
-      // console.log(response.data.data);
       setallCategory(response.data.data);
     } catch (e) {
       console.log("Error", e);
@@ -158,7 +202,6 @@ const AddCourse = () => {
       const response = await ax.get(
         `users?filters[role][name][$eq]=Lecturer&populate=*`
       );
-      // console.log(response.data);
       setLecturer(response.data);
     } catch (e) {
       console.log("Error", e);
@@ -260,23 +303,47 @@ const AddCourse = () => {
         onSubmit={(e) => e.preventDefault()}
       >
         {/* Title */}
-        <div className="p-2">
-          <label
-            htmlFor="title"
-            className="block text-sm font-medium text-gray-700"
-          >
-            สร้างชื่อคอร์สใหม่ :
-          </label>
-          <input
-            type="text"
-            id="title"
-            name="title"
-            placeholder="Title Course"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            className="block w-full rounded-md border-gray-300 shadow-sm focus:border-[#8c0327] focus:ring-[#8c0327] focus:ring-opacity-50 p-2"
-            style={{ backgroundColor: "#f6f6f6" }}
-          />
+        <div className="p-2 grid grid-cols-1 md:grid-cols-2 gap-6 mt-0">
+          <div>
+            <label
+              htmlFor="title"
+              className="block text-sm font-medium text-gray-700"
+            >
+              สร้างชื่อคอร์สใหม่ :
+            </label>
+            <input
+              type="text"
+              id="title"
+              name="title"
+              placeholder="Title Course"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              className="block w-full h-12 rounded-md border-gray-300 shadow-sm focus:border-[#8c0327] focus:ring-[#8c0327] focus:ring-opacity-50 p-2"
+              style={{ backgroundColor: "#f6f6f6" }}
+            />
+          </div>
+          <div>
+            <label
+              htmlFor="title"
+              className="block text-sm font-medium text-gray-700"
+            >
+              กำนหดสถานะคอร์ส :
+            </label>
+            <div className="flex items-center bg-[#f6f6f6] rounded-md">
+              <select
+                id="status"
+                name="status"
+                value={status}
+                onChange={(e) => setStatus(e.target.value)}
+                className="block w-full h-12 rounded-md border-gray-300 shadow-sm focus:border-[#8c0327] focus:ring-[#8c0327] focus:ring-opacity-50"
+                style={{ backgroundColor: "#f6f6f6", padding: "0" }}
+              >
+                <option value="">เลือกสถานะคอร์ส</option>
+                <option value="Activate">เปิดใช้งาน</option>
+                <option value="Deactivate">ปิดใช้งาน</option>
+              </select>
+            </div>
+          </div>
         </div>
 
         {/* Category */}
@@ -312,26 +379,19 @@ const AddCourse = () => {
             </label>
             <div className="p-2">
               {/* <p className="mt-0">เลือกประเภทของคอร์ส:</p> */}
-              <select
-                id="category"
-                name="category"
-                multiple
-                value={category}
+              <Select
+                options={categories}
+                value={categories.find((c) => c.value === category.id)}
                 onChange={handleSelectChange}
-                className="block w-full h-36  px-4 py-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[#8c0327] focus:border-[#8c0327] transition-all duration-300 ease-in-out hover:bg-gray-50"
-                style={{ backgroundColor: "#f6f6f6" }}
-              >
-                {allcategory &&
-                  allcategory.map((value, index) => (
-                    <option
-                      key={value.id}
-                      value={value.id}
-                      data-name={value.tag}
-                    >
-                      {index + 1}. {value.tag}
-                    </option>
-                  ))}
-              </select>
+                placeholder="เลือกประเภท"
+                className="text-gray-700 flex-auto"
+                getOptionLabel={(e) => (
+                  <div className="flex items-center">
+                    <img src={e.img} alt={e.label} className="w-6 h-6 mr-2" />
+                    {e.label}
+                  </div>
+                )}
+              />
               <div className="mt-2">
                 {category.map((value) => (
                   <div
@@ -351,42 +411,32 @@ const AddCourse = () => {
               </div>
             </div>
           </div>
-          {/* Description */}
-
-          {/* Image Upload */}
           <div>
-            <div>
-              <label
-                htmlFor="title"
-                className="block text-sm font-medium text-gray-700"
+            <label
+              htmlFor="title"
+              className="block text-sm font-medium text-gray-700"
+            >
+              อาจารย์ผู้สอนคอร์ส :
+            </label>
+            <div className="flex items-center bg-[#f6f6f6] rounded-md">
+              <select
+                id="lecturer"
+                name="lecturer"
+                value={lecturerOwner}
+                onChange={(e) => setlecturerOwner(e.target.value)}
+                className="block w-full h-12 rounded-md border-gray-300 shadow-sm focus:border-[#8c0327] focus:ring-[#8c0327] focus:ring-opacity-50"
+                style={{ backgroundColor: "#f6f6f6", padding: "0" }}
               >
-                เลือกรูปภาพหน้าปกของคอร์สเรียน :
-              </label>
-              <label
-                htmlFor="image-upload"
-                className=" w-full h-48 border-2 border-dashed border-gray-300 rounded-md cursor-pointer flex flex-col items-center justify-center bg-[#f6f6f6] hover:bg-gray-50"
-              >
-                <div className="text-center">
-                  <div className="mb-2">
-                    <button
-                      type="button"
-                      className="bg-[#8c0327] hover:bg-[#6b0220] text-white rounded-full py-2 px-4"
-                    >
-                      Select from the computer
-                    </button>
-                  </div>
-                  <p className="text-gray-500">or drag photo here</p>
-                  <p className="text-gray-500 text-sm mt-1">PNG, JPG, SVG</p>
-                </div>
-              </label>
-              <input
-                id="image-upload"
-                name="image"
-                type="file"
-                accept="image/*"
-                onChange={handleImageUpload}
-                className="sr-only"
-              />
+                <option value="">เลือกอาจารย์ผู้สอน</option>
+                {lecturer &&
+                  lecturer.map((person) => {
+                    return (
+                      <option key={person.id} value={person.id}>
+                        {`${person.first_name} ${person.last_name}`}
+                      </option>
+                    );
+                  })}
+              </select>
             </div>
           </div>
         </div>
@@ -432,60 +482,51 @@ const AddCourse = () => {
             />
           </div>
         </div>
-
-        {/* Status and Tags */}
-        <div className="p-2 grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Status */}
+        <div className="p-2 h-auto">
           <div>
-            <label
-              htmlFor="title"
-              className="block text-sm font-medium text-gray-700"
-            >
-              สถานะของคอร์สเรียน :
-            </label>
-            <div className="flex items-center bg-[#f6f6f6] rounded-md">
-              <select
-                id="status"
-                name="status"
-                value={status}
-                onChange={(e) => setStatus(e.target.value)}
-                className="block w-full h-12 rounded-md border-gray-300 shadow-sm focus:border-[#8c0327] focus:ring-[#8c0327] focus:ring-opacity-50"
-                style={{ backgroundColor: "#f6f6f6", padding: "0" }}
+            <div>
+              <label
+                htmlFor="title"
+                className="block text-sm font-medium text-gray-700"
               >
-                <option value="">เลือกสถานะคอร์ส</option>
-                <option value="Activate">เปิดใช้งาน</option>
-                <option value="Deactivate">ปิดใช้งาน</option>
-              </select>
-            </div>
-          </div>
-
-          {/* Status */}
-          <div>
-            <label
-              htmlFor="title"
-              className="block text-sm font-medium text-gray-700"
-            >
-              อาจารย์ผู้สอนคอร์ส :
-            </label>
-            <div className="flex items-center bg-[#f6f6f6] rounded-md">
-              <select
-                id="lecturer"
-                name="lecturer"
-                value={lecturerOwner}
-                onChange={(e) => setlecturerOwner(e.target.value)}
-                className="block w-full h-12 rounded-md border-gray-300 shadow-sm focus:border-[#8c0327] focus:ring-[#8c0327] focus:ring-opacity-50"
-                style={{ backgroundColor: "#f6f6f6", padding: "0" }}
+                เลือกรูปภาพหน้าปกของคอร์ส :
+              </label>
+              <label
+                htmlFor="image-upload"
+                className="w-full min-h-96 border-2 border-dashed border-gray-300 rounded-md cursor-pointer flex flex-col items-center justify-center bg-[#f6f6f6] hover:bg-gray-50"
               >
-                <option value="">เลือกอาจารย์ผู้สอน</option>
-                {lecturer &&
-                  lecturer.map((person) => {
-                    return (
-                      <option key={person.id} value={person.id}>
-                        {`${person.first_name} ${person.last_name}`}
-                      </option>
-                    );
-                  })}
-              </select>
+                {previewUrl ? (
+                  <img
+                    src={previewUrl}
+                    alt="Preview"
+                    className="w-full h-full object-cover rounded-md"
+                  />
+                ) : (
+                  <div className="text-center">
+                    <div className="mb-2">
+                      <button
+                        type="button"
+                        onClick={() =>
+                          document.getElementById("image-upload").click()
+                        }
+                        className="bg-[#8c0327] hover:bg-[#6b0220] text-white rounded-full py-2 px-4"
+                      >
+                        Select from the computer
+                      </button>
+                    </div>
+                    <p className="text-gray-500">or drag photo here</p>
+                    <p className="text-gray-500 text-sm mt-1">PNG, JPG, SVG</p>
+                  </div>
+                )}
+              </label>
+              <input
+                id="image-upload"
+                name="image"
+                type="file"
+                accept="image/*"
+                onChange={handleImageUpload}
+                className="sr-only"
+              />
             </div>
           </div>
         </div>

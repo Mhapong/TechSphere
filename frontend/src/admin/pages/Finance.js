@@ -11,7 +11,7 @@ import {
   DialogPanel,
   DialogTitle,
 } from "@headlessui/react";
-import { Edit, Search } from "@mui/icons-material";
+import { Edit } from "@mui/icons-material";
 
 const FinanceOrder = () => {
   const { state: ContextState } = useContext(AuthContext);
@@ -22,7 +22,6 @@ const FinanceOrder = () => {
   const [queryPayments, setQueryPayments] = useState("");
   const [currentData, setCurrentData] = useState(null);
   const [detail, setDetail] = useState(null);
-  const [course, setCourse] = useState(null);
 
   const openModal = (data, doc) => {
     setCurrentData(data);
@@ -65,8 +64,6 @@ const FinanceOrder = () => {
         .map((course) => course.Name)
         .join(", ");
       const courseId = value.course_purchase.map((course) => course.id);
-      console.log(value.users_purchase.documentId);
-      console.log(courseId);
       if (status === "confirmed") {
         try {
           await ax.put(`users/${value.users_purchase.id}`, {
@@ -114,7 +111,6 @@ const FinanceOrder = () => {
   const fetchConfirmPurchase = async () => {
     try {
       const response = await ax.get("confirm-purchases?populate=*");
-      console.log(response.data.data);
       setPayments(response.data.data);
     } catch (e) {
       console.log("error", e);

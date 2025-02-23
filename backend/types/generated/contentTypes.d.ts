@@ -591,7 +591,6 @@ export interface ApiCourseCourse extends Struct.CollectionTypeSchema {
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     Description: Schema.Attribute.RichText;
-    end_date: Schema.Attribute.DateTime;
     image: Schema.Attribute.Media<'images' | 'files', true> &
       Schema.Attribute.Required;
     lecturer_owner: Schema.Attribute.Relation<
@@ -612,7 +611,6 @@ export interface ApiCourseCourse extends Struct.CollectionTypeSchema {
     >;
     publishedAt: Schema.Attribute.DateTime;
     rating: Schema.Attribute.Relation<'oneToMany', 'api::review.review'>;
-    start_date: Schema.Attribute.DateTime;
     status_coure: Schema.Attribute.Enumeration<['Activate', 'Deactivate']>;
     sum_progresses: Schema.Attribute.Relation<
       'oneToMany',
@@ -719,6 +717,41 @@ export interface ApiProgressProgress extends Struct.CollectionTypeSchema {
       'plugin::users-permissions.user'
     >;
     publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiPromotionPromotion extends Struct.CollectionTypeSchema {
+  collectionName: 'promotions';
+  info: {
+    description: '';
+    displayName: 'Promotion';
+    pluralName: 'promotions';
+    singularName: 'promotion';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    Code: Schema.Attribute.String & Schema.Attribute.Required;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    detail: Schema.Attribute.String;
+    discount: Schema.Attribute.Integer & Schema.Attribute.Required;
+    end_date: Schema.Attribute.Date;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::promotion.promotion'
+    > &
+      Schema.Attribute.Private;
+    picture_promotion: Schema.Attribute.Media<'images' | 'files'>;
+    publishedAt: Schema.Attribute.DateTime;
+    status_promotion: Schema.Attribute.Enumeration<['Activate', 'Deactivate']> &
+      Schema.Attribute.DefaultTo<'Deactivate'>;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -1348,6 +1381,7 @@ declare module '@strapi/strapi' {
       'api::course.course': ApiCourseCourse;
       'api::lecturer-review.lecturer-review': ApiLecturerReviewLecturerReview;
       'api::progress.progress': ApiProgressProgress;
+      'api::promotion.promotion': ApiPromotionPromotion;
       'api::review.review': ApiReviewReview;
       'api::topic.topic': ApiTopicTopic;
       'plugin::content-releases.release': PluginContentReleasesRelease;
