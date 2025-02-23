@@ -17,6 +17,7 @@ const StudentTable = () => {
   const Navigate = useNavigate();
   const [queryStudent, setQueryStudent] = useState("");
   const [open, setOpen] = useState(false);
+  const [DeleteStudent, setDeleteStudent] = useState([]);
 
   const filteredStudent = queryStudent
     ? Student.filter(
@@ -201,7 +202,10 @@ const StudentTable = () => {
                       <td className="px-4 py-2 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                         <div className="flex items-center">
                           <button
-                            onClick={() => setOpen(true)}
+                            onClick={() => {
+                              setOpen(true);
+                              setDeleteStudent(value.id);
+                            }}
                             className="ml-1 flex items-center justify-center w-9 h-9 rounded-full bg-red-500 dark:bg-red-600 text-white hover:bg-red-600 dark:hover:bg-red-500 transition-all duration-200"
                           >
                             <Delete className="w-5 h-5" />
@@ -282,7 +286,11 @@ const StudentTable = () => {
               <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
                 <button
                   type="button"
-                  onClick={() => setOpen(false)}
+                  onClick={() => {
+                    handleRowDeleted(DeleteStudent);
+                    setDeleteStudent(null);
+                    setOpen(false);
+                  }}
                   className="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-red-500 sm:ml-3 sm:w-auto"
                 >
                   ยืนยันการลบ

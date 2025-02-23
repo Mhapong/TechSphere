@@ -12,11 +12,33 @@ import {
 } from "@mui/icons-material";
 import { motion } from "framer-motion";
 import BorderColorIcon from "@mui/icons-material/BorderColor";
+import { useLocation } from "react-router";
+import conf from "../../conf/main";
+
 export default function Profile() {
   const [darkMode, setDarkMode] = useState(false);
   const { state: ContextState } = useContext(AuthContext);
   const { user } = ContextState;
-  useEffect(() => {}, []);
+  const [UserData, setUserData] = useState(null);
+  const [Role, setRole] = useState(null);
+  const [Image, setImage] = useState(null);
+  const location = useLocation();
+  const { Value } = location.state || {};
+  console.log(Value);
+  console.log(user);
+  useEffect(() => {
+    if (Value) {
+      console.log(1);
+      setUserData(Value);
+      setRole(Value.role.name);
+      setImage(user.userProfile);
+    } else {
+      console.log(2);
+      setUserData(user);
+      setRole(user.userRole);
+      setImage(user.userProfile);
+    }
+  }, []);
 
   return (
     <div
@@ -47,42 +69,44 @@ export default function Profile() {
               className="block lg:hidden rounded-full shadow-xl mx-auto -mt-16 h-48 w-48 bg-cover bg-center"
               style={{
                 backgroundImage: `url(${
-                  user.userProfile?.url
-                    ? `http://localhost:1337${user.userProfile.url}`
+                  UserData?.userProfile?.url
+                    ? `${conf.apiUrl}${UserData?.userProfile.url}`
                     : usericon
                 })`,
               }}
             ></div>
             <h1 className="text-6xl font-bold pt-8 lg:pt-0">
-              {`${user.username} : `}
-              <a href={`/edit-profile/${user.id}`}>
+              {`${UserData?.username} : `}
+              <a href={`/edit-profile/${UserData?.id}`}>
                 <BorderColorIcon className="h-6 w-6 text-blue-500" />
               </a>
             </h1>
             <div className="mx-auto lg:mx-0 w-4/5 pt-3 border-b-2 border-green-500 opacity-25"></div>
             <p className="text-3xl pt-4 font-bold flex items-center justify-center lg:justify-start">
               {" "}
-              Name : {user.first_name} {user.last_name}
+              Name : {UserData?.first_name} {UserData?.last_name}
             </p>
             <p className="pt-4 text-2xl font-bold flex items-center justify-center lg:justify-start">
-              Role : {user.userRole}
+              Role : {Role}
             </p>
             <p className="pt-2 lg:text-1xl flex items-center justify-center lg:justify-start">
-              Email : {user.email}
+              Email : {UserData?.email}
             </p>
             <p className="pt-2 text-2xl lg:text-sm flex items-center justify-center lg:justify-start">
               <span
                 className={`inline-block pt-2 px-3 py-1 text-sm font-semibold rounded-full ${
-                  user.confirmed
+                  UserData?.confirmed
                     ? "bg-green-500 text-white"
                     : "bg-red-500 text-white"
                 }`}
               >
                 สถานะ :{" "}
-                {user.confirmed ? "ยืนยันตัวตนแล้ว" : "ยังไม่ได้ยืนยันตัวตน"}
+                {UserData?.confirmed
+                  ? "ยืนยันตัวตนแล้ว"
+                  : "ยังไม่ได้ยืนยันตัวตน"}
               </span>
             </p>
-            {user.userRole === "Admin" && (
+            {UserData?.userRole === "Admin" && (
               <div className="pt-12 pb-8">
                 <button className="bg-blue-700 hover:bg-blue-900 text-white font-bold py-2 px-4 rounded-full">
                   ประวัติเพิ่มเติม
@@ -110,11 +134,7 @@ export default function Profile() {
           {/* Profile Image */}
           <div className="w-full lg:w-2/5">
             <img
-              src={
-                user.userProfile?.url
-                  ? `http://localhost:1337${user.userProfile.url}`
-                  : usericon
-              }
+              src={Image?.url ? `http://localhost:1337${Image.url}` : usericon}
               className="hidden sm:block aspect-[9/16] object-cover rounded-lg shadow-2xl"
               alt="Profile"
               style={{ width: "550px" }}

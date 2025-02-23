@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router";
 import ax from "../../conf/ax";
 import { Toaster, toast } from "sonner";
+import conf from "../../conf/main";
+import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 
 const EditContent = () => {
   const location = useLocation();
@@ -9,6 +11,10 @@ const EditContent = () => {
   const [title, setTitle] = useState(Value?.topic_title || "");
   const [TimeUsage, setTimeUsage] = useState(Value?.time || "");
   const [detail, setDetail] = useState(Value?.detail || "");
+  const [video, setVideo] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState(null);
+  const [error, setError] = useState("");
+  console.log(Value);
 
   useEffect(() => {
     if (Value) {
@@ -16,19 +22,84 @@ const EditContent = () => {
       setTimeUsage(Value.time);
       setDetail(Value.detail);
     }
+    fetchContent();
   }, [Value]);
+
+  const fetchContent = async () => {
+    try {
+      const response = await ax.get(
+        `contents/${Value.documentId}?populate=video`
+      );
+      console.log(response.data.data.video);
+      const Data = response.data.data;
+      if (Data?.video) {
+        const videoUrl = `${conf.apiUrl}${Data?.video?.url}`;
+        setPreviewUrl(videoUrl);
+      }
+    } catch (e) {
+      console.log("Error", e);
+    }
+  };
+
+  const handleVideoUpload = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const allowedTypes = ["video/mp4", "video/quicktime"];
+      if (!allowedTypes.includes(file.type)) {
+        setError("รองรับเฉพาะไฟล์ MP4 หรือ MOV เท่านั้น");
+        setPreviewUrl(null);
+        return;
+      }
+
+      setError("");
+      const videoUrl = URL.createObjectURL(file);
+      setPreviewUrl(videoUrl);
+      setVideo(file);
+    }
+  };
 
   const Navigate = useNavigate();
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      console.log("Update");
+      let videoData = null;
+
+      if (video) {
+        const formData = new FormData();
+        formData.append("files", video);
+
+        const videoUploadResponse = await ax.post(`upload`, formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+
+        const {
+          data: [{ id, url }],
+        } = videoUploadResponse;
+
+        videoData = { id, url };
+        console.log("New video uploaded successfully:", url);
+      } else if (Value?.video) {
+        videoData = {
+          id: Value.video[0].id,
+          url: Value.video[0].url,
+        };
+        console.log("Using existing image:", videoData.url);
+      }
+
+      const ContentData = {
+        content_title: title,
+        time: TimeUsage,
+        detail: detail,
+      };
+
+      if (videoData) {
+        ContentData.video = [videoData.id];
+      } else {
+        ContentData.video = null;
+      }
+
       await ax.put(`contents/${Value.documentId}?populate=*`, {
-        data: {
-          content_title: title,
-          time: TimeUsage,
-          detail: detail,
-        },
+        data: ContentData,
       });
       toast.success("บันทึกข้อมูลเนื้อหาสำเร็จ!", {
         // position: "top-center",
@@ -198,36 +269,46 @@ const EditContent = () => {
             ></textarea>
           </div>
         </div>
-        <div className="mb-3">
-          <label
-            htmlFor="description"
-            className="block text-sm font-medium text-gray-700"
-          >
-            ใส่วิดีโอของคลิป:
+
+        <div className="p-2 h-auto">
+          <label className="block text-sm font-medium text-gray-700">
+            เลือกวิดีโอสำหรับคอร์ส:
           </label>
-          <label
-            htmlFor="image-upload"
-            className=" w-full h-48 border-2 border-dashed border-gray-300 rounded-md cursor-pointer flex flex-col items-center justify-center bg-[#f6f6f6] hover:bg-gray-50"
-          >
-            <div className="text-center">
-              <div className="mb-2">
-                <button
-                  type="button"
-                  className="bg-[#8c0327] hover:bg-[#6b0220] text-white rounded-full py-2 px-4"
-                >
-                  Select from the computer
-                </button>
+
+          <div className="flex items-center gap-4 border-2 border-dashed border-gray-300 rounded-md p-4 bg-[#f6f6f6]">
+            {/* พรีวิววิดีโอ */}
+            {previewUrl ? (
+              <video
+                src={previewUrl}
+                controls
+                className="w-5/6 h-auto object-cover rounded-md"
+              />
+            ) : (
+              <div className="w-5/6 h-40 flex items-center justify-center text-gray-500">
+                No video selected
               </div>
-              <p className="text-gray-500">or drag photo here</p>
-              <p className="text-gray-500 text-sm mt-1">PNG, JPG, SVG</p>
+            )}
+
+            <div className="w-1/6 flex flex-col items-center">
+              <CloudUploadIcon className="w-12 h-12 text-gray-500 mb-2" />
+              <button
+                type="button"
+                onClick={() => document.getElementById("video-upload").click()}
+                className="bg-[#8c0327] hover:bg-[#6b0220] text-white rounded-full py-2 px-4"
+              >
+                Select Video
+              </button>
+              <p className="text-gray-500 text-sm mt-1">MP4, MOV</p>
             </div>
-          </label>
+          </div>
+          {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
+
           <input
-            id="image-upload"
-            name="image"
+            id="video-upload"
+            name="video"
             type="file"
-            accept="image/*"
-            // onChange={handleImageUpload}
+            accept="video/mp4,video/quicktime"
+            onChange={handleVideoUpload}
             className="sr-only"
           />
         </div>
