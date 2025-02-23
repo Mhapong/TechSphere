@@ -14,7 +14,9 @@ const cartReducer = (state, action) => {
       if (state.some((item) => item.id === action.payload.id)) return state;
       return [...state, action.payload];
     case "REMOVE_FROM_CART":
-      return state.filter((item) => item.id !== action.payload.id);
+      return state.filter(
+        (item) => item.course_id !== action.payload.course_id
+      );
     default:
       return state;
   }
@@ -47,7 +49,10 @@ const CartProvider = ({ children }) => {
   };
 
   const removeFromCart = (courseId) => {
-    setCartItems({ type: "REMOVE_FROM_CART", payload: { id: courseId } });
+    setCartItems({
+      type: "REMOVE_FROM_CART",
+      payload: { course_id: courseId },
+    });
   };
 
   return (

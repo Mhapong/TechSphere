@@ -23,6 +23,7 @@ export default function BuyProduct() {
 
   useEffect(() => {
     generateQRCode();
+    console.log(location.state.cartItems);
   }, []);
 
   const generateQRCode = async () => {
@@ -58,9 +59,15 @@ export default function BuyProduct() {
     }
   };
 
+  const courseIds = location.state.cartItems.map((item) => item.course_id);
+
   const handleConfirmPurchase = async () => {
-    if (!location.state?.course_id || !receipt) {
-      console.error("Error: course_id is missing or no receipt uploaded");
+    if (!courseIds) {
+      console.error("Error: Course_id is missing");
+      return;
+    }
+    if (!receipt) {
+      console.error("Error: No receipt uploaded");
       return;
     }
 
@@ -69,7 +76,7 @@ export default function BuyProduct() {
       files.append("files", receipt);
       files.append(
         "name",
-        `${state.username}_${location.state.course_id}_receipt`
+        `${state.username}_${location.state.cartItems[0].name}_receipt`
       );
 
       const receiptUpload = await ax.post("/upload", files, {
@@ -85,12 +92,20 @@ export default function BuyProduct() {
           users_purchase: state.user.id,
           email: state.email,
           amount: location.state.total,
-          course_purchase: [location.state.course_id],
+          course_purchase: courseIds,
           picture_purchase: [{ id, url }],
         },
       });
+      console.log(courseIds);
 
-      location.state.course_id.forEach((id) => removeFromCart(id.id));
+      courseIds.forEach((courseId) => {
+        if (courseId) {
+          removeFromCart(courseId); // ตรวจสอบว่า courseId ถูกต้องก่อนลบ
+        } else {
+          console.error("Invalid courseId:", courseId);
+        }
+      });
+
       navigate("/payment-succeed");
     } catch (error) {
       console.error("Error:", error.response || error.message);
