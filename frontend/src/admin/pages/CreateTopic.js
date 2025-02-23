@@ -123,11 +123,10 @@ const AddTopic = () => {
         data: {
           content_title: titleContent,
           time: TimeUsageContent,
-          content_id: Topic.id,
+          content_id: Topic?.id,
           detail: detail,
         },
       });
-      console.log(response.data.data.topic.id);
       toast.success("บันทึกข้อมูลเนื้อหาสำเร็จ!", {
         // position: "top-center",
         duration: 5000,
@@ -139,10 +138,10 @@ const AddTopic = () => {
           borderRadius: "10px",
         },
       });
-      fetchTopic();
-      // Navigate(`/create-topic/${data.documentId}`, {
-      //   state: { Value: data },
-      // });
+      // fetchTopic();
+      Navigate(`/create-summarize/${data.documentId}`, {
+        state: { Value: data },
+      });
       setopenAddContent(false);
       console.log("Data successfully uploaded to Strapi!");
       // Navigate(`${path}/${response.data.data.id}`);
@@ -377,6 +376,7 @@ const AddTopic = () => {
                     style={{ backgroundColor: "#f6f6f6" }}
                     required
                   ></textarea>
+                  {/* < 
                   <div className="mt-5">
                     <label
                       htmlFor="description"
@@ -411,7 +411,10 @@ const AddTopic = () => {
                       // onChange={handleImageUpload}
                       className="sr-only"
                     />
-                  </div>
+                  </div> */}
+                  <p className="text-red-500 flex items-center mt-2 justify-center">
+                    **หมายเหตุอัปโหลดวิดีโอจะสามารถทำได้ ตอนแก้ไข**
+                  </p>
                 </div>
                 {/* ปุ่มกด */}
                 <div className="flex justify-end gap-5 mt-2">
