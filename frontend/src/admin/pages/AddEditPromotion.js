@@ -2,13 +2,6 @@ import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router";
 import ax from "../../conf/ax";
 import { Toaster, toast } from "sonner";
-import datapic from "../../client/components/data.png";
-import webpic from "../../client/components/web-100.png";
-import gamepic from "../../client/components/game.png";
-import hardwarepic from "../../client/components/hardware.png";
-import networkpic from "../../client/components/network.png";
-import morepic from "../../client/components/more.png";
-import Select from "react-select";
 import conf from "../../conf/main";
 
 const AddEditPromotion = () => {

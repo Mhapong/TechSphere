@@ -40,6 +40,7 @@ import Chat from "./admin/components/chat.js";
 import EditContent from "./admin/pages/EditContent.js";
 import PromotionAdminPage from "./admin/pages/Promotion.js";
 import AddEditPromotion from "./admin/pages/AddEditPromotion.js";
+import EditFinance from "./admin/pages/EditFinance.js";
 
 function App() {
   const { state } = useContext(AuthContext);
@@ -81,7 +82,7 @@ function App() {
           </>
         ) : userRole === "Lecturer" ? (
           <>
-            <Nav />
+            <NavAdmin />
             <Routes>
               <Route path="/" element={<HomeAdmin />} />
               {/* <Route path="*" element={<PageNotFound />} /> */}
@@ -117,6 +118,10 @@ function App() {
               <Route path="/finance" element={<FinanceOrder />} />
               <Route path="/user" element={<Profile />} />
               <Route path="/edit-profile/:userid" element={<EditProfile />} />
+              <Route
+                path="/edit-finance/:financeid"
+                element={<EditFinance />}
+              />
               <Route path="/sign-up" element={<SignUp />} />
             </Routes>
             <button
