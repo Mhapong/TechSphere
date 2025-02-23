@@ -159,7 +159,10 @@ export default function CheckCourseStatus() {
                                         <p className="text-black font-semibold text-lg lg:text-2xl pr-20">
                                             ชื่อคอร์ส: {item.course_purchase[0]?.Name}
                                         </p>
-                                        <p className="text-black text-sm lg:text-base">จำนวนเงิน: {item.amount} บาท</p>
+                                        <p className="text-black text-sm lg:text-base">
+                                            จำนวนเงิน: {item.amount && item.amount > 0 ? `${item.amount} บาท` : "ฟรี"}
+                                        </p>
+
                                         <p className="text-black text-sm lg:text-base">สถานะ: {item.status_confirm || "ไม่ระบุ"}</p>
                                         <p className="text-black text-sm lg:text-base">
                                             วันที่สั่งซื้อ: {new Date(item.createdAt).toLocaleDateString()}
