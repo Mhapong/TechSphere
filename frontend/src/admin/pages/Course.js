@@ -30,6 +30,8 @@ import {
 import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 import { Delete, Add } from "@mui/icons-material";
 import { motion } from "framer-motion";
+import conf from "../../conf/main";
+import Error from "../components/Image/404.png";
 
 export function CourseView() {
   const [Course, setCourse] = useState([]);
@@ -84,11 +86,6 @@ export function CourseView() {
           if (!queryCourse) {
             return value.categories.some((cat) => cat.tag === selectedCategory);
           }
-
-          // if (selectedCategory === "ALL") {
-          //   console.log("Entering 'ALL' condition"); // แสดงว่าเข้ามาในเงื่อนไข 'ALL'
-          //   return value.Name.toLowerCase().includes(queryCourse.toLowerCase());
-          // }
 
           return (
             value.Name.toLowerCase().includes(queryCourse.toLowerCase()) ||
@@ -181,7 +178,20 @@ export function CourseView() {
                     </button>
 
                     <CardHeader floated={false} color="blue-gray">
-                      <img src={CourseEx} alt="ui/ux review check" />
+                      {items.image ? (
+                        <img
+                          className="w-full h-36"
+                          src={`${conf.apiUrl}${items.image[0].url}`}
+                          alt="ui/ux review check"
+                        />
+                      ) : (
+                        <img
+                          className="w-full h-36"
+                          src={CourseEx}
+                          alt="ui/ux review check"
+                        />
+                      )}
+
                       <div className="to-bg-black-10 absolute inset-0 h-full w-full bg-gradient-to-tr from-transparent via-transparent to-black/60 " />
                     </CardHeader>
 

@@ -9,6 +9,7 @@ import hardwarepic from "../../client/components/hardware.png";
 import networkpic from "../../client/components/network.png";
 import morepic from "../../client/components/more.png";
 import Select from "react-select";
+import conf from "../../conf/main";
 
 const AddEditPromotion = () => {
   // State management for each form field
@@ -16,11 +17,13 @@ const AddEditPromotion = () => {
   const { Value } = location.state || {};
   const [Code, setCode] = useState("");
   const [Detail, setDetail] = useState("");
-  const [image, setImage] = useState(null);
+  // const [image, setImage] = useState(null);
   const [Discount, setDiscount] = useState("");
   const [status, setStatus] = useState("");
   const Navigate = useNavigate();
   const [endDate, setEndDate] = useState("");
+  const [image, setImage] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState(null);
 
   useEffect(() => {
     if (Value) {
@@ -29,33 +32,73 @@ const AddEditPromotion = () => {
       setStatus(Value.status_promotion);
       setDiscount(Value.discount);
       setEndDate(Value.end_date);
+      if (Value.picture_promotion) {
+        const imageUrl = `${conf.apiUrl}${Value.picture_promotion.url}`;
+        setPreviewUrl(imageUrl);
+      }
     }
   }, [Value]);
+
+  const handleImageUpload = (event) => {
+    const file = event.target.files[0];
+    if (file && (file.type === "image/png" || file.type === "image/jpeg")) {
+      setImage(file);
+      setPreviewUrl(URL.createObjectURL(file));
+    }
+  };
 
   const handleSubmit = async (e, path) => {
     e.preventDefault();
     try {
+      let imageData = null;
+
+      // ถ้ามีรูปภาพใหม่ที่อัปโหลด
+      if (image) {
+        const formData = new FormData();
+        formData.append("files", image);
+
+        const imageUploadResponse = await ax.post(`upload`, formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+
+        const {
+          data: [{ id, url }],
+        } = imageUploadResponse;
+
+        imageData = { id, url };
+        console.log("New image uploaded successfully:", url);
+      } else if (Value?.picture_promotion) {
+        imageData = {
+          id: Value.picture_promotion.id,
+          url: Value.picture_promotion.url,
+        };
+        console.log("Using existing image:", imageData.url);
+      }
+
+      const promotionData = {
+        Code: Code,
+        detail: Detail,
+        discount: Discount,
+        status_promotion: status,
+        end_date: endDate,
+      };
+
+      if (imageData) {
+        promotionData.picture_promotion = [imageData.id];
+      } else {
+        promotionData.picture_promotion = null;
+      }
+
       if (Value) {
         await ax.put(`promotions/${Value.documentId}?populate=*`, {
-          data: {
-            Code: Code,
-            detail: Detail,
-            discount: Discount,
-            status_promotion: status,
-            end_date: endDate,
-          },
+          data: promotionData,
         });
       } else {
         await ax.post(`promotions?populate=*`, {
-          data: {
-            Code: Code,
-            detail: Detail,
-            discount: Discount,
-            status_promotion: status,
-            end_date: endDate,
-          },
+          data: promotionData,
         });
       }
+
       setTimeout(() => Navigate(`${path}`), 500);
       console.log("Data successfully uploaded to Strapi!");
       toast.success("บันทึกข้อมูลโปรโมชั่นสำเร็จ!", {
@@ -79,14 +122,6 @@ const AddEditPromotion = () => {
       } else {
         console.error("Error:", error.message);
       }
-    }
-  };
-
-  // Handle image upload
-  const handleImageUpload = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setImage(file);
     }
   };
 
@@ -224,7 +259,7 @@ const AddEditPromotion = () => {
           </div>
         </div>
 
-        <div className="p-2">
+        <div className="p-2 h-auto">
           <div>
             <div>
               <label
@@ -235,20 +270,31 @@ const AddEditPromotion = () => {
               </label>
               <label
                 htmlFor="image-upload"
-                className=" w-full h-48 border-2 border-dashed border-gray-300 rounded-md cursor-pointer flex flex-col items-center justify-center bg-[#f6f6f6] hover:bg-gray-50"
+                className="w-full min-h-96 border-2 border-dashed border-gray-300 rounded-md cursor-pointer flex flex-col items-center justify-center bg-[#f6f6f6] hover:bg-gray-50"
               >
-                <div className="text-center">
-                  <div className="mb-2">
-                    <button
-                      type="button"
-                      className="bg-[#8c0327] hover:bg-[#6b0220] text-white rounded-full py-2 px-4"
-                    >
-                      Select from the computer
-                    </button>
+                {previewUrl ? (
+                  <img
+                    src={previewUrl}
+                    alt="Preview"
+                    className="w-full h-full object-cover rounded-md"
+                  />
+                ) : (
+                  <div className="text-center">
+                    <div className="mb-2">
+                      <button
+                        type="button"
+                        onClick={() =>
+                          document.getElementById("image-upload").click()
+                        }
+                        className="bg-[#8c0327] hover:bg-[#6b0220] text-white rounded-full py-2 px-4"
+                      >
+                        Select from the computer
+                      </button>
+                    </div>
+                    <p className="text-gray-500">or drag photo here</p>
+                    <p className="text-gray-500 text-sm mt-1">PNG, JPG, SVG</p>
                   </div>
-                  <p className="text-gray-500">or drag photo here</p>
-                  <p className="text-gray-500 text-sm mt-1">PNG, JPG, SVG</p>
-                </div>
+                )}
               </label>
               <input
                 id="image-upload"

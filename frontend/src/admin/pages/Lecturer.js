@@ -12,6 +12,7 @@ import {
   DialogTitle,
 } from "@headlessui/react";
 import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
+import conf from "../../conf/main";
 
 const LecturerAll = () => {
   const [Lecturer, setLecturer] = useState([]);
@@ -119,11 +120,19 @@ const LecturerAll = () => {
                   <span className="ml-2 text-sm">Delete</span>
                 </button>
                 <a href="#">
-                  <img
-                    className="w-52 rounded-lg sm:rounded-none sm:rounded-l-lg"
-                    src={usericon}
-                    alt={`${value.username} Avatar`}
-                  />
+                  {value.profile_picture ? (
+                    <img
+                      className="w-52 h-52 rounded-lg sm:rounded-none sm:rounded-l-lg"
+                      src={`${conf.apiUrl}${value.profile_picture[0].url}`}
+                      alt={`${value.username} Avatar`}
+                    />
+                  ) : (
+                    <img
+                      className="w-52 h-52 rounded-lg sm:rounded-none sm:rounded-l-lg"
+                      src={usericon}
+                      alt={`${value.username} Avatar`}
+                    />
+                  )}
                 </a>
                 <div className="p-5">
                   <h3 className="text-xl font-bold tracking-tight text-gray-900 dark:text-white">

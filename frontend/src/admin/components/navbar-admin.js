@@ -12,6 +12,7 @@ import Groups3Icon from "@mui/icons-material/Groups3";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import DiscountIcon from "@mui/icons-material/Discount";
 import ax from "../../conf/ax";
+import conf from "../../conf/main";
 
 export default function NavAdmin() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -154,11 +155,24 @@ export default function NavAdmin() {
                   >
                     <span className="sr-only">Open user menu</span>
                     <img src={logo} className="h-8 me-3" alt="Logo" />
-                    <img
+                    {/* <img
                       src={usericon}
                       className="w-8 h-8 rounded-full"
                       alt="user photo"
-                    />
+                    /> */}
+                    {user.userProfile ? (
+                      <img
+                        className="w-8 h-8 rounded-full"
+                        src={`${conf.apiUrl}${user.userProfile.url}`}
+                        alt={`${user.username} Avatar`}
+                      />
+                    ) : (
+                      <img
+                        className="w-8 h-8 rounded-full"
+                        src={usericon}
+                        alt={`${user.username} Avatar`}
+                      />
+                    )}
                   </button>
                 </div>
                 {isDropdownOpen && (

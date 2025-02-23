@@ -12,6 +12,7 @@ import {
 } from "@headlessui/react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import GroupAddIcon from "@mui/icons-material/GroupAdd";
+// import conf from "../../conf/main";
 
 const Chat = ({ open, close }) => {
   const [users, setUsers] = useState([]);
@@ -71,6 +72,7 @@ const Chat = ({ open, close }) => {
         `chats?filters[$or][0][sender][id][$eq]=${user.id}&filters[$or][1][request][id][$eq]=${user.id}&populate=*`
       );
       setData(response.data.data);
+      // console.log(response.data.data);
       const senders = response.data.data.reduce((acc, item) => {
         const existingSender = acc.find(
           (sender) =>
@@ -107,7 +109,7 @@ const Chat = ({ open, close }) => {
 
         return acc;
       }, []);
-
+      // console.log(senders);
       setUsers(senders);
     } catch (error) {
       console.error("Error fetching users:", error);
@@ -372,6 +374,19 @@ const Chat = ({ open, close }) => {
                             alt="User Icon"
                             className="w-10 h-10 rounded-full object-cover border-2 border-gray-300"
                           />
+                          {/* {user.userProfile ? (
+                      <img
+                        className="w-8 h-8 rounded-full"
+                        src={`${conf.apiUrl}${user.userProfile.url}`}
+                        alt={`${user.username} Avatar`}
+                      />
+                    ) : (
+                      <img
+                        className="w-8 h-8 rounded-full"
+                        src={usericon}
+                        alt={`${user.username} Avatar`}
+                      />
+                    )} */}
 
                           <div className="ml-4 flex-1 flex justify-between items-center">
                             {/* Name */}

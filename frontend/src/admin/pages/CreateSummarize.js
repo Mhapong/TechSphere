@@ -9,6 +9,8 @@ import {
   DialogTitle,
 } from "@headlessui/react";
 import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
+import conf from "../../conf/main";
+import Error from "../components/Image/404.png";
 
 export default function CourseDetails() {
   const { courseid } = useParams();
@@ -16,6 +18,7 @@ export default function CourseDetails() {
   const Navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [DeleteTopic, setDeleteTopic] = useState([]);
+  const [image, setImage] = useState(null);
 
   const handleRowDeleted = async (itemId) => {
     try {
@@ -30,6 +33,11 @@ export default function CourseDetails() {
     try {
       const response = await ax.get(`courses/${courseid}?populate=*`);
       setCourse(response.data.data);
+      console.log(response.data.data);
+      if (response.data.data.image[0]) {
+        const imageUrl = `${conf.apiUrl}${response.data.data.image[0].url}`;
+        setImage(imageUrl);
+      }
     } catch (e) {
       console.log("Error", e);
     }
@@ -133,6 +141,30 @@ export default function CourseDetails() {
           </span>
         </div>
         <h1 className="text-2xl font-bold md:text-3xl">{Course.Name}</h1>
+      </div>
+      <div className="p-2 h-auto">
+        <div>
+          <div>
+            <label
+              htmlFor="image-upload"
+              className="w-full min-h-96 border-2 border-dashed border-gray-300 rounded-md cursor-pointer flex flex-col items-center justify-center bg-[#f6f6f6] hover:bg-gray-50"
+            >
+              {image ? (
+                <img
+                  src={image}
+                  alt="Preview"
+                  className="w-full h-full object-cover rounded-md"
+                />
+              ) : (
+                <img
+                  src={Error}
+                  alt="Preview"
+                  className="w-full h-96 object-cover rounded-md"
+                />
+              )}
+            </label>
+          </div>
+        </div>
       </div>
 
       {/* Course Info Card */}
