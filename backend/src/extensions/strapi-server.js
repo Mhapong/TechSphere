@@ -8,7 +8,7 @@ module.exports = (plugin) => {
     const completeUser = await strapi.entityService.findOne(
       "plugin::users-permissions.user",
       user.id,
-      { populate: ["profile_picture", "role"] }
+      { populate: ["profile_picture", "role", "owned_course"] }
       // { populate: ["profile_picture", "role", "subject_owners", "score_owers"] }
     );
 
@@ -22,6 +22,7 @@ module.exports = (plugin) => {
       blocked: completeUser.blocked,
       profile_picture: completeUser.profile_picture,
       role: completeUser.role,
+      owned_course: completeUser.owned_course,
       // subject: completeUser.subject_owners,
       // score: completeUser.score_owers,
     };

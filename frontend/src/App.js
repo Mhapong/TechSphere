@@ -42,9 +42,11 @@ import CheckCourseStatus from "./client/pages/CheckCourseStatus.js";
 import PromotionAdminPage from "./admin/pages/Promotion.js";
 import AddEditPromotion from "./admin/pages/AddEditPromotion.js";
 import EditFinance from "./admin/pages/EditFinance.js";
+import { Toaster } from "sonner";
 import LecturerBackGround from "./client/pages/LecturerBackGround.js";
 import HomeLecturer from "./lecturer/page/home-lecturer.js";
 import ReviewLecturer from "./lecturer/page/viewReview.js";
+import { CourseAdminView } from "./lecturer/page/course.js";
 
 function App() {
   const { state } = useContext(AuthContext);
@@ -53,6 +55,7 @@ function App() {
 
   return (
     <BrowserRouter>
+      <Toaster />
       {state.isLoggedIn ? (
         userRole === "User" ? (
           <>
@@ -75,7 +78,10 @@ function App() {
               <Route path="/purchase" element={<BuyProduct />} />
               <Route path="/payment-succeed" element={<PaymentSucceed />} />
               <Route path="/checkstatus" element={<CheckCourseStatus />} />
-              <Route path="/lecturer-background/:name" element={<LecturerBackGround />} />
+              <Route
+                path="/lecturer-background/:name"
+                element={<LecturerBackGround />}
+              />
               <Route path="/user" element={<Profile />} />
               <Route path="/edit-profile/:userid" element={<EditProfile />} />
               {/* <Route path="*" element={<PageNotFound />} /> */}
@@ -96,6 +102,12 @@ function App() {
               <Route path="/user" element={<Profile />} />
               <Route path="/edit-profile/:userid" element={<EditProfile />} />
               <Route path="/review" element={<ReviewLecturer />} />
+              <Route path="/course" element={<CourseAdminView />} />
+              <Route
+                path="/view-product/:name/:documentId"
+                element={<ViewCourse />}
+              />
+              <Route path="/view-student" element={<CourseStudentTable />} />
               {/* <Route path="*" element={<PageNotFound />} /> */}
             </Routes>
             <button
@@ -157,7 +169,10 @@ function App() {
               element={<ViewCourse />}
             />
             <Route path="/about" element={<About />} />
-            <Route path="/lecturer-background/:name" element={<LecturerBackGround />} />
+            <Route
+              path="/lecturer-background/:name"
+              element={<LecturerBackGround />}
+            />
             {/* testing in plublic role */}
             <Route path="/contentstudy" element={<ContentStudy />} />
             <Route path="/my-course" element={<Mycourse />} />
