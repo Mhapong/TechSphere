@@ -73,7 +73,7 @@ function App() {
               <Route path="/purchase" element={<BuyProduct />} />
               <Route path="/payment-succeed" element={<PaymentSucceed />} />
               <Route path="/checkstatus" element={<CheckCourseStatus />} />
-              <Route path="/lecturer-background/:documentId" element={<LecturerBackGround />} />
+              <Route path="/lecturer-background/:name" element={<LecturerBackGround />} />
               {/* <Route path="*" element={<PageNotFound />} /> */}
             </Routes>
             <Footer />
