@@ -11,6 +11,7 @@ import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
 import Groups3Icon from "@mui/icons-material/Groups3";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import DiscountIcon from "@mui/icons-material/Discount";
+import ReviewsIcon from "@mui/icons-material/Reviews";
 import ax from "../../conf/ax";
 import conf from "../../conf/main";
 
@@ -20,6 +21,7 @@ export default function NavAdmin() {
   const { state: ContextState, logout } = useContext(AuthContext);
   const { user } = ContextState;
   const [Count, setCount] = useState(null);
+  const [NavMenu, setNavMenu] = useState([]);
 
   useEffect(() => {
     const fetchCount = async () => {
@@ -31,9 +33,14 @@ export default function NavAdmin() {
       }
     };
     fetchCount();
+    if (user.userRole === "Admin") {
+      setNavMenu(NavAdminMenu);
+    } else if (user.userRole === "Lecturer") {
+      setNavMenu(NavLecturerMenu);
+    }
   }, []);
 
-  const NavMenu = [
+  const NavAdminMenu = [
     {
       name: "หน้าแรก",
       href: "/",
@@ -82,6 +89,48 @@ export default function NavAdmin() {
       current: true,
       key: `${Count ? `${Count["confirm-purchase"]}` : ""}`,
       icon: <PaymentIcon />,
+    },
+    {
+      name: "บัญชีผู้ใช้งาน",
+      href: "/user",
+      current: true,
+      key: "",
+      icon: <AccountCircleIcon />,
+    },
+    {
+      name: "ลงชื่อออก",
+      href: "/",
+      current: true,
+      key: "",
+      icon: <LogoutIcon />,
+      action: () => {
+        logout();
+        window.location.href = "/";
+      },
+    },
+  ];
+
+  const NavLecturerMenu = [
+    {
+      name: "หน้าแรก",
+      href: "/",
+      current: true,
+      key: "",
+      icon: <HomeIcon />,
+    },
+    {
+      name: "คอร์สทั้งหมดของคุณ",
+      href: "/view",
+      current: true,
+      key: `${Count ? `${Count.course}` : "0"}`,
+      icon: <StorageIcon />,
+    },
+    {
+      name: "รีวิวของคุณ",
+      href: "/review",
+      current: true,
+      key: `${Count ? `${Count.users.User}` : "0"}`,
+      icon: <ReviewsIcon />,
     },
     {
       name: "บัญชีผู้ใช้งาน",
