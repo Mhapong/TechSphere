@@ -134,7 +134,7 @@ export default function Profile() {
           {/* Profile Image */}
           <div className="w-full lg:w-2/5">
             <img
-              src={Image?.url ? `http://localhost:1337${Image.url}` : usericon}
+              src={Image?.url ? `${conf.apiUrl}${Image.url}` : usericon}
               className="hidden sm:block aspect-[9/16] object-cover rounded-lg shadow-2xl"
               alt="Profile"
               style={{ width: "550px" }}

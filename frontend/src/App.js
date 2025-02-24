@@ -46,6 +46,7 @@ import { Toaster } from "sonner";
 import LecturerBackGround from "./client/pages/LecturerBackGround.js";
 import HomeLecturer from "./lecturer/page/home-lecturer.js";
 import ReviewLecturer from "./lecturer/page/viewReview.js";
+import { CourseAdminView } from "./lecturer/page/course.js";
 
 function App() {
   const { state } = useContext(AuthContext);
@@ -101,6 +102,12 @@ function App() {
               <Route path="/user" element={<Profile />} />
               <Route path="/edit-profile/:userid" element={<EditProfile />} />
               <Route path="/review" element={<ReviewLecturer />} />
+              <Route path="/course" element={<CourseAdminView />} />
+              <Route
+                path="/view-product/:name/:documentId"
+                element={<ViewCourse />}
+              />
+              <Route path="/view-student" element={<CourseStudentTable />} />
               {/* <Route path="*" element={<PageNotFound />} /> */}
             </Routes>
             <button

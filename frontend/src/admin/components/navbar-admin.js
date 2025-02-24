@@ -14,15 +14,16 @@ import DiscountIcon from "@mui/icons-material/Discount";
 import ReviewsIcon from "@mui/icons-material/Reviews";
 import ax from "../../conf/ax";
 import conf from "../../conf/main";
+import HighlightOffIcon from "@mui/icons-material/HighlightOff";
 
 export default function NavAdmin() {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const { state: ContextState, logout } = useContext(AuthContext);
   const { user } = ContextState;
   const [Count, setCount] = useState(null);
   const [NavMenu, setNavMenu] = useState([]);
-
+  const [rotated, setRotated] = useState(false);
   useEffect(() => {
     const fetchCount = async () => {
       try {
@@ -120,7 +121,7 @@ export default function NavAdmin() {
     },
     {
       name: "คอร์สทั้งหมดของคุณ",
-      href: "/view",
+      href: "/course",
       current: true,
       key: `${Count ? `${Count.course}` : "0"}`,
       icon: <StorageIcon />,
@@ -153,6 +154,7 @@ export default function NavAdmin() {
   ];
 
   const toggleSidebar = () => {
+    setRotated(!rotated);
     setIsSidebarOpen(!isSidebarOpen);
   };
 
@@ -165,7 +167,15 @@ export default function NavAdmin() {
       <nav className="fixed top-0 z-50 w-full bg-white border-b border-gray-200 dark:bg-gray-800 dark:border-gray-700">
         <div className="px-3 py-3 lg:px-5 lg:pl-3">
           <div className="flex items-center justify-between">
-            <div className="flex items-center justify-start rtl:justify-end">
+            {user.userRole === "Lecturer" && (
+              <HighlightOffIcon
+                onClick={toggleSidebar}
+                className={`transition-transform duration-300 ${
+                  rotated ? "rotate-90" : "rotate-0"
+                }`}
+              />
+            )}
+            <div className="flex items-center ml-64 justify-start rtl:justify-end">
               <button
                 type="button"
                 className="inline-flex items-center p-2 text-sm text-gray-500 rounded-lg sm:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
@@ -250,46 +260,47 @@ export default function NavAdmin() {
           </div>
         </div>
       </nav>
-
-      <aside
-        id="logo-sidebar"
-        className={`fixed top-0 left-0 z-40 w-64 h-screen pt-20 transition-transform bg-white border-r border-gray-200 sm:translate-x-0 dark:bg-gray-800 dark:border-gray-700 ${
-          isSidebarOpen ? "translate-x-0" : "-translate-x-full"
-        }`}
-        aria-label="Sidebar"
-      >
-        <div className="h-full px-3 pb-4 overflow-y-auto bg-white dark:bg-gray-800">
-          <ul className="space-y-2 font-medium">
-            {NavMenu.map((menu) => (
-              <li>
-                <a
-                  href={menu.href}
-                  className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
-                  onClick={
-                    menu.action
-                      ? (e) => {
-                          e.preventDefault();
-                          menu.action();
-                        }
-                      : null
-                  }
-                >
-                  <span className="shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white  flex items-center justify-center">
-                    {menu.icon}
-                  </span>
-                  <span className="flex-1 ms-3 whitespace-nowrap">
-                    {menu.name}
-                  </span>
-                  <span className="inline-flex items-center justify-center px-2 ms-3 text-sm font-medium text-gray-800 bg-gray-100 rounded-full dark:bg-gray-700 dark:text-gray-300">
-                    {menu.key}
-                  </span>
-                </a>
-                {/* <div className="border-b border-gray-200 dark:border-gray-700 my-2"></div> */}
-              </li>
-            ))}
-          </ul>
-        </div>
-      </aside>
+      {isSidebarOpen && (
+        <aside
+          id="logo-sidebar"
+          className={`fixed top-0 left-0 z-40 w-64 h-screen pt-20 transition-transform bg-white border-r border-gray-200 sm:translate-x-0 dark:bg-gray-800 dark:border-gray-700 ${
+            isSidebarOpen ? "translate-x-0" : "-translate-x-full"
+          }`}
+          aria-label="Sidebar"
+        >
+          <div className="h-full px-3 pb-4 overflow-y-auto bg-white dark:bg-gray-800">
+            <ul className="space-y-2 font-medium">
+              {NavMenu.map((menu) => (
+                <li>
+                  <a
+                    href={menu.href}
+                    className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
+                    onClick={
+                      menu.action
+                        ? (e) => {
+                            e.preventDefault();
+                            menu.action();
+                          }
+                        : null
+                    }
+                  >
+                    <span className="shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white  flex items-center justify-center">
+                      {menu.icon}
+                    </span>
+                    <span className="flex-1 ms-3 whitespace-nowrap">
+                      {menu.name}
+                    </span>
+                    <span className="inline-flex items-center justify-center px-2 ms-3 text-sm font-medium text-gray-800 bg-gray-100 rounded-full dark:bg-gray-700 dark:text-gray-300">
+                      {menu.key}
+                    </span>
+                  </a>
+                  {/* <div className="border-b border-gray-200 dark:border-gray-700 my-2"></div> */}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </aside>
+      )}
     </>
   );
 }

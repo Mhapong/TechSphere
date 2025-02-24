@@ -78,8 +78,8 @@ export default function ViewCourse() {
     const halfStars = rating % 1 >= 0.5 ? 1 : 0; // ดาวครึ่ง
     const emptyStars = 5 - fullStars - halfStars; // ดาวที่ว่าง
   };
-  const isCourseInCart = cartItems.some((item) => item.id === course.id);
-  const isUserOwned = course.user_owner?.some(
+  const isCourseInCart = cartItems.some((item) => item?.id === course?.id);
+  const isUserOwned = course?.user_owner?.some(
     (owner) => owner?.id === state.user?.id
   );
 

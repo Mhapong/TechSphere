@@ -183,9 +183,10 @@ const HomeLecturer = () => {
           {/* Inbox Card */}
           <div className="flex-1 bg-red-100 border border-red-200 rounded-xl p-6 animate-fade-in">
             <h2 className="text-3xl md:text-4xl text-red-900">
-              ตรวจสอบสถานะการจ่ายเงิน <br />
+              จำนวนคอร์สทั้งหมดของ <br />
               <strong>
-                รอตรวจสอบ : {Count ? `${Count["confirm-purchase"]}` : "0"}
+                คุณ {user.first_name} {user.last_name} มี{" "}
+                {Count ? `${Count.course}` : 0}
               </strong>
             </h2>
             <a
@@ -204,7 +205,7 @@ const HomeLecturer = () => {
             style={{ animationDelay: "0.1s" }}
           >
             <h3 className="text-xl font-bold text-red-800">
-              จำนวนคอร์สทั้งหมดของ TechSphere
+              คอร์สทั้งหมดของ คุณ {user.first_name} {user.last_name}
             </h3>
             <p className="text-9xl md:text-7xl text-red-900 mt-4 flex justify-center">
               <strong className="text-9xl">
@@ -218,7 +219,7 @@ const HomeLecturer = () => {
             style={{ animationDelay: "0.2s" }}
           >
             <h3 className="text-xl font-bold text-red-800">
-              นักเรียนทั้งหมดของ TechSphere
+              นักเรียนทั้งหมดของ คุณ {user.first_name} {user.last_name}
             </h3>
             <p className="text-9xl md:text-7xl text-red-900 mt-4 flex justify-center">
               <strong className="text-9xl">
@@ -232,7 +233,7 @@ const HomeLecturer = () => {
             style={{ animationDelay: "0.3s" }}
           >
             <h3 className="text-xl font-bold text-red-800">
-              อาจารย์ผู้สอนทั้งหมดของ TechSphere
+              รีวิวทั้งหมดของ คุณ {user.first_name} {user.last_name}
             </h3>
             <p className="text-9xl md:text-7xl text-red-900 mt-4 flex justify-center">
               <strong className="text-9xl">

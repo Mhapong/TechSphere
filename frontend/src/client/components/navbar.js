@@ -42,6 +42,7 @@ export default function Nav() {
   const NavMenu = [
     { name: "หน้าแรก", href: "/", current: true },
     { name: "สำรวจ", href: "/explore", current: true },
+    { name: "เกี่ยวกับเรา", href: "/about", current: true },
     ...(isAuthenticated
       ? [{ name: "คอร์สของคุณ", href: "/my-course", current: true }]
       : []),
