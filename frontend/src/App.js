@@ -42,6 +42,7 @@ import CheckCourseStatus from "./client/pages/CheckCourseStatus.js";
 import PromotionAdminPage from "./admin/pages/Promotion.js";
 import AddEditPromotion from "./admin/pages/AddEditPromotion.js";
 import EditFinance from "./admin/pages/EditFinance.js";
+import LecturerBackGround from "./client/pages/LecturerBackGround.js";
 
 function App() {
   const { state } = useContext(AuthContext);
@@ -72,6 +73,7 @@ function App() {
               <Route path="/purchase" element={<BuyProduct />} />
               <Route path="/payment-succeed" element={<PaymentSucceed />} />
               <Route path="/checkstatus" element={<CheckCourseStatus />} />
+              <Route path="/lecturer-background/:documentId" element={<LecturerBackGround />} />
               {/* <Route path="*" element={<PageNotFound />} /> */}
             </Routes>
             <Footer />
