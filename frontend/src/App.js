@@ -150,6 +150,7 @@ function App() {
               element={<ViewCourse />}
             />
             <Route path="/about" element={<About />} />
+            <Route path="/lecturer-background/:name" element={<LecturerBackGround />} />
             {/* testing in plublic role */}
             <Route path="/contentstudy" element={<ContentStudy />} />
             <Route path="/my-course" element={<Mycourse />} />
