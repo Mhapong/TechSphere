@@ -61,7 +61,6 @@ export default function Home() {
 
   return (
     <html className="!scorll-smooth max-w-[100%]">
-      <Toaster />
       <div className="grid grid-cols-2 gap-0 max- h-[30rem]">
         <motion.div
           className="place-content-center ml-80"

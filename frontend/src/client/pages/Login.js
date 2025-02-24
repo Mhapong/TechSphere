@@ -39,7 +39,6 @@ export default function Login() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-900">
-      <Toaster />
       <div class="absolute inset-0 z-0">
         <img
           src="https://source.unsplash.com/random/1920x1080"

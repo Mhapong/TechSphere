@@ -72,7 +72,6 @@ const EditFinance = () => {
 
   return (
     <div className="w-[1000px] mx-96 mt-11 p-8">
-      <Toaster />
       <h1 className="flex items-center justify-center text-3xl font-bold text-black mb-6 mt-5">
         แก้ไขสถานะ การเงิน 📝
       </h1>
