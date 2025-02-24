@@ -215,10 +215,10 @@ const Explore = () => {
                           ⭐{" "}
                           {course.rating === 0
                             ? "ยังไม่มีรีวิว"
-                            : `(${course.rating.length} reviews)`}{" "}
+                            : `(${course.rating?.length} reviews)`}{" "}
                         </span>
                         <span className="text-end ml-2">
-                          ขายแล้ว: {course.user_owner.length}
+                          ขายแล้ว: {course.user_owner?.length}
                         </span>
                       </div>
                       <div className="p-4 border-t flex  justify-end">
