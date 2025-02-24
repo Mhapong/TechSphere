@@ -48,20 +48,32 @@ export default function LecturerProfile() {
         console.log("useParams name:", name)
     }, [fetchLecturer, name])
 
-    if (loading) return <p className="text-center text-gray-500 p-4">Loading...</p>
-    if (!lecturer) return <p className="text-center text-red-500 p-4">Lecturer not found.</p>
+    if (loading)
+        return (
+            <div className="flex justify-center items-center h-screen">
+                <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-gray-900"></div>
+            </div>
+        )
+    if (!lecturer) return <p className="text-center text-red-500 p-4 text-xl">Lecturer not found.</p>
 
     return (
         <div className="max-w-4xl mx-auto py-6 sm:py-10 px-4 sm:px-6 lg:px-8">
             <div className="bg-white shadow-lg rounded-lg overflow-hidden">
                 <div className="p-6 sm:p-8">
                     {/* รูปโปรไฟล์ */}
-                    {lecturer?.profile_picture?.length > 0 && (
+                    {lecturer?.profile_picture?.length > 0 ? (
                         <img
                             src={`${BASE_URL}${lecturer.profile_picture[0].url}`}
                             alt={`${lecturer.first_name} ${lecturer.last_name}`}
                             className="w-24 h-24 sm:w-32 sm:h-32 rounded-full mx-auto mb-4 shadow-lg object-cover"
                         />
+                    ) : (
+                        <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-full mx-auto mb-4 bg-gray-300 flex items-center justify-center">
+                            <span className="text-4xl text-gray-600">
+                                {lecturer?.first_name?.[0]}
+                                {lecturer?.last_name?.[0]}
+                            </span>
+                        </div>
                     )}
 
                     {/* ชื่ออาจารย์ */}
@@ -70,9 +82,9 @@ export default function LecturerProfile() {
                     </h1>
 
                     {/* ข้อมูลพื้นฐาน */}
-                    <p className="text-center text-gray-600 mt-2 text-sm sm:text-base">
+                    <div className="text-center text-gray-600 mt-2 text-sm sm:text-base whitespace-pre-line">
                         {lecturer?.background || "No background information."}
-                    </p>
+                    </div>
 
                     {/* รายการคอร์สที่เปิดสอน */}
                     <div className="mt-8">
@@ -80,10 +92,46 @@ export default function LecturerProfile() {
                         {lecturer?.created_courses?.length > 0 ? (
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 {lecturer.created_courses.map((course) => (
-                                    <div key={course.id} className="bg-gray-50 shadow-md rounded-lg p-4 border">
-                                        <h4 className="font-semibold text-base sm:text-lg text-gray-800">{course?.Name}</h4>
-                                        <p className="text-gray-600 text-xs sm:text-sm mt-1">{course?.Description}</p>
-                                        <p className="text-xs sm:text-sm text-gray-500 mt-2">⏳ {course?.Time_Usage || "N/A"} hours</p>
+                                    <div
+                                        key={course.id}
+                                        className="bg-white shadow-lg rounded-lg overflow-hidden hover:shadow-xl transition-shadow duration-300"
+                                    >
+                                        {/* Course Image */}
+                                        <div className="w-full h-48 bg-gray-200">
+                                            <img
+                                                src="/placeholder.svg?height=192&width=384"
+                                                alt={course?.Name}
+                                                className="w-full h-full object-cover"
+                                            />
+                                        </div>
+
+                                        {/* Course Content */}
+                                        <div className="p-4">
+                                            <h4 className="text-xl font-bold text-gray-800 mb-1">{course?.Name}</h4>
+                                            <p className="text-gray-600 text-sm mb-3 whitespace-pre-line">{course?.Description}</p>
+
+                                            {/* Course Details */}
+                                            <div className="space-y-2">
+                                                <p className="text-sm flex items-center text-gray-600">
+                                                    <span className="mr-2">⏳</span>
+                                                    ระยะเวลาเรียน: {course?.Time_Usage || "N/A"} ชั่วโมง
+                                                </p>
+                                                <p className="text-sm flex items-center text-gray-600">
+                                                    <span className="mr-2">👨‍🏫</span>
+                                                    ผู้สอน: {lecturer.first_name} {lecturer.last_name}
+                                                </p>
+                                                <p className="text-sm flex items-center text-gray-600">
+                                                    <span className="mr-2">⭐</span>
+                                                    <span className="text-orange-400">({lecturer.rating?.length || 0} reviews)</span>
+                                                    <span className="ml-2">ขายแล้ว: 1</span>
+                                                </p>
+                                            </div>
+
+                                            {/* Price */}
+                                            <div className="mt-4 flex justify-end">
+                                                <p className="text-xl font-bold text-gray-800">{course?.Price?.toLocaleString()} ฿</p>
+                                            </div>
+                                        </div>
                                     </div>
                                 ))}
                             </div>
@@ -94,21 +142,36 @@ export default function LecturerProfile() {
 
                     {/* รีวิว */}
                     <div className="mt-8">
-                        <h3 className="text-lg sm:text-xl font-semibold mb-4 text-gray-800">Reviews:</h3>
+                        <h3 className="text-lg sm:text-xl font-semibold mb-4 text-gray-800">
+                            Reviews ({lecturer?.rating?.length || 0}):
+                        </h3>
                         {lecturer?.rating?.length > 0 ? (
                             <div>
-                                <p className="text-yellow-500 font-semibold text-lg sm:text-xl">
-                                    ⭐{" "}
-                                    {(lecturer.rating.reduce((acc, review) => acc + review.star, 0) / lecturer.rating.length).toFixed(1)}{" "}
-                                    / 5
+                                <p className="text-yellow-500 font-semibold text-lg sm:text-xl flex items-center mb-4">
+                                    <span className="text-2xl mr-2">⭐</span>
+                                    {(lecturer.rating.reduce((acc, review) => acc + review.star, 0) / lecturer.rating.length).toFixed(1)}
+                                    <span className="text-gray-500 text-base ml-2">/ 5</span>
                                 </p>
-                                <ul className="space-y-4 mt-4">
-                                    {lecturer.rating.map((review) => (
-                                        <li key={review.id} className="border-b pb-4 last:border-none">
-                                            <p className="text-gray-700 text-sm sm:text-base">"{review?.comment}"</p>
-                                            <p className="text-xs sm:text-sm text-gray-500 mt-1">⭐ {review?.star} stars</p>
-                                        </li>
-                                    ))}
+                                <ul className="space-y-4">
+                                    {lecturer.rating.map((review) => {
+                                        const stars = review?.star ?? 0
+                                        return (
+                                            <li key={review.id} className="border-b pb-4 last:border-none">
+                                                <div className="flex items-start">
+                                                    <div className="flex-shrink-0 mr-3">
+                                                        {Array.from({ length: 5 }, (_, i) => (
+                                                            <span key={i} className={`text-lg ${i < stars ? "text-yellow-500" : "text-gray-300"}`}>
+                                                                ★
+                                                            </span>
+                                                        ))}
+                                                    </div>
+                                                    <div>
+                                                        <p className="text-gray-700 text-sm sm:text-base italic">"{review?.comment}"</p>
+                                                    </div>
+                                                </div>
+                                            </li>
+                                        )
+                                    })}
                                 </ul>
                             </div>
                         ) : (
