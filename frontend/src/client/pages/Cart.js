@@ -6,6 +6,7 @@ import { Image } from "@mui/icons-material";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import ax from "../../conf/ax";
+import { Toaster, toast } from "sonner";
 
 const Cart = () => {
   const { cartItems, removeFromCart } = useCart();
@@ -14,12 +15,15 @@ const Cart = () => {
   const [promoCode, setPromoCode] = useState("");
   const [discount, setDiscount] = useState(0);
   const [suggestedCourses, setSuggestedCourses] = useState([]);
+  const [allPromo, setAllPromo] = useState({});
+  const [promoId, setPromoId] = useState(null);
 
   const subtotal = cartItems.reduce((sum, item) => sum + item.Price, 0);
   const total = subtotal - discount;
 
   useEffect(() => {
     fetchSuggestedCourses();
+    fetchAllPromoCode();
   }, []);
 
   const fetchSuggestedCourses = async () => {
@@ -32,17 +36,54 @@ const Cart = () => {
     }
   };
 
+  const handleRemoveFromCart = (courseId) => {
+    removeFromCart(courseId);
+    setDiscount(0); // รีเซ็ตส่วนลด
+    setPromoCode(""); // รีเซ็ตโค้ดโปรโมชัน (ถ้าต้องการ)
+    toast.warning("Item removed. Promo code has been reset.", {
+      position: "bottom-left",
+      duration: 3000,
+    });
+  };
+
+  const fetchAllPromoCode = async () => {
+    try {
+      const response = await ax.get("promotions");
+      console.log(response.data.data);
+      setAllPromo(response.data.data);
+    } catch {}
+  };
+
   const applyPromoCode = () => {
-    // This is a mock function. In a real application, you would validate the promo code with your backend.
-    if (promoCode === "DISCOUNT10") {
-      setDiscount(subtotal * 0.1);
+    const matchedPromo = allPromo.find(
+      (promo) =>
+        promo.Code === promoCode && promo.status_promotion === "Activate"
+    );
+
+    if (matchedPromo) {
+      const discountAmount = total * (matchedPromo.discount / 100);
+      setPromoId(matchedPromo.id);
+      setDiscount(discountAmount);
+      toast.success(`Promo applied! You got ${matchedPromo.discount}% off.`, {
+        position: "bottom-left",
+        duration: 3000,
+        style: {
+          fontSize: "1.1rem",
+          padding: "20px",
+          fontWeight: "bold",
+          textAlign: "center",
+          borderRadius: "10px",
+          color: "green",
+        },
+      });
     } else {
-      alert("Invalid promo code");
+      alert("Invalid or inactive promo code");
     }
   };
 
   return (
     <div className="container mx-auto min-h-screen p-4 bg-white">
+      <Toaster />
       <div className="flex flex-col lg:flex-row gap-8">
         {/* Cart Items */}
         <div className="lg:w-2/3 space-y-4">
@@ -83,7 +124,7 @@ const Cart = () => {
                     ฿{item.Price}
                   </h1>
                   <button
-                    onClick={() => removeFromCart(item.id)}
+                    onClick={() => handleRemoveFromCart(item.course_id)}
                     className="mt-6 text-red-500 hover:text-red-700"
                   >
                     Remove
@@ -124,7 +165,12 @@ const Cart = () => {
               />
               <button
                 onClick={applyPromoCode}
-                className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition"
+                className={`text-white   px-4 py-2 rounded transition ${
+                  !discount
+                    ? "bg-blue-500 hover:bg-blue-600 "
+                    : "bg-gray-700 cursor-not-allowed"
+                }`}
+                disabled={discount}
               >
                 Apply
               </button>
@@ -132,7 +178,9 @@ const Cart = () => {
             <button
               className="w-full bg-green-500 text-white py-2 rounded hover:bg-green-600 transition"
               onClick={() =>
-                navigate("/purchase", { state: { total, cartItems } })
+                navigate("/purchase", {
+                  state: { total, cartItems, promoId },
+                })
               }
               disabled={cartItems.length === 0}
             >

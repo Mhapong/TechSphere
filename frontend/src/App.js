@@ -41,6 +41,7 @@ import EditContent from "./admin/pages/EditContent.js";
 import PromotionAdminPage from "./admin/pages/Promotion.js";
 import AddEditPromotion from "./admin/pages/AddEditPromotion.js";
 import EditFinance from "./admin/pages/EditFinance.js";
+import { Toaster } from "sonner";
 
 function App() {
   const { state } = useContext(AuthContext);
@@ -49,6 +50,7 @@ function App() {
 
   return (
     <BrowserRouter>
+      <Toaster />
       {state.isLoggedIn ? (
         userRole === "User" ? (
           <>

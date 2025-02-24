@@ -13,10 +13,10 @@ import morepic from "../components/more.png";
 import homepic from "../components/home-page.png";
 import ax from "../../conf/ax";
 import no_image from "../components/No_Image_Available.jpeg";
+import { Toaster } from "sonner";
 
 export default function Home() {
   const navigate = useNavigate();
-  const { state } = useContext(AuthContext);
   const [courseData, setCourseData] = useState([]);
   const [category, setCategory] = useState([]);
   const baseURL = "http://localhost:1337";
@@ -61,6 +61,7 @@ export default function Home() {
 
   return (
     <html className="!scorll-smooth max-w-[100%]">
+      <Toaster />
       <div className="grid grid-cols-2 gap-0 max- h-[30rem]">
         <motion.div
           className="place-content-center ml-80"
@@ -110,7 +111,7 @@ export default function Home() {
               >
                 <Card
                   className="h-fit my-3 cursor-pointer overflow-visible flex flex-col shadow-md shadow-blue-100 ring-2 ring-black ring-"
-                  onClick={() => navigate("/")}
+                  onClick={() => navigate("/explore", { state: item.name })}
                 >
                   <CardBody className="flex-none h-24 justify-center self-center place-content-center">
                     <img src={item.img || no_image}></img>

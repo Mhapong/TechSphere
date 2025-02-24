@@ -8,20 +8,29 @@ import ax from "../../conf/ax";
 import { Range, getTrackBackground } from "react-range";
 import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
+import { useLocation } from "react-router-dom";
+import conf from "../../conf/main";
 
 const Explore = () => {
   const [courseData, setCourseData] = useState([]);
+  const location = useLocation();
   const [query, setQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
   const [categories, setCategories] = useState([]);
   const [priceRange, setPriceRange] = useState([0, 5000]);
   const { addToCart } = useCart();
   const navigate = useNavigate();
-  const baseURL = process.env.REACT_APP_API_URL || "http://localhost:1337";
+  const baseURL = process.env.REACT_APP_API_URL || conf.apiUrl;
+
+  const category_from_home = location.state || "";
 
   useEffect(() => {
     fetchCategories();
     fetchCourses();
+    console.log(category_from_home);
+    if (category_from_home) {
+      setSelectedCategory(category_from_home);
+    }
   }, []);
 
   const fetchCourses = async () => {
@@ -213,7 +222,7 @@ const Explore = () => {
                                 </p> */}
                         <span className="text-amber-700 mt-2">
                           ⭐{" "}
-                          {course.rating === 0
+                          {course.rating && course.rating === 0
                             ? "ยังไม่มีรีวิว"
                             : `(${course.rating.length} reviews)`}{" "}
                         </span>

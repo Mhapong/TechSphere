@@ -2,6 +2,7 @@ import React, { useContext } from "react";
 import { useSetState } from "react-use";
 import { AuthContext } from "../../context/Auth.context.js";
 import { useNavigate } from "react-router";
+import { Toaster, toast } from "sonner";
 
 const initialState = {
   username: "",
@@ -17,12 +18,28 @@ export default function Login() {
   const onSubmit = (e) => {
     e.preventDefault();
     const { username, password } = state;
-    login(username, password, navigate);
+    login(username, password);
+    toast.success(`Welcome. Login, Successefully`, {
+      position: "top-right",
+      duration: 5000,
+      style: {
+        fontSize: "1.1rem",
+        padding: "20px",
+        fontWeight: "bold",
+        textAlign: "center",
+        borderRadius: "10px",
+        color: "green",
+      },
+    });
+    setTimeout(() => {
+      navigate("/");
+    }, 1000);
     setState({ username: "", password: "" });
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-900">
+      <Toaster />
       <div class="absolute inset-0 z-0">
         <img
           src="https://source.unsplash.com/random/1920x1080"
