@@ -410,14 +410,14 @@ export default function ContentStudy() {
     useEffect(() => {
         const fetchVideoDurations = async () => {
             const durations = {};
-    
+
             for (const topic of Object.values(groupedContent)) {
                 for (const content of topic) {
                     if (content.video_url) {
                         const video = document.createElement("video");
                         video.src = content.video_url;
                         video.preload = "metadata";
-    
+
                         await new Promise((resolve) => {
                             video.onloadedmetadata = () => {
                                 durations[content.id] = formatTime(video.duration);
@@ -431,31 +431,31 @@ export default function ContentStudy() {
                     }
                 }
             }
-    
+
             setVideoDurations(durations);
         };
-    
+
         fetchVideoDurations();
     }, [groupedContent]);
-    
+
 
 
     //ส่วนจัดการการเลือกลำดับของบทเรียน
     const goToNextLesson = () => {
         const topics = Object.values(groupedContent).flat(); // รวมทุกบทเรียน
         if (!topics.length) return;
-    
+
         let currentIndex = topics.findIndex(item => item.id === selectedContent.id);
-        
+
         // หาเนื้อหาที่ progress < 100%
         let nextIndex = (currentIndex + 1) % topics.length;
         while (progress[topics[nextIndex].id]?.progress === 100 && nextIndex !== currentIndex) {
             nextIndex = (nextIndex + 1) % topics.length;
         }
-    
+
         setSelectedContent(topics[nextIndex]);
     };
-    
+
 
     const restartLesson = () => {
         if (videoRef.current) {
@@ -479,11 +479,11 @@ export default function ContentStudy() {
 
 
     return (
-        <div className="flex max-w-full h-screen">
-            <div className="w-[70%] bg-gray-100 p-6 overflow-y-auto">
+        <div className="flex flex-col lg:flex-row max-w-full min-h-screen">
+            <div className="w-full lg:w-[70%] bg-gray-100 p-4 lg:p-6 overflow-y-auto">
                 {selectedContent && (
                     <section>
-                        <h2 className="text-black text-2xl font-bold mb-4">{selectedContent.content_title}</h2>
+                        <h2 className="text-black text-xl lg:text-2xl font-bold mb-4">{selectedContent.content_title}</h2>
 
                         {selectedContent.video_url ? (
                             <div className="relative">
@@ -503,13 +503,13 @@ export default function ContentStudy() {
 
                                 {progress[selectedContent.id]?.progress === 100 && (
                                     <div className="absolute top-0 left-0 w-full h-full flex flex-col justify-center items-center bg-gray-800/90">
-                                        <h1 className="mb-10 text-white text-3xl font-bold text-center">
+                                        <h1 className="mb-6 lg:mb-10 text-white text-2xl lg:text-3xl font-bold text-center px-4">
                                             จบบทเรียน {selectedContent.content_title}
                                         </h1>
 
-                                        <div className="mt-4 flex gap-9">
+                                        <div className="mt-4 flex flex-col sm:flex-row gap-4 sm:gap-9">
                                             <button
-                                                className="px-6 py-3 text-white text-lg font-bold rounded-full bg-gradient-to-r from-[#64c5d7] to-[#2563eb] hover:opacity-80"
+                                                className="px-4 py-2 lg:px-6 lg:py-3 text-white text-base lg:text-lg font-bold rounded-full bg-gradient-to-r from-[#64c5d7] to-[#2563eb] hover:opacity-80"
                                                 onClick={() => restartLesson()}
                                             >
                                                 ดูบทเรียนนี้อีกครั้ง
@@ -517,24 +517,22 @@ export default function ContentStudy() {
 
                                             {overallProgress === 100 ? (
                                                 <button
-                                                    className="px-6 py-3 text-white text-lg font-bold rounded-full bg-gradient-to-r from-[#64c5d7] to-[#2563eb] hover:opacity-80"
+                                                    className="px-4 py-2 lg:px-6 lg:py-3 text-white text-base lg:text-lg font-bold rounded-full bg-gradient-to-r from-[#64c5d7] to-[#2563eb] hover:opacity-80"
                                                     onClick={() => exitLesson()}
                                                 >
                                                     ออกจากบทเรียนนี้
                                                 </button>
                                             ) : (
                                                 <button
-                                                    className="px-6 py-3 text-white text-lg font-bold rounded-full bg-gradient-to-r from-[#64c5d7] to-[#2563eb] hover:opacity-80"
+                                                    className="px-4 py-2 lg:px-6 lg:py-3 text-white text-base lg:text-lg font-bold rounded-full bg-gradient-to-r from-[#64c5d7] to-[#2563eb] hover:opacity-80"
                                                     onClick={() => goToNextLesson()}
                                                 >
                                                     ไปบทเรียนถัดไป
                                                 </button>
                                             )}
-
                                         </div>
                                     </div>
                                 )}
-
                             </div>
                         ) : (
                             <p className="text-gray-500">ไม่มีวิดีโอ</p>
@@ -545,9 +543,9 @@ export default function ContentStudy() {
                 )}
             </div>
 
-            <div className="w-[30%] bg-white p-6 overflow-y-auto">
-                <h2 className="text-lg font-bold text-xl mb-4">ความคืบหน้าของบทเรียน</h2>
-                <div className="w-full bg-gray-200 rounded-full dark:bg-gray-700 mt-2 mb-4">
+            <div className="w-full lg:w-[30%] bg-white p-4 lg:p-6 overflow-y-auto">
+                <h2 className="text-lg font-bold mb-4">ความคืบหน้าของบทเรียน</h2>
+                <div className="w-full bg-gray-200 rounded-full dark:bg-gray-700 mb-4">
                     <div
                         className="bg-green-500 text-xs font-medium text-white text-center p-0.5 leading-none rounded-full"
                         style={{
@@ -558,30 +556,29 @@ export default function ContentStudy() {
                         {overallProgress}%
                     </div>
                 </div>
-                <h2 className="text-lg font-bold text-xl mb-4">เนื้อหาวิดีโอ</h2>
-                <ul>
+                <h2 className="text-lg font-bold mb-4">เนื้อหาวิดีโอ</h2>
+                <ul className="space-y-6">
                     {Object.keys(groupedContent).length > 0 ? (
                         Object.entries(groupedContent).map(([topic, contents]) => (
-                            <li key={topic} className="mb-6">
-                                <h3 className="text-gray-600 text-m font-bold">
+                            <li key={topic}>
+                                <h3 className="text-gray-600 text-sm lg:text-base font-bold">
                                     {topic} <span className="text-gray-400 text-xs">({topicDurations[topic]})</span>
                                 </h3>
                                 <h6 className="text-gray-400 text-xs font-bold">จำนวน {contents.length} บทเรียน</h6>
-                                <ul className="ml-4 mt-2">
+                                <ul className="ml-4 mt-2 space-y-2">
                                     {contents.map((item) => (
-                                        <li key={item.id} className="mb-2">
+                                        <li key={item.id}>
                                             <button
-                                                className={`flex items-center space-x-4 text-left w-full ${progress[item.id]?.progress === 100
-                                                    ? "text-blue-500 text-xs"
-                                                    : selectedContent?.id === item.id
-                                                        ? "text-blue-500 font-bold text-xs"
-                                                        : "text-gray-400 text-xs"
+                                                className={`flex items-center space-x-2 lg:space-x-4 text-left w-full ${progress[item.id]?.progress === 100
+                                                        ? "text-blue-500 text-xs"
+                                                        : selectedContent?.id === item.id
+                                                            ? "text-blue-500 font-bold text-xs"
+                                                            : "text-gray-400 text-xs"
                                                     }`}
                                                 onClick={() => {
-                                                    console.log("Selected Item:", item);
-                                                    setSelectedContent(item);
+                                                    console.log("Selected Item:", item)
+                                                    setSelectedContent(item)
                                                 }}
-
                                             >
                                                 <img
                                                     src={
@@ -592,7 +589,7 @@ export default function ContentStudy() {
                                                                 : video_NeverStudy
                                                     }
                                                     alt="Video Icon"
-                                                    className="w-14 h-14"
+                                                    className="w-10 h-10 lg:w-14 lg:h-14"
                                                 />
                                                 <div className="flex flex-col w-full">
                                                     <span>{item.content_title}</span>
@@ -608,9 +605,7 @@ export default function ContentStudy() {
                                                                 {Math.round(progress[item.id]?.progress || 0)}%
                                                             </div>
                                                         </div>
-                                                        <span className="text-gray-500 ml-2">
-                                                            {videoDurations[item.id] || "00:00:00"}
-                                                        </span>
+                                                        <span className="text-gray-500 ml-2 text-xs">{videoDurations[item.id] || "00:00:00"}</span>
                                                     </div>
                                                 </div>
                                             </button>
@@ -625,5 +620,5 @@ export default function ContentStudy() {
                 </ul>
             </div>
         </div>
-    );
+    )
 }

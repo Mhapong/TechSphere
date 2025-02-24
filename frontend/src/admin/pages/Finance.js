@@ -12,6 +12,7 @@ import {
   DialogTitle,
 } from "@headlessui/react";
 import { Edit } from "@mui/icons-material";
+import { useNavigate } from "react-router";
 
 const FinanceOrder = () => {
   const { state: ContextState } = useContext(AuthContext);
@@ -22,6 +23,7 @@ const FinanceOrder = () => {
   const [queryPayments, setQueryPayments] = useState("");
   const [currentData, setCurrentData] = useState(null);
   const [detail, setDetail] = useState(null);
+  const Navigate = useNavigate();
 
   const openModal = (data, doc) => {
     setCurrentData(data);
@@ -177,7 +179,7 @@ const FinanceOrder = () => {
           filteredPayments.map((payment) => (
             <div
               key={payment.id}
-              className={`rounded-xl p-5 shadow-lg transition-all duration-300 transform hover:scale-105 ${
+              className={`relative group rounded-xl p-5 shadow-lg transition-all duration-300 transform hover:scale-105 ${
                 payment.status_confirm === "confirmed"
                   ? "bg-gradient-to-r from-green-50 to-green-100 border-2 border-green-200 hover:shadow-green-200/50"
                   : payment.status_confirm === "unapproved"
@@ -185,6 +187,21 @@ const FinanceOrder = () => {
                   : "bg-gradient-to-r from-blue-50 to-blue-100 border-2 border-blue-200 hover:shadow-blue-200/50"
               }`}
             >
+              {(payment.status_confirm === "confirmed" ||
+                payment.status_confirm === "unapproved") && (
+                <button
+                  className="absolute top-2 right-2 z-30 bg-blue-800 hover:bg-blue-900 focus:ring-4 
+                           focus:ring-blue-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md 
+                           transform transition-all focus:outline-none opacity-0 group-hover:opacity-100"
+                  onClick={() =>
+                    Navigate(`/edit-finance/${payment.id}`, {
+                      state: { Value: payment },
+                    })
+                  }
+                >
+                  <Edit className="mr-1" /> Edit
+                </button>
+              )}
               <div className="flex justify-between items-start">
                 <div>
                   <p className="text-sm text-gray-600">
