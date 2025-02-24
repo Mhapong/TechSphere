@@ -71,7 +71,7 @@ const EditFinance = () => {
   };
 
   return (
-    <div className="w-[1000px] mx-96 mt-11 p-8">
+    <div className="w-full lg:w-[1000px] mt-11 lg:ml-96 max-w-7xl p-4">
       <h1 className="flex items-center justify-center text-3xl font-bold text-black mb-6 mt-5">
         แก้ไขสถานะ การเงิน 📝
       </h1>
@@ -162,13 +162,12 @@ const EditFinance = () => {
             />
           </div>
         </div>
-
         <div className="p-2 h-auto">
           {previewUrl && (
             <img
               src={previewUrl}
               alt="Preview"
-              className="w-96 h-fit ml-72 object-cover rounded-md"
+              className="w-96 h-fit lg:ml-72 object-cover rounded-md"
             />
           )}
         </div>
