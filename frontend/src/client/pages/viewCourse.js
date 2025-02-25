@@ -31,6 +31,8 @@ import morepic from "../components/more.png";
 import allpic from "../../admin/components/Image/All.png";
 import { fontSize, sizing } from "@mui/system";
 import { Rating } from "@mui/material";
+import YouTubeIcon from "@mui/icons-material/YouTube";
+import FacebookIcon from "@mui/icons-material/Facebook";
 
 export default function ViewCourse() {
   const navigate = useNavigate();
@@ -78,7 +80,7 @@ export default function ViewCourse() {
     console.log(state.user?.id);
     if (
       course &&
-      course.user_owner?.some((owner) => owner.id === state.user.id)
+      course?.user_owner?.some((owner) => owner?.id === state.user?.id)
     ) {
       console.log("This user owns the course");
     } else {
@@ -142,9 +144,9 @@ export default function ViewCourse() {
               <div className="flex bg-white rounded-full mr-2">
                 <Rating
                   value={averageRating}
-                  readonly
                   size=""
                   readOnly
+                  precision={0.5}
                   className="mx-1"
                 />
               </div>
@@ -388,7 +390,6 @@ export default function ViewCourse() {
                       <div className="flex items-center justify-center mb-1">
                         <Rating
                           value={averageLecturerRating}
-                          readonly
                           size="small"
                           readOnly
                         />
@@ -416,13 +417,17 @@ export default function ViewCourse() {
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                       <div className="text-center">
                         <div className="text-lg font-bold text-gray-900">
-                          14
+                          {course?.lecturer_owner?.created_courses
+                            ? course?.lecturer_owner?.created_courses?.length
+                            : "0"}{" "}
                         </div>
                         <div className="text-sm text-gray-600">หลักสูตร</div>
                       </div>
                       <div className="text-center">
                         <div className="text-lg font-bold text-gray-900">
-                          13,593
+                          {course?.user_owner
+                            ? course?.user_owner?.length
+                            : "0"}{" "}
                         </div>
                         <div className="text-sm text-gray-600">ผู้เรียน</div>
                       </div>
@@ -436,8 +441,9 @@ export default function ViewCourse() {
 
                     {/* คำอธิบาย */}
                     <p className="text-gray-700 leading-relaxed">
-                      เจ้าของเทจ KongRuksiam Studio สอนเขียนโปรแกรมในช่อง
-                      YouTube KongRuksiam Official และ KongRuksiam Tutorial
+                      {course.lecturer_owner?.background
+                        ? course.lecturer_owner?.background
+                        : "ไม่มีข้อมูลอาจารย์ผู้สอน"}
                     </p>
 
                     {/* ข้อความแนะนำ */}
@@ -457,11 +463,7 @@ export default function ViewCourse() {
                         rel="noopener noreferrer"
                         className="px-4 py-2 bg-red-600 text-white rounded-full flex items-center hover:bg-red-700 transition"
                       >
-                        <img
-                          src="https://www.svgrepo.com/show/475689/youtube-color.svg"
-                          className="w-5 h-5 mr-2"
-                          alt="YouTube"
-                        />
+                        <YouTubeIcon />
                         YouTube
                       </a>
                       <a
@@ -470,11 +472,7 @@ export default function ViewCourse() {
                         rel="noopener noreferrer"
                         className="px-4 py-2 bg-blue-600 text-white rounded-full flex items-center hover:bg-blue-700 transition"
                       >
-                        <img
-                          src="https://www.svgrepo.com/show/475664/facebook-color.svg"
-                          className="w-5 h-5 mr-2"
-                          alt="Facebook"
-                        />
+                        <FacebookIcon />
                         Facebook
                       </a>
                     </div>

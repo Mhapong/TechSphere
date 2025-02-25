@@ -19,6 +19,7 @@ import networkpic from "../components/network.png";
 import gamepic from "../components/game.png";
 import morepic from "../components/more.png";
 import allpic from "../../admin/components/Image/All.png";
+import { Rating } from "@mui/material";
 
 const Explore = () => {
   const [courseData, setCourseData] = useState([]);
@@ -27,20 +28,9 @@ const Explore = () => {
   const [selectedCategory, setSelectedCategory] = useState("");
   const [priceRange, setPriceRange] = useState([0, 5000]);
   const [selectedRating, setSelectedRating] = useState(0);
-  const { addToCart } = useCart();
   const navigate = useNavigate();
   const baseURL = process.env.REACT_APP_API_URL || conf.apiUrl;
-  const [queryCourse, setQueryCourse] = useState("");
   const category_from_home = location.state || "";
-  const allcategories = [
-    { name: "ALL", img: allpic, path: "ALL" },
-    { name: "Web Develop", img: webpic, path: "Web Develop" },
-    { name: "Data Analysis", img: datapic, path: "Data Analysis" },
-    { name: "IoT & Hardware", img: hardwarepic, path: "Hardware" },
-    { name: "Network", img: networkpic, path: "Network" },
-    { name: "Game Develop", img: gamepic, path: "Game Develop" },
-    { name: "AI", img: morepic, path: "AI" },
-  ];
 
   const fetchCourses = async () => {
     try {
@@ -88,9 +78,16 @@ const Explore = () => {
     const matchesPrice =
       course.Price >= priceRange[0] && course.Price <= priceRange[1];
 
-    const matchesRating =
-      selectedRating === 0 ||
-      (course.rating && course.rating >= selectedRating);
+    const totalStars = course.rating.reduce(
+      (sum, item) => sum + (item?.star || 0),
+      0
+    );
+    const avgRating = course.rating.length
+      ? totalStars / course.rating.length
+      : 0;
+
+    // ตรวจสอบเงื่อนไขคะแนน
+    const matchesRating = selectedRating === 0 || avgRating >= selectedRating;
 
     return matchesSearch && matchesCategory && matchesPrice && matchesRating;
   });
@@ -200,17 +197,15 @@ const Explore = () => {
                     htmlFor={`rating-${rating}`}
                     className="flex items-center"
                   >
-                    {[...Array(rating)].map((_, i) => (
-                      <svg
-                        key={i}
-                        className="size-5 text-amber-500"
-                        fill="currentColor"
-                        viewBox="0 0 20 20"
-                      >
-                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                      </svg>
-                    ))}
-                    <span className="ml-1">{rating === 1 ? "& up" : ""}</span>
+                    <Rating
+                      value={rating}
+                      readOnly
+                      size="small"
+                      precision={0.5}
+                    />
+                    <span className="ml-1 text-sm text-gray-600">
+                      {rating === 1 ? "ขึ้นไป" : "ขึ้นไป"}
+                    </span>
                   </label>
                 </div>
               ))}
@@ -317,20 +312,34 @@ const Explore = () => {
                               }`
                             : "ไม่ระบุ"}
                         </p>
-                        {/* <p className="text-gray-500">
-                                  📅 เวลาหมดอายุ{" "}
-                                  {new Date(course.start_date).toLocaleDateString()} ถึง{" "}
-                                  {new Date(course.end_date).toLocaleDateString()}
-                                </p> */}
-                        <span className="text-amber-700 mt-2">
-                          ⭐{" "}
-                          {course.rating && course.rating === 0
-                            ? "ยังไม่มีรีวิว"
-                            : `(${course.rating?.length} รีวิว)`}{" "}
-                        </span>
-                        <span className="text-end ml-2">
-                          ขายแล้ว: {course.user_owner?.length}
-                        </span>
+                        <div className=" flex justify-between ">
+                          <span className="text-amber-900 flex items-center gap-0.5">
+                            {course.rating.length === 0
+                              ? 0
+                              : (
+                                  course.rating.reduce(
+                                    (sum, item) => sum + (item?.star || 0),
+                                    0
+                                  ) / course.rating.length
+                                ).toFixed(1)}
+                            <Rating
+                              value={
+                                course.rating.length === 0
+                                  ? 0
+                                  : course.rating.reduce(
+                                      (sum, item) => sum + (item?.star || 0),
+                                      0
+                                    ) / course.rating.length
+                              }
+                              size="small"
+                              precision={0.5}
+                              readOnly
+                            />
+                            ({course.rating.length})
+                          </span>
+
+                          <span>ขายแล้ว: {course.user_owner?.length}</span>
+                        </div>
                       </div>
                       <div className="p-4 border-t flex  justify-end">
                         <span className="text-xl font-bold text-primary">

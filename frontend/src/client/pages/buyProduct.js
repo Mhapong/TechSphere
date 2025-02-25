@@ -7,6 +7,10 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/Auth.context";
 import { useCart } from "../../context/Cart.context";
 import ax from "../../conf/ax";
+import promptpay from "../components/promptpay2.png";
+import logo from "../components/logo.png";
+import Tippy from "@tippyjs/react";
+import "tippy.js/dist/tippy.css";
 
 export default function BuyProduct() {
   const { state } = useContext(AuthContext);
@@ -114,21 +118,20 @@ export default function BuyProduct() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4">
+    <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4 ">
       <div className="max-w-md w-full space-y-8 bg-white p-6 rounded-xl shadow-lg">
         <div className="text-center">
-          <h2 className="mt-6 text-3xl font-extrabold text-gray-900">
-            PromptPay Payment
-          </h2>
-          <p className="mt-2 text-sm text-gray-600">Scan the QR code to pay</p>
+          <img src={promptpay} alt="PromptPay" className="mx-auto h-44" />
+          <p className="mb-4 text-xl font-bold text-gray-900">
+            จำนวนที่ต้องชำระ: ฿{amount}
+          </p>
+          <p className="mt-1 text-sm text-gray-600">Scan the QR code to pay</p>
+          <div className="mt-1 h-px bg-gray-100"></div>
         </div>
 
-        <div className="mt-8 space-y-6">
+        <div className="space-y-6">
           <div className="rounded-md shadow-sm -space-y-px">
             <div className="flex flex-col items-center">
-              <p className="mb-4 text-lg font-medium text-gray-900">
-                จำนวนที่ต้องชำระ: ฿{amount}
-              </p>
               {qrCode && (
                 <div className="bg-white p-4 rounded-lg shadow-md">
                   <img
@@ -185,12 +188,29 @@ export default function BuyProduct() {
                 >
                   Cancel
                 </button>
-                <button
-                  onClick={handleConfirmPurchase}
-                  className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                >
-                  Confirm Purchase
-                </button>
+                {previewUrl ? (
+                  <button
+                    onClick={handleConfirmPurchase}
+                    className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  >
+                    Confirm Purchase
+                  </button>
+                ) : (
+                  <Tippy
+                    content={<span>กรุณาใส่รูปถาพยืนยันการชำระเงิน</span>}
+                    className="font-bold p-2 rounded-lg shadow-lg"
+                  >
+                    <div className="relative">
+                      <button
+                        title="Please upload an image first."
+                        className="px-4 py-2 bg-gray-400 text-white rounded-md cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-gray-500"
+                        disabled
+                      >
+                        Confirm Purchase
+                      </button>
+                    </div>
+                  </Tippy>
+                )}
               </div>
             </div>
           </div>

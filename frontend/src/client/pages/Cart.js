@@ -8,6 +8,7 @@ import ax from "../../conf/ax";
 import { Toaster, toast } from "sonner";
 import { ShoppingCart, Tag, X, Clock, User, Star, Image } from "lucide-react";
 import { color } from "@mui/system";
+import { Rating } from "@mui/material";
 
 const Cart = () => {
   const { cartItems, removeFromCart } = useCart();
@@ -290,20 +291,34 @@ const Cart = () => {
                           }`
                         : "ไม่ระบุ"}
                     </p>
-                    {/* <p className="text-gray-500">
-                                  📅 เวลาหมดอายุ{" "}
-                                  {new Date(course.start_date).toLocaleDateString()} ถึง{" "}
-                                  {new Date(course.end_date).toLocaleDateString()}
-                                </p> */}
-                    <span className="text-amber-700 mt-2">
-                      ⭐{" "}
-                      {course.rating && course.rating === 0
-                        ? "ยังไม่มีรีวิว"
-                        : `(${course.rating?.length} รีวิว)`}{" "}
-                    </span>
-                    <span className="text-end ml-2">
-                      ขายแล้ว: {course.user_owner?.length}
-                    </span>
+                    <div className=" flex justify-between ">
+                      <span className="text-amber-900 flex items-center gap-0.5">
+                        {course.rating.length === 0
+                          ? 0
+                          : (
+                              course.rating.reduce(
+                                (sum, item) => sum + (item?.star || 0),
+                                0
+                              ) / course.rating.length
+                            ).toFixed(1)}
+                        <Rating
+                          value={
+                            course.rating.length === 0
+                              ? 0
+                              : course.rating.reduce(
+                                  (sum, item) => sum + (item?.star || 0),
+                                  0
+                                ) / course.rating.length
+                          }
+                          size="small"
+                          precision={0.5}
+                          readOnly
+                        />
+                        ({course.rating.length})
+                      </span>
+
+                      <span>ขายแล้ว: {course.user_owner?.length}</span>
+                    </div>
                   </div>
                   <div className="p-4 border-t flex  justify-end">
                     <span className="text-xl font-bold text-primary">

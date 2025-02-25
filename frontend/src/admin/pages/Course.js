@@ -209,17 +209,17 @@ export function CourseView() {
                         >
                           {/* Rating Section */}
                           <div className="flex items-center gap-2">
-                            <Rating
+                            {/* <Rating
                               value={
-                                items.rating.length === 0
-                                  ? 0
-                                  : items.rating.reduce(
+                                items.rating && items.rating.length > 0
+                                  ? items.rating.reduce(
                                       (sum, item) => sum + (item?.star || 0),
                                       0
-                                    ) / items.rating.length
+                                    ) / items.rating?.length
+                                  : 0
                               }
-                              readonly
-                            />
+                              readOnly
+                            /> */}
                             <span className="text-sm mt-2 text-amber-700 whitespace-nowrap">
                               {items.rating && items.rating.length === 0
                                 ? "ยังไม่มีรีวิว"
