@@ -1329,6 +1329,7 @@ export interface PluginUsersPermissionsUser
       Schema.Attribute.SetMinMaxLength<{
         minLength: 6;
       }>;
+    position: Schema.Attribute.Text;
     profile_picture: Schema.Attribute.Media<
       'images' | 'files' | 'videos' | 'audios',
       true

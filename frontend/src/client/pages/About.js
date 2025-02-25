@@ -1,75 +1,134 @@
-import React from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import techspherepic from "../components/logo.png";
 import definitionpic from "../components/definition.png";
 import { useNavigate } from "react-router-dom";
-
+import axios from "axios";
+import { motion } from "framer-motion"
 
 const AboutPage = () => {
     const navigate = useNavigate();
-    const instructors = [
-        {
-            name: "Phil White",
-            position: "อาจารย์",
-            image: "/placeholder.svg?height=400&width=400",
-            expertise: "ผู้เชี่ยวชาญทางด้าน Web Application"
-        },
-        {
-            name: "ผศ.ดร. วิภา รักการสอน",
-            position: "อาจารย์ประจำภาควิชาเทคโนโลยีสารสนเทศ",
-            image: "/placeholder.svg?height=400&width=400",
-            expertise: "การพัฒนาซอฟต์แวร์และความปลอดภัยไซเบอร์"
-        },
-        {
-            name: "รศ. ประภาส นวัตกรรม",
-            position: "ผู้อำนวยการศูนย์วิจัยเทคโนโลยี",
-            image: "/placeholder.svg?height=400&width=400",
-            expertise: "นวัตกรรมดิจิทัลและ IoT"
-        },
-        {
-            name: "ดร. นภา เทคโนโลยี",
-            position: "อาจารย์ประจำภาควิชาวิศวกรรมซอฟต์แวร์",
-            image: "/placeholder.svg?height=400&width=400",
-            expertise: "การพัฒนาเว็บและโมบายแอปพลิเคชัน"
+    const [lecturers, setLecturers] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:1337";
+
+    const fetchLecturers = useCallback(async () => {
+        try {
+            const response = await axios.get(`${BASE_URL}/api/users`, {
+                params: { populate: ["profile_picture"] },
+            });
+
+            console.log("API Response:", response.data);
+
+            if (response.data?.length > 0) {
+                // กรองข้อมูลเฉพาะที่มี role เป็น "Lecturer"
+                const lecturersData = response.data.filter(
+                    (user) => user.username === "lecturer"
+                );
+                setLecturers(lecturersData);
+            } else {
+                setLecturers([]);
+            }
+        } catch (err) {
+            console.error("เกิดข้อผิดพลาดขณะดึงข้อมูลอาจารย์:", err);
+        } finally {
+            setLoading(false);
         }
-    ];
+    }, [BASE_URL]);
+
+    useEffect(() => {
+        fetchLecturers();
+    }, [fetchLecturers]);
 
     return (
         <div className="flex flex-col items-center justify-center min-h-screen p-6 space-y-8">
-            {/* โลโก้ */}
             <div className="w-full max-w-4xl overflow-hidden rounded-lg shadow-lg">
-                <img
-                    className="object-cover object-center w-full h-96"
-                    src={techspherepic || "/placeholder.svg"}
-                    alt="Techsphere"
-                />
+                <img className="object-cover object-center w-full h-96" src={techspherepic || "/placeholder.svg"} alt="Techsphere" />
             </div>
 
-            {/* ชื่อและคำอธิบาย */}
             <div className="text-center space-y-4">
                 <p className="text-4xl font-bold text-gray-900">ศูนย์กลางการเรียนรู้ด้านเทคโนโลยี</p>
                 <p className="text-3xl font-semibold text-blue-600">TechSphere</p>
             </div>
 
-            {/* คำบรรยาย TechSphere */}
             <blockquote className="max-w-4xl text-2xl leading-relaxed text-center text-gray-700">
-                <p className="italic font-semibold">
-                    "TechSphere คือองค์กรที่มุ่งเน้นการเสริมสร้างความรู้และทักษะด้านเทคโนโลยีสมัยใหม่
+                <p className="italic font-semibold">"TechSphere คือองค์กรที่มุ่งเน้นการเสริมสร้างความรู้และทักษะด้านเทคโนโลยีสมัยใหม่
                     ผ่านการเรียนการสอนที่เข้มข้นและมีประสิทธิภาพ ไม่ว่าจะเป็นการพัฒนาซอฟต์แวร์ ปัญญาประดิษฐ์
                     ความปลอดภัยทางไซเบอร์ หรือเทคโนโลยีอื่น ๆ ที่กำลังเปลี่ยนแปลงโลก
                     เราเชื่อว่าการเรียนรู้เทคโนโลยีไม่ควรจำกัดอยู่แค่ในห้องเรียน แต่ควรเป็นประสบการณ์ที่สามารถนำไปใช้ได้จริงในชีวิตและอาชีพ
                     ด้วยหลักสูตรที่ออกแบบโดยผู้เชี่ยวชาญและอัปเดตให้ทันสมัยอยู่เสมอ TechSphere เป็นศูนย์กลางแห่งการเรียนรู้ที่เปิดโอกาสให้ผู้เรียนทุกระดับ
                     ไม่ว่าจะเป็นผู้เริ่มต้น นักพัฒนา หรือแม้แต่องค์กรที่ต้องการพัฒนาทักษะทีมงาน
-                    เราพร้อมพาคุณก้าวสู่อนาคตของเทคโนโลยีด้วยการเรียนรู้ที่มีประสิทธิภาพและสนุกสนาน"
-                </p>
+                    เราพร้อมพาคุณก้าวสู่อนาคตของเทคโนโลยีด้วยการเรียนรู้ที่มีประสิทธิภาพและสนุกสนาน"</p>
             </blockquote>
 
             <div className="w-screen overflow-hidden">
-                <img
-                    className="w-screen h-auto object-cover"
-                    src={definitionpic || "/placeholder.svg"}
-                    alt="definition"
-                />
+                <img className="w-screen h-auto object-cover" src={definitionpic || "/placeholder.svg"} alt="definition" />
             </div>
+
+            <section className="w-full py-16 bg-gradient-to-br from-blue-50 to-white dark:from-gray-800 dark:to-gray-900">
+                <div className="container mx-auto px-4 md:px-6 lg:px-8 max-w-7xl">
+                    <motion.h2
+                        initial={{ opacity: 0, y: -20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.5 }}
+                        className="text-4xl font-bold text-center mb-6 text-blue-600 dark:text-blue-400"
+                    >
+                        คณาจารย์ผู้เชี่ยวชาญ
+                    </motion.h2>
+                    <motion.p
+                        initial={{ opacity: 0, y: -20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.5, delay: 0.2 }}
+                        className="text-center text-blue-800 dark:text-blue-200 max-w-3xl mx-auto mb-12 text-lg"
+                    >
+                        เราพร้อมนำเสนอคอร์สเรียนที่ทันสมัย จากเหล่าอาจารย์ผู้มีความเชี่ยวชาญ...
+                    </motion.p>
+
+                    {loading ? (
+                        <p className="text-center text-blue-600 dark:text-blue-400">กำลังโหลดข้อมูล...</p>
+                    ) : lecturers.length > 0 ? (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
+                            {lecturers.map((lecturer) => (
+                                <motion.div
+                                    key={lecturer.id}
+                                    initial={{ opacity: 0, scale: 0.9 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    transition={{ duration: 0.5 }}
+                                    className="bg-white dark:bg-gray-700 rounded-xl shadow-lg overflow-hidden transform hover:scale-105 transition-all duration-300 cursor-pointer"
+                                    onClick={() =>
+                                        navigate(
+                                            `/lecturer-background/${lecturer.first_name}-${lecturer.last_name}`
+                                        )
+                                    }
+                                >
+                                    <div className="aspect-square relative">
+                                        <img
+                                            src={`${BASE_URL}${lecturer.profile_picture &&
+                                                    lecturer.profile_picture.length > 0
+                                                    ? lecturer.profile_picture[0].formats?.thumbnail?.url ||
+                                                    lecturer.profile_picture[0].url
+                                                    : "/placeholder.svg"
+                                                }`}
+                                            alt={`${lecturer.first_name} ${lecturer.last_name}`}
+                                            className="w-full h-full object-cover"
+                                        />
+                                        <div className="absolute inset-0 bg-gradient-to-t from-blue-500/60 to-transparent" />
+                                    </div>
+                                    <div className="p-6 text-center">
+                                        <h3 className="text-xl font-semibold text-blue-800 dark:text-blue-200 mb-1">
+                                            {lecturer.first_name} {lecturer.last_name}
+                                        </h3>
+                                        <p className="text-sm text-blue-600 dark:text-blue-300">
+                                            {lecturer.position || "อาจารย์"}
+                                        </p>
+                                    </div>
+                                </motion.div>
+                            ))}
+                        </div>
+                    ) : (
+                        <p className="text-center text-blue-600 dark:text-blue-400">ไม่พบข้อมูลอาจารย์</p>
+                    )}
+                </div>
+            </section>
 
             <section className="bg-white dark:bg-gray-900">
                 {/*ช่องที่ 1*/}
@@ -125,42 +184,9 @@ const AboutPage = () => {
                     </div>
                 </div>
             </section>
-
-            {/* ส่วนของอาจารย์ */}
-            <section className="w-full py-12 bg-gray-50 dark:bg-gray-800">
-                <div className="container mx-auto px-4">
-                    <h2 className="text-3xl font-bold text-center mb-12 text-gray-900 dark:text-white">คณาจารย์ผู้เชี่ยวชาญ</h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                        {instructors.map((instructor, index) => (
-                            <div key={index} className="bg-white dark:bg-gray-700 rounded-lg shadow-lg overflow-hidden transition-transform duration-300 hover:scale-105">
-                                <div
-                                    className="aspect-square relative cursor-pointer"
-                                    onClick={() => navigate(`/lecturer-background/${instructor.name.replace(/\s/g, "-")}`)}
-                                >
-                                    <img
-                                        src={instructor.image || "/placeholder.svg"}
-                                        alt={instructor.name}
-                                        className="w-full h-full object-cover"
-                                    />
-                                </div>
-                                <div className="p-6">
-                                    <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-                                        {instructor.name}
-                                    </h3>
-                                    <p className="text-blue-600 dark:text-blue-400 font-medium mb-2">
-                                        {instructor.position}
-                                    </p>
-                                    <p className="text-gray-600 dark:text-gray-300 text-sm">
-                                        {instructor.expertise}
-                                    </p>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </section>
         </div>
     );
 };
 
 export default AboutPage;
+

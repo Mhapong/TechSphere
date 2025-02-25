@@ -3,7 +3,7 @@ import ax from "../../conf/ax";
 import usericon from "../components/Image/usertest.png";
 import { Rating } from "@material-tailwind/react";
 import { useNavigate } from "react-router";
-import { Edit, Delete } from "@mui/icons-material";
+import { Edit, Delete, ConstructionOutlined } from "@mui/icons-material";
 import { motion } from "framer-motion";
 import {
   Dialog,
@@ -172,17 +172,28 @@ const LecturerAll = () => {
 
                   {/* Rating Section */}
                   <div className="flex items-center mt-2">
+                    {/* <div className="flex items-center mt-2"> */}
+                    {/* ค่าเฉลี่ยรีวิว */}
                     <div className="flex items-center gap-2 font-bold text-blue-gray-500">
-                      <span>{4}</span>
-                      <Rating value={4} readonly />
+                      <Rating
+                        value={
+                          value.rating.length === 0
+                            ? 0
+                            : value.rating.reduce(
+                                (sum, item) => sum + (item?.star || 0),
+                                0
+                              ) / value.rating.length
+                        }
+                        readonly
+                      />
                     </div>
+
                     <span className="w-1 h-1 mx-1.5 bg-gray-500 rounded-full dark:bg-gray-400"></span>
-                    <a
-                      href="#"
-                      className="text-sm font-medium text-gray-900 underline hover:no-underline dark:text-white"
-                    >
-                      {value.rating?.length || 0} reviews
-                    </a>
+                    <span className="inline-flex items-center text-amber-700 w-full whitespace-nowrap">
+                      {value.rating && value.rating === 0
+                        ? "ยังไม่มีรีวิว"
+                        : `(${value.rating?.length} reviews)`}
+                    </span>
                   </div>
                 </div>
               </div>
