@@ -312,7 +312,7 @@ export default function MyCourse() {
         const fetchData = async () => {
             try {
                 // ดึงข้อมูลผู้ใช้และคอร์สที่ลงทะเบียน
-                const userResponse = await ax.get(`${BASE_URL}/api/users/me?populate=owned_course`)
+                const userResponse = await ax.get(`${BASE_URL}/api/users/me?populate=owned_course.image`)
                 console.log("✅ User Data:", userResponse.data)
                 const currentUser = userResponse.data
                 setUser(currentUser)
