@@ -18,6 +18,7 @@ import {
 } from "react-icons/fa";
 import { motion } from "framer-motion";
 import ax from "../../conf/ax";
+import conf from "../../conf/main";
 
 export default function ViewCourse() {
   const navigate = useNavigate();
@@ -29,7 +30,7 @@ export default function ViewCourse() {
   const [error, setError] = useState(null);
   const [openSections, setOpenSections] = useState({}); // ✅ จัดการ state ของ dropdown แต่ละหัวข้อ
 
-  const baseURL = "http://localhost:1337";
+  const baseURL = conf.apiUrl;
 
   const fetchCourse = async () => {
     try {
@@ -77,9 +78,9 @@ export default function ViewCourse() {
     const halfStars = rating % 1 >= 0.5 ? 1 : 0; // ดาวครึ่ง
     const emptyStars = 5 - fullStars - halfStars; // ดาวที่ว่าง
   };
-  const isCourseInCart = cartItems.some((item) => item.id === course.id);
-  const isUserOwned = course.user_owner?.some(
-    (owner) => owner.id === state.user.id
+  const isCourseInCart = cartItems.some((item) => item?.id === course?.id);
+  const isUserOwned = course?.user_owner?.some(
+    (owner) => owner?.id === state.user?.id
   );
 
   const toggleSection = (index) => {
@@ -190,11 +191,11 @@ export default function ViewCourse() {
                       disabled={(isCourseInCart, isUserOwned)}
                     >
                       <FaShoppingCart className="mr-2" />
-                      {isUserOwned
-                        ? isCourseInCart
-                          ? "Already in cart"
-                          : "You're already owned this course"
-                        : "Add to Cart"}
+                      {!isUserOwned && !isCourseInCart
+                        ? "Add to Cart"
+                        : isCourseInCart && !isUserOwned
+                        ? "Already in cart"
+                        : "You're already owned this course"}
                     </button>
                     <ul className="text-sm text-black">
                       <li className="flex items-center mb-2 text-black">
@@ -387,11 +388,11 @@ export default function ViewCourse() {
                     disabled={(isCourseInCart, isUserOwned)}
                   >
                     <FaShoppingCart className="mr-2" />
-                    {isUserOwned
-                      ? isCourseInCart
-                        ? "Already in cart"
-                        : "You're already owned this course"
-                      : "Add to Cart"}
+                    {!isUserOwned && !isCourseInCart
+                      ? "Add to Cart"
+                      : isCourseInCart && !isUserOwned
+                      ? "Already in cart"
+                      : "You're already owned this course"}
                   </button>
                   <ul className="text-sm text-black">
                     <li className="flex items-center mb-2 text-black">

@@ -93,6 +93,7 @@ export default function BuyProduct() {
           email: state.email,
           amount: location.state.total,
           course_purchase: courseIds,
+          promocode: location.state.promoId,
           picture_purchase: [{ id, url }],
         },
       });

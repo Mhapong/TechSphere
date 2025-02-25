@@ -153,8 +153,8 @@ const EditProfile = () => {
 
   // const GetPic
   return (
-    <div className="w-[800px] mx-auto mt-12 p-4">
-      <Toaster />
+    // <div className="w-[800px] mx-auto mt-12 p-4">
+    <div className="w-full lg:w-[800px] mt-11 lg:ml-96 pt-16 max-w-7xl p-4">
       <h1 className="text-3xl font-bold text-black mb-6 flex items-center justify-center">
         Edit Profile
       </h1>

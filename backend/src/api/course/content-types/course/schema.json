@@ -42,12 +42,6 @@
         "files"
       ]
     },
-    "start_date": {
-      "type": "datetime"
-    },
-    "end_date": {
-      "type": "datetime"
-    },
     "status_coure": {
       "type": "enumeration",
       "enum": [

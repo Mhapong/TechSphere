@@ -119,8 +119,8 @@ const AddEditPromotion = () => {
   };
 
   return (
-    <div className="w-[1000px] mx-96 mt-11 p-8">
-      <Toaster />
+    // <div className="w-[1000px] mx-96 mt-11 p-8">
+    <div className="w-full lg:w-[1000px] mt-11 lg:ml-96 pt-16 max-w-7xl p-4">
       <h1 className="flex items-center justify-center text-3xl font-bold text-black mb-6 mt-5">
         สร้าง/แก้ไขโปรโมชั่น {Value?.Code} 📝
       </h1>

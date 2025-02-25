@@ -8,20 +8,46 @@ import ax from "../../conf/ax";
 import { Range, getTrackBackground } from "react-range";
 import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
-
+import { useLocation } from "react-router-dom";
+import conf from "../../conf/main";
+import Select from "react-select";
+import datapic from "../components/data.png";
+import webpic from "../components/web-100.png";
+import gamepic from "../components/game.png";
+import hardwarepic from "../components/hardware.png";
+import networkpic from "../components/network.png";
+import morepic from "../components/more.png";
+import homepic from "../components/home-page.png";
+import allpic from "../../admin/components/Image/All.png";
 const Explore = () => {
   const [courseData, setCourseData] = useState([]);
+  const location = useLocation();
   const [query, setQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
   const [categories, setCategories] = useState([]);
   const [priceRange, setPriceRange] = useState([0, 5000]);
   const { addToCart } = useCart();
   const navigate = useNavigate();
-  const baseURL = process.env.REACT_APP_API_URL || "http://localhost:1337";
+  const baseURL = process.env.REACT_APP_API_URL || conf.apiUrl;
+  const [queryCourse, setQueryCourse] = useState("");
+  const category_from_home = location.state || "";
+  const allcategories = [
+    { name: "ALL", img: allpic, path: "ALL" },
+    { name: "Web Develop", img: webpic, path: "Web Develop" },
+    { name: "Data Analysis", img: datapic, path: "Data Analysis" },
+    { name: "IoT & Hardware", img: hardwarepic, path: "Hardware" },
+    { name: "Network", img: networkpic, path: "Network" },
+    { name: "Game Develop", img: gamepic, path: "Game Develop" },
+    { name: "AI", img: morepic, path: "AI" },
+  ];
 
   useEffect(() => {
-    fetchCategories();
+    // fetchCategories();
     fetchCourses();
+    console.log(category_from_home);
+    if (category_from_home) {
+      setSelectedCategory(category_from_home);
+    }
   }, []);
 
   const fetchCourses = async () => {
@@ -33,22 +59,39 @@ const Explore = () => {
     }
   };
 
-  const fetchCategories = async () => {
-    try {
-      const response = await ax.get(`categories`);
-      setCategories(response.data.data);
-    } catch (err) {
-      console.error(err);
-    }
-  };
+  const categoryOptions = allcategories.map((cat) => ({
+    value: cat.name,
+    label: (
+      <div className="flex items-center space-x-2">
+        <img
+          src={cat?.img}
+          alt={cat.name}
+          className="w-8 h-8 object-cover rounded-full"
+        />
+        <span>{cat.name}</span>
+      </div>
+    ),
+  }));
+
+  // const fetchCategories = async () => {
+  //   try {
+  //     const response = await ax.get(`categories`);
+  //     setCategories(response.data.data);
+  //   } catch (err) {
+  //     console.error(err);
+  //   }
+  // };
 
   const filteredCourses = courseData.filter((course) => {
     const matchesSearch = course.Name.toLowerCase().includes(
       query.toLowerCase()
     );
     const matchesCategory = selectedCategory
-      ? course.categories.some((cat) => cat.tag === selectedCategory)
+      ? selectedCategory === "ALL"
+        ? true
+        : course.categories.some((cat) => cat.tag === selectedCategory)
       : true;
+
     const matchesPrice =
       course.Price >= priceRange[0] && course.Price <= priceRange[1];
     return matchesSearch && matchesCategory && matchesPrice;
@@ -80,17 +123,16 @@ const Explore = () => {
           <aside className="w-full lg:w-1/4 space-y-6">
             <div>
               <h2 className="text-lg font-semibold mb-2">Categories</h2>
-              <select
-                className="w-full p-2 border border-gray-300 rounded-md"
-                onChange={(e) => setSelectedCategory(e.target.value)}
-              >
-                <option value="">All Categories</option>
-                {categories.map((category) => (
-                  <option key={category.tag} value={category.tag}>
-                    {category.tag}
-                  </option>
-                ))}
-              </select>
+              <Select
+                options={categoryOptions}
+                value={selectedCategory}
+                onChange={(selectedOption) => {
+                  setSelectedCategory(selectedOption.value);
+                }}
+                placeholder="เลือกประเภท"
+                className="text-gray-700 flex-auto w-full z-20"
+                classNamePrefix="custom-select"
+              />
             </div>
             <div>
               <h2 className="text-lg font-semibold mb-2">Price Range</h2>
@@ -213,7 +255,7 @@ const Explore = () => {
                                 </p> */}
                         <span className="text-amber-700 mt-2">
                           ⭐{" "}
-                          {course.rating === 0
+                          {course.rating && course.rating === 0
                             ? "ยังไม่มีรีวิว"
                             : `(${course.rating?.length} reviews)`}{" "}
                         </span>

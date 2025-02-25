@@ -50,7 +50,7 @@ const CourseStudentTable = () => {
 
   return (
     <section className="bg-gray-50 dark:bg-gray-900 h-screen py-3 sm:py-5">
-      <div className="w-[1200px] mx-96 mt-11 p-8 ml-80 px-4 max-w-screen-2xl lg:px-12">
+      <div className="w-full lg:w-[1200px] mt-11 lg:ml-96 max-w-7xl p-4">
         <div className="mx-auto max-w-screen-sm text-center mb-8 lg:mb-16">
           <h2 className="mb-4 text-4xl tracking-tight font-extrabold text-gray-900 dark:text-white">
             นักเรียนของคอร์ส {Value.Name}
@@ -95,19 +95,19 @@ const CourseStudentTable = () => {
             <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
               <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                 <tr>
-                  <th scope="col" className="px-4 py-3">
+                  <th scope="col" className="px-4 py-3 whitespace-nowrap">
                     ชื่อ-นามสกุล
                   </th>
-                  <th scope="col" className="px-4 py-3">
+                  <th scope="col" className="px-4 py-3 whitespace-nowrap">
                     ชื่อผู้ใช้งาน
                   </th>
-                  <th scope="col" className="px-4 py-3">
+                  <th scope="col" className="px-4 py-3 whitespace-nowrap">
                     สถานะ
                   </th>
-                  <th scope="col" className="flex ml-3 px-4 py-3">
+                  <th scope="col" className="px-4 py-3 whitespace-nowrap">
                     การยืนยันตัวตน
                   </th>
-                  <th scope="col" className="px-4 py-3">
+                  <th scope="col" className="px-4 py-3 whitespace-nowrap">
                     เงินรวม
                   </th>
 

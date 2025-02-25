@@ -215,8 +215,8 @@ const AddCourse = () => {
   }, []);
 
   return (
-    <div className="w-[1000px] mx-96 mt-11 p-8">
-      <Toaster />
+    // <div className="w-[1000px] mx-96 mt-11 p-8">
+    <div className="w-full lg:w-[1000px] mt-11 lg:ml-96 max-w-7xl p-4">
       <ol class="flex flex-col gap-4 rounded-lg border border-gray-200 bg-gray-50 p-4 dark:border-gray-700 dark:bg-gray-800 sm:justify-center md:flex-row md:items-center lg:gap-6">
         <div class="hidden h-px w-8 shrink-0 bg-gray-200 dark:bg-gray-700 md:block xl:w-16"></div>
         <li class="flex items-center gap-2 md:flex-1 md:flex-col md:gap-1.5 lg:flex-none">
