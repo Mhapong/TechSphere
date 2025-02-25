@@ -15,6 +15,7 @@ import ReviewsIcon from "@mui/icons-material/Reviews";
 import ax from "../../conf/ax";
 import conf from "../../conf/main";
 import HighlightOffIcon from "@mui/icons-material/HighlightOff";
+import GroupAddIcon from "@mui/icons-material/GroupAdd";
 
 export default function NavAdmin() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -69,6 +70,12 @@ export default function NavAdmin() {
       current: true,
       key: `${Count ? `${Count.course}` : "0"}`,
       icon: <StorageIcon />,
+    },
+    {
+      name: "สร้างอาจารย์",
+      href: "/create-lecturer",
+      current: true,
+      icon: <GroupAddIcon />,
     },
     {
       name: "อาจารย์ทั้งหมด",

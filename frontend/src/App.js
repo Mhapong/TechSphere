@@ -48,6 +48,7 @@ import HomeLecturer from "./lecturer/page/home-lecturer.js";
 // import ReviewLecturer from "./lecturer/page/viewReview.js";
 import ReviewAdmin from "./admin/pages/viewReview.js";
 import { CourseAdminView } from "./lecturer/page/course.js";
+import CreateLecturer from "./admin/pages/CreateLecturer.js";
 
 function App() {
   const { state } = useContext(AuthContext);
@@ -143,6 +144,7 @@ function App() {
               <Route path="/finance" element={<FinanceOrder />} />
               <Route path="/user" element={<Profile />} />
               <Route path="/edit-profile/:userid" element={<EditProfile />} />
+              <Route path="/create-lecturer" element={<CreateLecturer />} />
               <Route
                 path="/edit-finance/:financeid"
                 element={<EditFinance />}
