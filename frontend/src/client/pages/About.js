@@ -14,7 +14,7 @@ const AboutPage = () => {
     const fetchLecturers = useCallback(async () => {
         try {
             const response = await axios.get(`${BASE_URL}/api/users`, {
-                params: { populate: ["profile_picture"] },
+                params: { populate: ["profile_picture", "role"] },
             });
 
             console.log("API Response:", response.data);
@@ -22,7 +22,7 @@ const AboutPage = () => {
             if (response.data?.length > 0) {
                 // กรองข้อมูลเฉพาะที่มี role เป็น "Lecturer"
                 const lecturersData = response.data.filter(
-                    (user) => user.username === "lecturer"
+                    (user) => user.role?.type === "lecturer"
                 );
                 setLecturers(lecturersData);
             } else {
@@ -86,43 +86,44 @@ const AboutPage = () => {
                     {loading ? (
                         <p className="text-center text-blue-600 dark:text-blue-400">กำลังโหลดข้อมูล...</p>
                     ) : lecturers.length > 0 ? (
-                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
-                            {lecturers.map((lecturer) => (
-                                <motion.div
-                                    key={lecturer.id}
-                                    initial={{ opacity: 0, scale: 0.9 }}
-                                    animate={{ opacity: 1, scale: 1 }}
-                                    transition={{ duration: 0.5 }}
-                                    className="bg-white dark:bg-gray-700 rounded-xl shadow-lg overflow-hidden transform hover:scale-105 transition-all duration-300 cursor-pointer"
-                                    onClick={() =>
-                                        navigate(
-                                            `/lecturer-background/${lecturer.first_name}-${lecturer.last_name}`
-                                        )
-                                    }
-                                >
-                                    <div className="aspect-square relative">
-                                        <img
-                                            src={`${BASE_URL}${lecturer.profile_picture &&
-                                                    lecturer.profile_picture.length > 0
-                                                    ? lecturer.profile_picture[0].formats?.thumbnail?.url ||
-                                                    lecturer.profile_picture[0].url
-                                                    : "/placeholder.svg"
-                                                }`}
-                                            alt={`${lecturer.first_name} ${lecturer.last_name}`}
-                                            className="w-full h-full object-cover"
-                                        />
-                                        <div className="absolute inset-0 bg-gradient-to-t from-blue-500/60 to-transparent" />
-                                    </div>
-                                    <div className="p-6 text-center">
-                                        <h3 className="text-xl font-semibold text-blue-800 dark:text-blue-200 mb-1">
-                                            {lecturer.first_name} {lecturer.last_name}
-                                        </h3>
-                                        <p className="text-sm text-blue-600 dark:text-blue-300">
-                                            {lecturer.position || "อาจารย์"}
-                                        </p>
-                                    </div>
-                                </motion.div>
-                            ))}
+                        <div className="relative px-4 md:px-12">
+                            <div
+                                className="flex gap-6 overflow-x-auto snap-x snap-mandatory pb-6 scrollbar-hide"
+                                style={{
+                                    scrollbarWidth: "none",
+                                    msOverflowStyle: "none",
+                                    WebkitOverflowScrolling: "touch",
+                                }}
+                            >
+                                {lecturers.map((lecturer) => (
+                                    <motion.div
+                                        key={lecturer.id}
+                                        initial={{ opacity: 0, scale: 0.9 }}
+                                        animate={{ opacity: 1, scale: 1 }}
+                                        transition={{ duration: 0.5 }}
+                                        className="flex-none w-[280px] md:w-[320px] snap-center bg-white dark:bg-gray-700 rounded-xl shadow-lg overflow-hidden transform hover:scale-105 transition-all duration-300 cursor-pointer"
+                                        onClick={() => navigate(`/lecturer-background/${lecturer.first_name}-${lecturer.last_name}`)}
+                                    >
+                                        <div className="aspect-square relative">
+                                            <img
+                                                src={`${BASE_URL}${lecturer.profile_picture && lecturer.profile_picture.length > 0
+                                                        ? lecturer.profile_picture[0].formats?.thumbnail?.url || lecturer.profile_picture[0].url
+                                                        : "/placeholder.svg"
+                                                    }`}
+                                                alt={`${lecturer.first_name} ${lecturer.last_name}`}
+                                                className="w-full h-full object-cover"
+                                            />
+                                            <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent" />
+                                        </div>
+                                        <div className="p-6 text-center">
+                                            <h3 className="text-xl font-semibold text-blue-800 dark:text-blue-200 mb-1">
+                                                {lecturer.first_name} {lecturer.last_name}
+                                            </h3>
+                                            <p className="text-sm text-blue-600 dark:text-blue-300">{lecturer.position || "อาจารย์"}</p>
+                                        </div>
+                                    </motion.div>
+                                ))}
+                            </div>
                         </div>
                     ) : (
                         <p className="text-center text-blue-600 dark:text-blue-400">ไม่พบข้อมูลอาจารย์</p>
