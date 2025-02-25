@@ -12,6 +12,7 @@
     "@mui/icons-material": "^6.4.3",
     "@mui/material": "^6.4.3",
     "@mui/system": "^6.4.3",
+    "@tippyjs/react": "^4.2.6",
     "axios": "^1.7.9",
     "canvas": "^2.7.0",
     "cra-template": "1.2.0",

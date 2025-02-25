@@ -1,167 +1,323 @@
-import React, { useState, useEffect, useContext } from "react";
+import { useState, useEffect, useContext, useCallback } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { AuthContext } from "../../context/Auth.context";
 import ax from "../../conf/ax";
-// import { SearchIcon } from "@heroicons/react";
-import Confirm from "../../admin/components/Image/confirm.png";
-import Unapproved from "../../admin/components/Image/unapproved.png";
-import Error from "../../admin/components/Image/404.png";
-import {
-  Dialog,
-  DialogBackdrop,
-  DialogPanel,
-  DialogTitle,
-} from "@headlessui/react";
-import { Edit } from "@mui/icons-material";
-import { useNavigate } from "react-router";
+import conf from "../../conf/main";
 
 const ReviewLecturer = () => {
   const { state: ContextState } = useContext(AuthContext);
   const { user } = ContextState;
-  const [review, setReview] = useState(null);
-  const Navigate = useNavigate();
+  const [reviewData, setReviewData] = useState([]);
+  const [reviewCourseData, setReviewCourseData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [selectedLecturer, setSelectedLecturer] = useState();
+  const [selectedCourse, setSelectedCourse] = useState(null);
+  const [selectedRating, setSelectedRating] = useState(null);
+  const [showFilterOptions, setShowFilterOptions] = useState(false);
+  const [lecturerSelectedRating, setLecturerSelectedRating] = useState(null);
+  const [lecturerShowFilterOptions, setLecturerShowFilterOptions] =
+    useState(false);
 
-  const fetchReview = async () => {
+  const BASE_URL = process.env.REACT_APP_API_URL || conf.apiUrl;
+
+  const fetchReview = useCallback(async () => {
+    setLoading(true);
+    setError(null);
     try {
-      const response = await ax.get(
-        `lecturer-reviews?filters[id][$eq]=${user.id}&&populate=*`
-      );
-      console.log(response.data.data);
-      setReview(response.data.data);
-    } catch (e) {
-      console.log("error", e);
+      const response = await ax.get(`users`, {
+        params: {
+          "filters[id][$eq]": user.id,
+          populate: ["rating", "profile_picture"],
+        },
+      });
+
+      console.log("Lecturer Data Response:", response.data);
+
+      if (response.data && Array.isArray(response.data)) {
+        setReviewData(response.data);
+      } else {
+        setReviewData([]);
+      }
+    } catch (error) {
+      console.error("Error fetching lecturer review:", error);
+      setError(error.message);
+    } finally {
+      setLoading(false);
     }
+  }, [BASE_URL]);
+
+  const fetchCourseReview = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await ax.get(`courses`, {
+        params: {
+          "filters[lecturer_owner][id][$eq]": user.id,
+          populate: ["rating", "image"],
+        },
+      });
+
+      console.log("Course Data Response:", response.data.data);
+
+      if (response.data?.data && Array.isArray(response.data.data)) {
+        setReviewCourseData(response.data.data);
+      } else {
+        setReviewCourseData([]);
+      }
+    } catch (error) {
+      console.error("Error fetching course review:", error);
+      setError(error.message);
+    } finally {
+      setLoading(false);
+    }
+  }, [BASE_URL]);
+
+  const filterReviews = (rating, reviews) => {
+    if (rating === null) return reviews;
+    return reviews.filter((review) => review.star === rating);
+  };
+
+  const getImageUrl = (imageArray) => {
+    const BASE_URL = process.env.REACT_APP_API_URL || conf.apiUrl;
+    if (Array.isArray(imageArray) && imageArray.length > 0) {
+      const imageObj = imageArray[0];
+      const imageUrl = imageObj.formats?.thumbnail?.url || imageObj.url;
+      return imageUrl ? `${BASE_URL}${imageUrl}` : "/placeholder.svg";
+    }
+    return "/placeholder.svg";
   };
 
   useEffect(() => {
     fetchReview();
-  }, []);
+    fetchCourseReview();
+  }, [fetchReview, fetchCourseReview]);
 
-  return (
-    <div className="container mx-auto px-4 py-8 max-w-3xl mt-11">
-      {/* <div className="w-[1200px] mx-96 mt-11 p-8 ml-32"> */}
-      <div className="mx-auto text-center mb-8 lg:mb-16">
-        <h2 className="mb-4 text-4xl tracking-tight font-extrabold text-gray-900 dark:text-white">
-          รีวิวของคุณ
+  useEffect(() => {
+    console.log("Lecturer Reviews:", reviewData);
+    console.log("Course Reviews:", reviewCourseData);
+  }, [reviewData, reviewCourseData]);
+
+  const ReviewSection = ({
+    title,
+    data,
+    setSelected,
+    selected,
+    selectedRating,
+    setSelectedRating,
+    showFilterOptions,
+    setShowFilterOptions,
+  }) => {
+    const filteredReviews = selected
+      ? filterReviews(selectedRating, selected.rating)
+      : [];
+
+    return (
+      <div className="mb-12 pt-12">
+        <h2 className="mb-4 text-4xl tracking-tight font-extrabold text-gray-900 dark:text-white text-center">
+          {title}
         </h2>
-        {/* <p className="font-light text-gray-500 lg:mb-16 sm:text-xl dark:text-gray-400">
-          มีคอร์สรอยืนยันของ TechSphere ทั้งหมด {payments.length} คอร์ส
-        </p> */}
-      </div>
 
-      <div className="space-y-4">
-        {review ? (
-          review.map((payment) => (
-            <div
-              key={payment.id}
-              className={`relative group rounded-xl p-5 shadow-lg transition-all duration-300 transform hover:scale-105`}
-            >
-              {(payment.status_confirm === "confirmed" ||
-                payment.status_confirm === "unapproved") && (
-                <button
-                  className="absolute top-2 right-2 z-30 bg-blue-800 hover:bg-blue-900 focus:ring-4 
-                           focus:ring-blue-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md 
-                           transform transition-all focus:outline-none opacity-0 group-hover:opacity-100"
-                  onClick={() =>
-                    Navigate(`/edit-finance/${payment.id}`, {
-                      state: { Value: payment },
-                    })
-                  }
-                >
-                  <Edit className="mr-1" /> Edit
-                </button>
-              )}
-              <div className="flex justify-between items-start">
-                <div>
-                  <p className="text-sm text-gray-600">
-                    หมายเลขการสั่งซื้อ : {payment.id}
-                  </p>
-                  {payment.users_purchase !== null ? (
-                    <p className="font-medium">
-                      ผู้ซื้อ : {payment.users_purchase.first_name}{" "}
-                      {payment.users_purchase.last_name}
-                    </p>
+        {loading && (
+          <p className="text-center text-gray-500">กำลังโหลดข้อมูล...</p>
+        )}
+        {error && (
+          <p className="text-center text-red-500">เกิดข้อผิดพลาด: {error}</p>
+        )}
+        {!loading && !error && data.length === 0 && (
+          <p className="text-center text-gray-500">ไม่มีรีวิวที่จะแสดง</p>
+        )}
+
+        {/* แสดงรายการรีวิว */}
+        {!loading && !error && data.length > 0 && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {data.map((item) => {
+              const isSelected = selected?.id === item.id;
+
+              return (
+                <AnimatePresence key={item.id}>
+                  {isSelected ? (
+                    <motion.div
+                      className="col-span-1 sm:col-span-2 lg:col-span-3 bg-white p-6 border rounded-lg shadow-lg"
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: 20 }}
+                    >
+                      {/* แสดงรายละเอียดแทนการ์ด */}
+                      <div className="flex justify-between items-center mb-4">
+                        <h3 className="text-2xl font-semibold text-black">
+                          {selected.first_name
+                            ? `${selected.first_name} ${selected.last_name}`
+                            : selected.Name}
+                        </h3>
+                        <button
+                          className="text-gray-500 hover:text-gray-800"
+                          onClick={() => {
+                            setSelected(null);
+                            setShowFilterOptions(false);
+                            setSelectedRating(null);
+                          }}
+                        >
+                          ✖
+                        </button>
+                      </div>
+
+                      <div className="mb-4">
+                        {!showFilterOptions ? (
+                          <button
+                            className="px-4 py-2 text-sm rounded bg-gradient-to-r from-teal-400 to-green-200 text-black font-bold"
+                            onClick={() => setShowFilterOptions(true)}
+                          >
+                            แสดงตัวเลือกฟิลเตอร์
+                          </button>
+                        ) : (
+                          <div>
+                            <button
+                              className="px-4 py-2 text-sm rounded bg-gradient-to-r from-red-400 to-red-700 text-black font-bold mb-2"
+                              onClick={() => {
+                                setShowFilterOptions(false);
+                                setSelectedRating(null);
+                              }}
+                            >
+                              ปิดฟิลเตอร์
+                            </button>
+                            <div className="flex flex-wrap gap-2">
+                              {[5, 4, 3, 2, 1].map((star) => (
+                                <button
+                                  key={star}
+                                  className={`px-4 py-2 text-sm rounded border-2 
+                                    ${
+                                      selectedRating === star
+                                        ? "bg-gray-900 text-white border-gray-900 shadow-lg"
+                                        : "bg-gray-700 text-white border-transparent"
+                                    }
+                                  `}
+                                  onClick={() => setSelectedRating(star)}
+                                >
+                                  {star} ดาว (
+                                  {filterReviews(star, selected.rating).length})
+                                </button>
+                              ))}
+                              <button
+                                className={`px-4 py-2 text-sm rounded border-2 
+                                  ${
+                                    selectedRating === null
+                                      ? "bg-gray-900 text-white border-gray-900 shadow-lg"
+                                      : "bg-gray-700 text-white border-transparent"
+                                  }
+                                `}
+                                onClick={() => setSelectedRating(null)}
+                              >
+                                รีวิวทั้งหมด ({selected.rating.length})
+                              </button>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+
+                      <h4 className="text-lg font-semibold text-gray-800 mb-2">
+                        Reviews ({filteredReviews.length}):
+                      </h4>
+                      {filteredReviews.length > 0 ? (
+                        <ul className="space-y-4">
+                          {filteredReviews.map((review) => (
+                            <li
+                              key={review.id}
+                              className="border-b pb-4 last:border-none"
+                            >
+                              <div className="flex items-start">
+                                <div className="flex-shrink-0 mr-3">
+                                  {Array.from({ length: 5 }, (_, i) => (
+                                    <span
+                                      key={i}
+                                      className={`text-lg ${
+                                        i < review.star
+                                          ? "text-yellow-500"
+                                          : "text-gray-300"
+                                      }`}
+                                    >
+                                      ★
+                                    </span>
+                                  ))}
+                                </div>
+                                <p className="text-gray-700 text-sm sm:text-base italic">
+                                  "{review.comment}"
+                                </p>
+                              </div>
+                            </li>
+                          ))}
+                        </ul>
+                      ) : (
+                        <p className="text-gray-500">No reviews yet.</p>
+                      )}
+                    </motion.div>
                   ) : (
-                    "ผู้ซื้อ : ไม่มีชื่อ"
+                    <motion.div
+                      className="flex items-center p-6 border rounded-lg shadow-lg cursor-pointer hover:bg-gray-100 transition"
+                      onClick={() => setSelected(item)}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: 20 }}
+                      whileHover={{ scale: 1.02 }}
+                    >
+                      <img
+                        src={getImageUrl(item.profile_picture || item.image)}
+                        alt={item.first_name || item.Name || "No Image"}
+                        className="w-20 h-20 rounded-full object-cover mr-6"
+                      />
+
+                      <div>
+                        <h3 className="text-xl font-semibold">
+                          {item.first_name && item.last_name
+                            ? `${item.first_name} ${item.last_name}`
+                            : item.Name}
+                        </h3>
+                        <p className="text-gray-500">
+                          {Array.isArray(item.rating)
+                            ? `⭐ ${(
+                                item.rating.reduce(
+                                  (sum, r) => sum + r.star,
+                                  0
+                                ) / item.rating.length
+                              ).toFixed(1)}`
+                            : item.rating?.average
+                            ? `⭐ ${item.rating.average.toFixed(1)}`
+                            : "ไม่มีคะแนน"}
+                        </p>
+                      </div>
+                    </motion.div>
                   )}
-                  <p className="font-medium">
-                    Email :{" "}
-                    {payment.users_purchase !== null
-                      ? payment.users_purchase.email
-                      : "ไม่มีอีเมล"}
-                  </p>
-                  <p className="text-sm text-gray-600">
-                    เวลาการยืนยันชำระเงิน :{" "}
-                    {new Date(payment.createdAt).toLocaleDateString("th-TH")}{" "}
-                    {new Date(payment.createdAt).toLocaleTimeString("th-TH", {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                      hour12: false,
-                    })}
-                  </p>
-                  <p className="text-sm text-gray-600">
-                    คอร์สที่ซื้อ :{" "}
-                    {payment.course_purchase
-                      .map((course) =>
-                        course.Name.length > 30
-                          ? course.Name.slice(0, 30) + "..."
-                          : course.Name
-                      )
-                      .join(", ")}
-                  </p>
-                </div>
-                {payment.status_confirm === "confirmed" && (
-                  // <div className="bg-green-700 text-white text-2xl px-3 py-1 rounded-full">
-                  //   ยืนยันการชำระเงินแล้ว
-                  // </div>
-                  <img
-                    src={Confirm}
-                    className="px-3 py-1 rounded-full"
-                    alt="Confirm"
-                    style={{ width: "150px" }}
-                  />
-                )}
-                {payment.status_confirm === "unapproved" && (
-                  // <div className="bg-green-700 text-white text-2xl px-3 py-1 rounded-full">
-                  //   ยืนยันการชำระเงินแล้ว
-                  // </div>
-                  <img
-                    src={Unapproved}
-                    className="px-3 py-1 rounded-full"
-                    alt="Confirm"
-                    style={{ width: "150px" }}
-                  />
-                )}
-              </div>
-              <div className="flex justify-between items-center mt-4">
-                <p className="text-lg">
-                  จำนวนเงินที่ต้องชำระ : {payment.amount} บาท
-                </p>
-                {/* {payment.status_confirm === "waiting" && (
-                  <button>
-                //     onClick={() => {
-                //       openModal(payment.picture_purchase, payment);
-                //     }}
-                //     className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                //   >
-                    ตรวจสอบการชำระ
-                  </button>
-                )} */}
-              </div>
-            </div>
-          ))
-        ) : (
-          <div className="mx-auto my-7 flex items-center justify-center">
-            <div className="bg-white shadow-lg border border-gray-200 rounded-xl px-6 py-8 text-center">
-              <p className="text-gray-700 text-2xl font-semibold">
-                ไม่พบข้อมูลการเงินที่ค้นหา
-              </p>
-              <p className="text-gray-500 text-lg mt-2">
-                กรุณาตรวจสอบคำค้นหาข้อมูลการเงิน
-              </p>
-            </div>
+                </AnimatePresence>
+              );
+            })}
           </div>
         )}
       </div>
+    );
+  };
+
+  return (
+    <div className="container mx-auto px-4 py-8 lg:w-[1000px] lg:ml-96 max-w-7xl">
+      <ReviewSection
+        title="รีวิวทั้งหมดของคุณ"
+        data={reviewData}
+        setSelected={setSelectedLecturer}
+        selected={selectedLecturer}
+        selectedRating={lecturerSelectedRating}
+        setSelectedRating={setLecturerSelectedRating}
+        showFilterOptions={lecturerShowFilterOptions}
+        setShowFilterOptions={setLecturerShowFilterOptions}
+      />
+      <ReviewSection
+        title="รีวิวทั้งหมดของคอร์สของคุณ"
+        data={reviewCourseData}
+        setSelected={setSelectedCourse}
+        selected={selectedCourse}
+        selectedRating={selectedRating}
+        setSelectedRating={setSelectedRating}
+        showFilterOptions={showFilterOptions}
+        setShowFilterOptions={setShowFilterOptions}
+      />
     </div>
   );
 };
