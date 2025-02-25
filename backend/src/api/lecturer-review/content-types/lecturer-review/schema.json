@@ -24,7 +24,7 @@
     "star": {
       "type": "integer",
       "max": 5,
-      "min": 0,
+      "min": 1,
       "required": false
     },
     "review": {
