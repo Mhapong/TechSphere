@@ -45,7 +45,8 @@ import EditFinance from "./admin/pages/EditFinance.js";
 import { Toaster } from "sonner";
 import LecturerBackGround from "./client/pages/LecturerBackGround.js";
 import HomeLecturer from "./lecturer/page/home-lecturer.js";
-import ReviewLecturer from "./lecturer/page/viewReview.js";
+// import ReviewLecturer from "./lecturer/page/viewReview.js";
+import ReviewAdmin from "./admin/pages/viewReview.js";
 import { CourseAdminView } from "./lecturer/page/course.js";
 
 function App() {
@@ -101,7 +102,7 @@ function App() {
               <Route path="/" element={<HomeLecturer />} />
               <Route path="/user" element={<Profile />} />
               <Route path="/edit-profile/:userid" element={<EditProfile />} />
-              <Route path="/review" element={<ReviewLecturer />} />
+              <Route path="/review" element={<ReviewAdmin />} />
               <Route path="/course" element={<CourseAdminView />} />
               <Route
                 path="/view-product/:name/:documentId"
@@ -134,6 +135,7 @@ function App() {
                 element={<CourseDetails />}
               />
               <Route path="/view" element={<CourseView />} />
+              <Route path="/review" element={<ReviewAdmin />} />
               <Route path="/view-student" element={<CourseStudentTable />} />
               <Route path="/promotion" element={<PromotionAdminPage />} />
               <Route path="/lecturer" element={<LecturerAll />} />

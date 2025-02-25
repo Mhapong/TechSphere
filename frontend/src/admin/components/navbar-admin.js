@@ -85,6 +85,13 @@ export default function NavAdmin() {
       icon: <PeopleAltIcon />,
     },
     {
+      name: "รีวิวทั้งหมด",
+      href: "/review",
+      current: true,
+      key: `${Count ? `${Count.users.User}` : "0"}`,
+      icon: <ReviewsIcon />,
+    },
+    {
       name: "การเงิน",
       href: "/finance",
       current: true,
