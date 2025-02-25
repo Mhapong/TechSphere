@@ -20,6 +20,8 @@ import gamepic from "../components/game.png";
 import morepic from "../components/more.png";
 import allpic from "../../admin/components/Image/All.png";
 import { Rating } from "@mui/material";
+import header1 from "../components/header1.png";
+import header2 from "../components/header2.png";
 
 const Explore = () => {
   const [courseData, setCourseData] = useState([]);
@@ -31,7 +33,7 @@ const Explore = () => {
   const navigate = useNavigate();
   const baseURL = process.env.REACT_APP_API_URL || conf.apiUrl;
   const category_from_home = location.state || "";
-
+  const [promotion, setPromotions] = useState([]);
   const fetchCourses = async () => {
     try {
       const response = await ax.get(`courses?populate=*`);
@@ -40,6 +42,38 @@ const Explore = () => {
       console.error(err);
     }
   };
+
+  const fetchPromotions = async () => {
+    try {
+      const response = await ax.get("promotions?populate=*");
+      console.log(response.data.data);
+      setPromotions(response.data.data);
+    } catch (error) {
+      console.error("Error fetching promotions:", error);
+    }
+  };
+  useEffect(() => {
+    fetchPromotions();
+  }, []);
+
+  const header = [
+    { img: header1 },
+    { img: header2 },
+    // { title: "Special Offers", bg: "bg-purple-600" },
+  ];
+
+  const headerData = [
+    ...header,
+    ...promotion.map((promo) => ({
+      title: `Promotion: ${promo.Code}`,
+      detail: promo.detail,
+      discount: promo.discount,
+      img: `${conf.apiUrl}${promo?.picture_promotion?.url}`,
+      bg: "bg-yellow-500",
+    })),
+  ];
+
+  console.log(headerData);
 
   useEffect(() => {
     fetchCourses();
@@ -102,18 +136,34 @@ const Explore = () => {
         interval={5000}
         className="mb-2"
       >
-        {[
-          { title: "Featured Courses", bg: "bg-blue-600" },
-          { title: "New Arrivals", bg: "bg-green-600" },
-          { title: "Special Offers", bg: "bg-purple-600" },
-        ].map((slide, index) => (
-          <div
-            key={index}
-            className={`h-64 ${slide.bg} flex items-center justify-center`}
-          >
-            <h2 className="text-4xl text-white font-bold">{slide.title}</h2>
-          </div>
-        ))}
+        {headerData &&
+          headerData.map((slide, index) => (
+            <div
+              key={index}
+              className={`h-full lg:h-64 ${slide.bg} flex items-center justify-center relative`}
+            >
+              <img
+                src={`${slide?.img}`}
+                alt={slide?.title}
+                className="w-full h-full object-cover"
+              />{" "}
+              {slide?.title && (
+                <h2 className="text-4xl font-bold absolute top-10 left-1/2 transform -translate-x-1/2 bg-black bg-opacity-50 text-white px-6 py-3 rounded-lg">
+                  {slide?.title}
+                </h2>
+              )}
+              {/* {slide?.detail && (
+                <p className="text-xl font-semibold absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-black bg-opacity-50 text-white px-6 py-3 rounded-lg">
+                  {slide?.detail}
+                </p>
+              )} */}
+              {slide?.discount && (
+                <div className="text-3xl font-bold absolute bottom-10 left-1/2 transform -translate-x-1/2 bg-black bg-opacity-50 text-white px-6 py-3 rounded-lg">
+                  Discount: {slide?.discount}%
+                </div>
+              )}
+            </div>
+          ))}
       </Carousel>
 
       <div className=" container mx-auto px-4 py-6">

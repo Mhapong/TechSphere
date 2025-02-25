@@ -197,11 +197,9 @@ export default function Home() {
                       <p className="text-green-700">
                         👨‍🏫 ผู้สอน:{" "}
                         {course.lecturer_owner !== null
-                          ? `${
-                              course.lecturer_owner?.first_name || "ไม่มีชื่อ"
-                            } ${
-                              course.lecturer_owner?.last_name || "ไม่มีนามสกุล"
-                            }`
+                          ? `${course.lecturer_owner?.first_name || "ไม่มีชื่อ"
+                          } ${course.lecturer_owner?.last_name || "ไม่มีนามสกุล"
+                          }`
                           : "ไม่ระบุ"}
                       </p>
                       <div className=" flex justify-between ">
@@ -243,7 +241,6 @@ export default function Home() {
               ))}
             </motion.div>
           )}
-
           <div className="text-center mt-12">
             <button
               className="bg-blue-600 text-white font-bold py-3 px-8 rounded-full hover:bg-blue-700 transition duration-300"
