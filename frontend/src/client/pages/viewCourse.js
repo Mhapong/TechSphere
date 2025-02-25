@@ -253,7 +253,7 @@ export default function ViewCourse() {
             <div className="container mx-auto mb-2 px-4">
               <h2 className="text-2xl font-bold mb-4">หมวดหมู่ที่เกี่ยวข้อง</h2>
               <ul className="flex line-clamp-1">
-                {course &&
+                {course ? (
                   course.categories.map((value) => (
                     <div
                       key={value.id}
@@ -273,7 +273,12 @@ export default function ViewCourse() {
                         </div>
                       </Tooltip>
                     </div>
-                  ))}
+                  ))
+                ) : (
+                  <div className="inline-flex bg-white border-2 border-black rounded-md px-3 py-2 text-sm font-semibold text-gray-900 items-center">
+                    ไม่หมวดหมู่แสดง
+                  </div>
+                )}
               </ul>
             </div>
 
@@ -291,7 +296,7 @@ export default function ViewCourse() {
                         className="w-full flex justify-between items-center p-4 bg-gray-100 hover:bg-gray-200 rounded-t-lg focus:outline-none"
                         onClick={() => toggleSection(index)}
                       >
-                        <span className="font-semibold">
+                        <span className="font-semibold text-start">
                           {topic.topic_title}
                         </span>
                         {openSections[index] ? (

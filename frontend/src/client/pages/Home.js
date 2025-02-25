@@ -105,9 +105,10 @@ export default function Home() {
                 key={category.name}
                 className="bg-white rounded-lg shadow-md p-6 flex flex-col items-center justify-center cursor-pointer hover:shadow-lg transition duration-300"
                 onClick={() => navigate("/explore", { state: category.name })}
-                whileHover={{ scale: 1.05 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                whileTap={{ scale: 1.05 }}
+                whileHover={{ scale: 1.1 }}
                 initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
               >
                 <img
@@ -154,7 +155,7 @@ export default function Home() {
             <motion.div
               className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
               initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
+              whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
             >
               {courseData.map((course) => (
@@ -197,9 +198,11 @@ export default function Home() {
                       <p className="text-green-700">
                         👨‍🏫 ผู้สอน:{" "}
                         {course.lecturer_owner !== null
-                          ? `${course.lecturer_owner?.first_name || "ไม่มีชื่อ"
-                          } ${course.lecturer_owner?.last_name || "ไม่มีนามสกุล"
-                          }`
+                          ? `${
+                              course.lecturer_owner?.first_name || "ไม่มีชื่อ"
+                            } ${
+                              course.lecturer_owner?.last_name || "ไม่มีนามสกุล"
+                            }`
                           : "ไม่ระบุ"}
                       </p>
                       <div className=" flex justify-between ">
