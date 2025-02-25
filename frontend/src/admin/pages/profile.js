@@ -61,7 +61,7 @@ export default function Profile() {
 
           <div
             id="profile"
-            className={`w-full lg:w-3/5 rounded-lg lg:rounded-l-lg lg:rounded-r-none shadow-2xl p-4 md:p-12 text-center lg:text-left opacity-75 ${
+            className={`w-full lg:w-3/5 rounded-lg lg:rounded-l-lg lg:rounded-r-none shadow-2xl p-4 md:p-12 text-center lg:text-left  ${
               darkMode ? "bg-gray-900" : "bg-white"
             }`}
           >
@@ -135,7 +135,7 @@ export default function Profile() {
           <div className="w-full lg:w-2/5">
             <img
               src={Image?.url ? `${conf.apiUrl}${Image.url}` : usericon}
-              className="hidden sm:block aspect-[9/16] object-cover rounded-lg shadow-2xl"
+              className="hidden sm:block aspect-[11/16] object-cover rounded-lg shadow-2xl"
               alt="Profile"
               style={{ width: "550px" }}
             />

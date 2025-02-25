@@ -21,11 +21,12 @@ const Footer = () => {
             <FaFacebook className="text-2xl hover:text-blue-400 cursor-pointer" />
             <FaTwitter className="text-2xl hover:text-blue-300 cursor-pointer" />
             <FaLinkedin className="text-2xl hover:text-blue-500 cursor-pointer" />
-            <FaGithub
-              className="text-2xl hover:text-gray-500 cursor-pointer"
-              href="https://github.com/Mhapong/TechSphere/tree/main"
-              type="button"
-            />
+            <a href="https://github.com/Mhapong/TechSphere">
+              <FaGithub
+                className="text-2xl hover:text-gray-500 cursor-pointer"
+                href="https://github.com/Mhapong/TechSphere/tree/main"
+              />
+            </a>
           </div>
         </div>
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { Breadcrumbs, Tooltip } from "@material-tailwind/react";
+import { Breadcrumbs, rating, Tooltip } from "@material-tailwind/react";
 import { useEffect, useState, useContext } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useCart } from "../../context/Cart.context";
@@ -49,13 +49,12 @@ export default function ViewCourse() {
   const fetchCourse = async () => {
     try {
       const response = await ax.get(
-        `courses?filters[documentId][$eq]=${documentId}&populate[0]=topic.content&populate[1]=lecturer_owner.created_courses&populate[2]=rating.users_review.profile_picture&populate[3]=categories&populate[4]=user_owner&populate[5]=lecturer_owner.rating`
+        `courses?filters[documentId][$eq]=${documentId}&populate[0]=topic.content&populate[1]=lecturer_owner.created_courses&populate[2]=rating.users_review.profile_picture&populate[3]=categories&populate[4]=user_owner&populate[5]=lecturer_owner.rating&populate[6]=image`
       );
       const now_course = response.data.data;
       setCourse(now_course[0]);
 
       console.log(now_course[0]);
-      console.log(now_course[0].topic);
     } catch (err) {
       setError(err);
       console.error(err);
@@ -211,6 +210,9 @@ export default function ViewCourse() {
                         ? navigate("/login")
                         : addToCart({
                             ...course,
+                            rating: course.rating,
+                            lecturer_owner: course.lecturer_owner,
+                            Time_Usage: course.Time_Usage,
                             course_id: course.documentId,
                           })
                     }
@@ -526,6 +528,9 @@ export default function ViewCourse() {
                         ? navigate("/login")
                         : addToCart({
                             ...course,
+                            rating: course.rating,
+                            lecturer_owner: course.lecturer_owner,
+                            Time_Usage: course.Time_Usage,
                             course_id: course.documentId,
                           })
                     }
