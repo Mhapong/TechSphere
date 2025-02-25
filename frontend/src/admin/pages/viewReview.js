@@ -1,168 +1,275 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useCallback } from "react";
+import { motion } from "framer-motion";
 import { AuthContext } from "../../context/Auth.context";
 import ax from "../../conf/ax";
-// import { SearchIcon } from "@heroicons/react";
-import Confirm from "../../admin/components/Image/confirm.png";
-import Unapproved from "../../admin/components/Image/unapproved.png";
-import Error from "../../admin/components/Image/404.png";
-import {
-  Dialog,
-  DialogBackdrop,
-  DialogPanel,
-  DialogTitle,
-} from "@headlessui/react";
-import { Edit } from "@mui/icons-material";
-import { useNavigate } from "react-router";
 
 const ReviewAdmin = () => {
   const { state: ContextState } = useContext(AuthContext);
   const { user } = ContextState;
-  const [review, setReview] = useState(null);
-  const Navigate = useNavigate();
+  const [reviewData, setReviewData] = useState([]);
+  const [reviewCourseData, setReviewCourseData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [selectedLecturer, setSelectedLecturer] = useState(null);
+  const [selectedCourse, setSelectedCourse] = useState(null);
+  const BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:1337";
 
-  const fetchReview = async () => {
+  const fetchReview = useCallback(async () => {
+    setLoading(true);
+    setError(null);
     try {
-      const response = await ax.get(
-        `lecturer-reviews?filters[id][$eq]=${user.id}&&populate=*`
-      );
-      console.log(response.data.data);
-      setReview(response.data.data);
-    } catch (e) {
-      console.log("error", e);
+      const response = await ax.get(`${BASE_URL}/api/users`, {
+        params: {
+          "filters[role][name][$eq]": "Lecturer",
+          "populate": ["rating", "profile_picture"],
+        },
+      });
+
+      console.log("Lecturer Data Response:", response.data);
+
+      if (response.data && Array.isArray(response.data)) {
+        setReviewData(response.data);
+      } else {
+        setReviewData([]);
+      }
+    } catch (error) {
+      console.error("Error fetching lecturer review:", error);
+      setError(error.message);
+    } finally {
+      setLoading(false);
     }
-  };
+  }, [BASE_URL]);
+
+  const fetchCourseReview = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await ax.get(`${BASE_URL}/api/courses`, {
+        params: {
+          "populate": ["rating", "image"],
+        },
+      });
+
+      console.log("Course Data Response:", response.data.data);
+
+      if (response.data?.data && Array.isArray(response.data.data)) {
+        setReviewCourseData(response.data.data);
+      } else {
+        setReviewCourseData([]);
+      }
+    } catch (error) {
+      console.error("Error fetching course review:", error);
+      setError(error.message);
+    } finally {
+      setLoading(false);
+    }
+  }, [BASE_URL]);
 
   useEffect(() => {
     fetchReview();
-  }, []);
+    fetchCourseReview();
+  }, [fetchReview, fetchCourseReview]);
 
   return (
-    // <div className="container mx-auto px-4 py-8 max-w-3xl mt-11">
     <div className="container w-full lg:w-[1000px] mt-11 lg:ml-96 max-w-7xl p-4">
-      {/* <div className="w-[1200px] mx-96 mt-11 p-8 ml-32"> */}
+
+      {/* รีวิวของอาจารย์*/}
       <div className="mx-auto text-center mb-8 lg:mb-16">
         <h2 className="mb-4 text-4xl tracking-tight font-extrabold text-gray-900 dark:text-white">
-          รีวิวของคุณ
+          รีวิวทั้งหมดของอาจารย์
         </h2>
-        {/* <p className="font-light text-gray-500 lg:mb-16 sm:text-xl dark:text-gray-400">
-          มีคอร์สรอยืนยันของ TechSphere ทั้งหมด {payments.length} คอร์ส
-        </p> */}
       </div>
 
-      <div className="space-y-4">
-        {review ? (
-          review.map((payment) => (
-            <div
-              key={payment.id}
-              className={`relative group rounded-xl p-5 shadow-lg transition-all duration-300 transform hover:scale-105`}
-            >
-              {(payment.status_confirm === "confirmed" ||
-                payment.status_confirm === "unapproved") && (
-                <button
-                  className="absolute top-2 right-2 z-30 bg-blue-800 hover:bg-blue-900 focus:ring-4 
-                           focus:ring-blue-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md 
-                           transform transition-all focus:outline-none opacity-0 group-hover:opacity-100"
-                  onClick={() =>
-                    Navigate(`/edit-finance/${payment.id}`, {
-                      state: { Value: payment },
-                    })
-                  }
-                >
-                  <Edit className="mr-1" /> Edit
-                </button>
-              )}
-              <div className="flex justify-between items-start">
+      {loading && <p className="text-center text-gray-500">กำลังโหลดข้อมูล...</p>}
+      {error && <p className="text-center text-red-500">เกิดข้อผิดพลาด: {error}</p>}
+      {!loading && !error && reviewData.length === 0 && (
+        <p className="text-center text-gray-500">ไม่มีรีวิวที่จะแสดง</p>
+      )}
+
+      {!loading && !error && reviewData.length > 0 && (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {reviewData.map((lecturer) => {
+            const profileImage = lecturer?.profile_picture?.[0]?.url
+              ? `${BASE_URL}${lecturer.profile_picture[0].url}`
+              : "/default-profile.png";
+
+            // คำนวณคะแนนเฉลี่ย
+            const averageRating =
+              lecturer.rating.length > 0
+                ? (lecturer.rating.reduce((acc, review) => acc + review.star, 0) / lecturer.rating.length).toFixed(1)
+                : "0.0";
+
+            return (
+              <motion.div
+                key={lecturer.id}
+                className="flex items-center p-6 border rounded-lg shadow-lg cursor-pointer hover:bg-gray-100 transition"
+                onClick={() => setSelectedLecturer(selectedLecturer?.id === lecturer.id ? null : lecturer)}
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.3 }}
+              >
+                <img src={profileImage} alt={`${lecturer.first_name} ${lecturer.last_name}`} className="w-20 h-20 rounded-full object-cover mr-6" />
                 <div>
-                  <p className="text-sm text-gray-600">
-                    หมายเลขการสั่งซื้อ : {payment.id}
-                  </p>
-                  {payment.users_purchase !== null ? (
-                    <p className="font-medium">
-                      ผู้ซื้อ : {payment.users_purchase.first_name}{" "}
-                      {payment.users_purchase.last_name}
-                    </p>
-                  ) : (
-                    "ผู้ซื้อ : ไม่มีชื่อ"
-                  )}
-                  <p className="font-medium">
-                    Email :{" "}
-                    {payment.users_purchase !== null
-                      ? payment.users_purchase.email
-                      : "ไม่มีอีเมล"}
-                  </p>
-                  <p className="text-sm text-gray-600">
-                    เวลาการยืนยันชำระเงิน :{" "}
-                    {new Date(payment.createdAt).toLocaleDateString("th-TH")}{" "}
-                    {new Date(payment.createdAt).toLocaleTimeString("th-TH", {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                      hour12: false,
-                    })}
-                  </p>
-                  <p className="text-sm text-gray-600">
-                    คอร์สที่ซื้อ :{" "}
-                    {payment.course_purchase
-                      .map((course) =>
-                        course.Name.length > 30
-                          ? course.Name.slice(0, 30) + "..."
-                          : course.Name
-                      )
-                      .join(", ")}
-                  </p>
+                  <h3 className="text-xl font-semibold text-blue-700">{lecturer.first_name} {lecturer.last_name}</h3>
+                  {/* แสดงคะแนนเฉลี่ย */}
+                  <div className="flex items-center mt-2">
+                    <span className="text-2xl text-yellow-500 mr-2">⭐</span>
+                    <span className="text-yellow-500 font-semibold text-lg sm:text-xl">{averageRating}</span>
+                    <span className="text-gray-500 text-base ml-2">/ 5</span>
+                  </div>
                 </div>
-                {payment.status_confirm === "confirmed" && (
-                  // <div className="bg-green-700 text-white text-2xl px-3 py-1 rounded-full">
-                  //   ยืนยันการชำระเงินแล้ว
-                  // </div>
-                  <img
-                    src={Confirm}
-                    className="px-3 py-1 rounded-full"
-                    alt="Confirm"
-                    style={{ width: "150px" }}
-                  />
-                )}
-                {payment.status_confirm === "unapproved" && (
-                  // <div className="bg-green-700 text-white text-2xl px-3 py-1 rounded-full">
-                  //   ยืนยันการชำระเงินแล้ว
-                  // </div>
-                  <img
-                    src={Unapproved}
-                    className="px-3 py-1 rounded-full"
-                    alt="Confirm"
-                    style={{ width: "150px" }}
-                  />
-                )}
-              </div>
-              <div className="flex justify-between items-center mt-4">
-                <p className="text-lg">
-                  จำนวนเงินที่ต้องชำระ : {payment.amount} บาท
-                </p>
-                {/* {payment.status_confirm === "waiting" && (
-                  <button>
-                //     onClick={() => {
-                //       openModal(payment.picture_purchase, payment);
-                //     }}
-                //     className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                //   >
-                    ตรวจสอบการชำระ
-                  </button>
-                )} */}
-              </div>
-            </div>
-          ))
-        ) : (
-          <div className="mx-auto my-7 flex items-center justify-center">
-            <div className="bg-white shadow-lg border border-gray-200 rounded-xl px-6 py-8 text-center">
-              <p className="text-gray-700 text-2xl font-semibold">
-                ไม่พบข้อมูลการเงินที่ค้นหา
-              </p>
-              <p className="text-gray-500 text-lg mt-2">
-                กรุณาตรวจสอบคำค้นหาข้อมูลการเงิน
-              </p>
-            </div>
+              </motion.div>
+            );
+          })}
+        </div>
+      )}
+
+
+      {selectedLecturer && (
+        <div className="bg-white shadow-md rounded-lg p-6 mt-8">
+          <div className="flex justify-between items-center">
+            <h3 className="text-2xl font-semibold text-blue-700">
+              {selectedLecturer.first_name} {selectedLecturer.last_name}
+            </h3>
+            <button
+              className="text-gray-500 hover:text-gray-800"
+              onClick={() => setSelectedLecturer(null)}
+            >
+              ✖
+            </button>
           </div>
-        )}
+          <div className="mt-4">
+            <h4 className="text-lg font-semibold text-gray-800">Reviews:</h4>
+            {selectedLecturer?.rating?.length > 0 ? (
+              <ul className="space-y-4 mt-2">
+                {selectedLecturer.rating.map((review) => (
+                  <motion.li
+                    key={review.id}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.3 }}
+                    className="border-b pb-4 last:border-none"
+                  >
+                    <div className="flex items-start">
+                      <div className="flex-shrink-0 mr-3">
+                        {Array.from({ length: 5 }, (_, i) => (
+                          <span key={i} className={`text-lg ${i < review.star ? "text-yellow-500" : "text-gray-300"}`}>
+                            ★
+                          </span>
+                        ))}
+                      </div>
+                      <div>
+                        <p className="text-gray-700 text-sm sm:text-base italic">"{review.comment}"</p>
+                      </div>
+                    </div>
+                  </motion.li>
+                ))}
+              </ul>
+            ) : (
+              <p className="text-gray-500">No reviews yet.</p>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* รีวิวของคอร์ส */}
+      <div className="mx-auto text-center mb-8 lg:mb-16">
+        <h2 className="mb-4 text-4xl tracking-tight font-extrabold text-gray-900 dark:text-white">
+          รีวิวทั้งหมดของคอร์ส
+        </h2>
       </div>
+      {loading && <p className="text-center text-gray-500">กำลังโหลดข้อมูล...</p>}
+      {error && <p className="text-center text-red-500">เกิดข้อผิดพลาด: {error}</p>}
+      {!loading && !error && reviewCourseData.length === 0 && (
+        <p className="text-center text-gray-500">ไม่มีรีวิวที่จะแสดง</p>
+      )}
+
+      {!loading && !error && reviewCourseData.length > 0 && (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {reviewCourseData.map((course) => {
+            const courseImage = course?.image?.[0]?.url
+              ? `${BASE_URL}${course.image[0].url}`
+              : "/default-profile.png";
+
+            // คำนวณคะแนนเฉลี่ยของคอร์ส
+            const averageRating =
+              course.rating && course.rating.length > 0
+                ? (course.rating.reduce((acc, review) => acc + review.star, 0) / course.rating.length).toFixed(1)
+                : "0.0";
+
+            return (
+              <motion.div
+                key={course.id}
+                className="flex items-center p-6 border rounded-lg shadow-lg cursor-pointer hover:bg-gray-100 transition"
+                onClick={() => setSelectedCourse(selectedCourse?.id === course.id ? null : course)}
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.3 }}
+              >
+                <img src={courseImage} alt={`${course.Name}`} className="w-20 h-20 rounded-full object-cover mr-6" />
+                <div>
+                  <h3 className="text-xl font-semibold text-blue-700">{course.Name}</h3>
+                  {/* แสดงคะแนนเฉลี่ย */}
+                  <div className="flex items-center mt-2">
+                    <span className="text-2xl text-yellow-500 mr-2">⭐</span>
+                    <span className="text-yellow-500 font-semibold text-lg sm:text-xl">{averageRating}</span>
+                    <span className="text-gray-500 text-base ml-2">/ 5</span>
+                  </div>
+                </div>
+              </motion.div>
+            );
+          })}
+        </div>
+      )}
+
+
+      {selectedCourse && (
+        <div className="bg-white shadow-md rounded-lg p-6 mt-8">
+          <div className="flex justify-between items-center">
+            <h3 className="text-2xl font-semibold text-blue-700">
+              {selectedCourse.Name}
+            </h3>
+            <button
+              className="text-gray-500 hover:text-gray-800"
+              onClick={() => setSelectedCourse(null)}
+            >
+              ✖
+            </button>
+          </div>
+          <div className="mt-4">
+            <h4 className="text-lg font-semibold text-gray-800">Reviews:</h4>
+            {selectedCourse?.rating?.length > 0 ? (
+              <ul className="space-y-4 mt-2">
+                {selectedCourse.rating.map((review) => (
+                  <motion.li
+                    key={review.id}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.3 }}
+                    className="border-b pb-4 last:border-none"
+                  >
+                    <div className="flex items-start">
+                      <div className="flex-shrink-0 mr-3">
+                        {Array.from({ length: 5 }, (_, i) => (
+                          <span key={i} className={`text-lg ${i < review.star ? "text-yellow-500" : "text-gray-300"}`}>
+                            ★
+                          </span>
+                        ))}
+                      </div>
+                      <div>
+                        <p className="text-gray-700 text-sm sm:text-base italic">"{review.comment}"</p>
+                      </div>
+                    </div>
+                  </motion.li>
+                ))}
+              </ul>
+            ) : (
+              <p className="text-gray-500">No reviews yet.</p>
+            )}
+          </div>
+        </div>
+      )}
+
     </div>
   );
 };
