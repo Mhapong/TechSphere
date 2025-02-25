@@ -149,7 +149,7 @@ export default function ViewCourse() {
                   className="mx-1"
                 />
               </div>
-              <span className="mr-2">{averageRating} ดาว</span>
+              <span className="mr-2">{averageRating.toFixed(1)} ดาว</span>
               <span className="text-gray-400">
                 ({course?.rating.length || "ยังไม่มีรีวิว"} รีวิว)
               </span>
@@ -397,7 +397,7 @@ export default function ViewCourse() {
                         />
                       </div>
                       <span className="text-sm text-gray-600">
-                        คะแนนวิทยากร 4.7
+                        คะแนนวิทยากร {averageLecturerRating.toFixed(1)}
                       </span>
                     </div>
                   </div>

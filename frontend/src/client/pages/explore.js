@@ -118,7 +118,23 @@ const Explore = () => {
 
       <div className=" container mx-auto px-4 py-6">
         <div className="flex flex-col lg:flex-row gap-8">
-          <aside className="w-full lg:w-1/4 space-y-6 bg-white p-6 rounded-lg shadow-md">
+          <motion.aside
+            initial={{
+              opacity: 0,
+              y: -20,
+            }}
+            exit={{
+              opacity: 0,
+            }}
+            whileInView={{
+              opacity: 1,
+              y: 0,
+            }}
+            transition={{
+              duration: 0.5,
+            }}
+            className="lg:sticky md:static sm:static p-5 bg-white rounded-lg shadow-lg h-fit lg:w-1/4 top-20 overflow-visible"
+          >
             <h2 className="text-2xl font-bold mb-4">ค้นหาแบบละเอียด</h2>
             <div>
               <h3 className="text-lg font-semibold mb-2">หมวดหมู่คอร์ส</h3>
@@ -216,7 +232,7 @@ const Explore = () => {
             >
               รีเซ็ตค่าที่ใช้
             </button>
-          </aside>
+          </motion.aside>
 
           <main className="w-full lg:w-3/4">
             <div className="mb-6">
