@@ -287,11 +287,10 @@ const Chat = ({ open, close }) => {
                             <ArrowBackIosNewOutlinedIcon />
                           </button>
 
-                          {/* ข้อความชื่อแชท */}
-                          <span>แชทกับ </span>
-                          <span className="font-medium text-gray-800 flex items-center">
-                            {`${selectedUser.first_name} ${selectedUser.last_name}`}
-                          </span>
+                          <div className="flex flex-wrap items-center gap-1 text-base sm:text-xl">
+                            <span className="text-gray-600">แชทกับ</span>
+                            <span className="font-medium text-gray-800">{`${selectedUser.first_name} ${selectedUser.last_name}`}</span>
+                          </div>
                         </h2>
                       </div>
                       <div className="p-4 bg-gray-100 h-[calc(75vh-75px)] overflow-y-auto rounded-lg">
