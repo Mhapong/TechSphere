@@ -15,6 +15,7 @@ import networkpic from "../components/network.png";
 import gamepic from "../components/game.png";
 import morepic from "../components/more.png";
 import no_image from "../components/No_Image_Available.jpeg";
+import { Rating } from "@mui/material";
 
 const categories = [
   { name: "Web Develop", img: webpic, path: "Web Develop" },
@@ -129,8 +130,22 @@ export default function Home() {
           <h2 className="text-3xl font-bold text-center mb-12">
             คอร์สเรียนยอดนิยม
           </h2>
+
           {courseData.length === 0 ? (
-            <div className="text-center py-12">
+            <div className="flex flex-col items-center justify-center h-64 bg-white rounded-lg shadow-md">
+              <svg
+                className="w-16 h-16 text-gray-400 mb-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
               <h3 className="text-2xl font-bold text-gray-600">
                 ❌ ไม่พบคอร์สที่ต้องการ
               </h3>
@@ -192,20 +207,34 @@ export default function Home() {
                             }`
                           : "ไม่ระบุ"}
                       </p>
-                      {/* <p className="text-gray-500">
-                                  📅 เวลาหมดอายุ{" "}
-                                  {new Date(course.start_date).toLocaleDateString()} ถึง{" "}
-                                  {new Date(course.end_date).toLocaleDateString()}
-                                </p> */}
-                      <span className="text-amber-700 mt-2">
-                        ⭐{" "}
-                        {course.rating && course.rating === 0
-                          ? "ยังไม่มีรีวิว"
-                          : `(${course.rating?.length} รีวิว)`}{" "}
-                      </span>
-                      <span className="text-end ml-2">
-                        ขายแล้ว: {course.user_owner?.length}
-                      </span>
+                      <div className=" flex justify-between ">
+                        <span className="text-amber-900 flex items-center gap-0.5">
+                          {course.rating.length === 0
+                            ? 0
+                            : (
+                                course.rating.reduce(
+                                  (sum, item) => sum + (item?.star || 0),
+                                  0
+                                ) / course.rating.length
+                              ).toFixed(1)}
+                          <Rating
+                            value={
+                              course.rating.length === 0
+                                ? 0
+                                : course.rating.reduce(
+                                    (sum, item) => sum + (item?.star || 0),
+                                    0
+                                  ) / course.rating.length
+                            }
+                            size="small"
+                            precision={0.5}
+                            readOnly
+                          />
+                          ({course.rating.length})
+                        </span>
+
+                        <span>ขายแล้ว: {course.user_owner?.length}</span>
+                      </div>
                     </div>
                     <div className="p-4 border-t flex  justify-end">
                       <span className="text-xl font-bold text-primary">
@@ -217,6 +246,7 @@ export default function Home() {
               ))}
             </motion.div>
           )}
+
           <div className="text-center mt-12">
             <button
               className="bg-blue-600 text-white font-bold py-3 px-8 rounded-full hover:bg-blue-700 transition duration-300"

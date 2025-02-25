@@ -218,7 +218,7 @@ export function CourseView() {
                                       0
                                     ) / items.rating.length
                               }
-                              readonly
+                              readOnly
                             />
                             <span className="text-sm mt-2 text-amber-700 whitespace-nowrap">
                               {items.rating && items.rating.length === 0
