@@ -59,9 +59,8 @@ const LecturerAll = () => {
 
   return (
     <section className="bg-white dark:bg-gray-900">
-      {/* <div className="py-8 px-4 mx-auto max-w-screen-xl lg:py-16 lg:px-6"> */}
-      {/* <div className="w-full max-w-[1200px] mx-auto mt-11 p-8 sm:w-[90%] md:w-[80%] lg:w-[1200px]  ml-96"> */}
       <div className="w-full max-w-[1200px] mx-auto mt-11 p-8 sm:w-[100%] sm:flexmd:w-[80%] lg:w-[1200px] lg:ml-20 xl:ml-96">
+        {/* <div className="w-full lg:w-[1000px] mt-11 lg:ml-96 pt-16 max-w-7xl p-4"> */}
         <div className="mx-auto max-w-screen-sm text-center mb-8 lg:mb-16">
           <h2 className="mb-4 text-4xl tracking-tight font-extrabold text-gray-900 dark:text-white">
             อาจารย์ผู้สอน
@@ -97,44 +96,54 @@ const LecturerAll = () => {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               exit={{ opacity: 0 }}
-              className="inline-block mx-6 h-64"
+              className="inline-block w-full sm:w-auto mx-2 sm:mx-6 my-4 sm:my-0" // Adjusted margins and width for responsiveness
             >
               <div
-                className="items-center bg-gray-50 rounded-lg shadow sm:flex dark:bg-gray-800 dark:border-gray-700 
-               hover:-translate-y-2 transition-all duration-200 delay-75 hover:drop-shadow-5xl hover:shadow-blue-900"
+                className="flex flex-col sm:flex-row items-center bg-gray-50 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 
+    hover:-translate-y-2 transition-all duration-200 delay-75 hover:drop-shadow-5xl hover:shadow-blue-900"
               >
-                <button
-                  className="absolute top-2 right-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-3 rounded"
-                  onClick={() => Navigate(`/edit-profile/${value.id}`)}
+                {/* Buttons for Edit and Delete */}
+                <div className="absolute top-2 right-2 flex gap-2">
+                  <button
+                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-3 rounded text-sm sm:text-base"
+                    onClick={() => Navigate(`/edit-profile/${value.id}`)}
+                  >
+                    <Edit /> Edit
+                  </button>
+                  <button
+                    className="bg-red-800 hover:bg-red-900 text-white font-bold py-1 px-3 rounded text-sm sm:text-base"
+                    onClick={() => {
+                      setOpen(true);
+                      setDeleteLecturer(value.documentId);
+                    }}
+                  >
+                    <Delete className="w-4 h-4 sm:w-5 sm:h-5" />
+                    <span className="ml-1 sm:ml-2 text-sm">Delete</span>
+                  </button>
+                </div>
+
+                {/* Profile Picture */}
+                <a
+                  href="#"
+                  className="w-full sm:w-52 h-52 flex justify-center sm:justify-start"
                 >
-                  <Edit /> Edit
-                </button>
-                <button
-                  className="absolute top-2 right-24 bg-red-800 hover:bg-red-900 text-white font-bold py-1 px-3 rounded"
-                  onClick={() => {
-                    setOpen(true);
-                    setDeleteLecturer(value.documentId);
-                  }}
-                >
-                  <Delete className="w-5 h-5" />
-                  <span className="ml-2 text-sm">Delete</span>
-                </button>
-                <a href="#">
                   {value.profile_picture ? (
                     <img
-                      className="w-52 h-52 rounded-lg sm:rounded-none sm:rounded-l-lg"
+                      className="w-full h-full sm:w-52 sm:h-52 rounded-lg sm:rounded-none sm:rounded-l-lg object-cover"
                       src={`${conf.apiUrl}${value.profile_picture[0].url}`}
                       alt={`${value.username} Avatar`}
                     />
                   ) : (
                     <img
-                      className="w-52 h-52 rounded-lg sm:rounded-none sm:rounded-l-lg"
+                      className="w-40 h-40 sm:w-52 sm:h-52 rounded-lg sm:rounded-none sm:rounded-l-lg object-cover"
                       src={usericon}
                       alt={`${value.username} Avatar`}
                     />
                   )}
                 </a>
-                <div className="p-5">
+
+                {/* Content Section */}
+                <div className="p-4 sm:p-5 w-full">
                   <h3 className="text-xl font-bold tracking-tight text-gray-900 dark:text-white">
                     <a href="#">
                       {value.first_name} {value.last_name}
@@ -143,10 +152,10 @@ const LecturerAll = () => {
                   <span className="text-gray-500 dark:text-gray-400">
                     {value.role?.name || "No Role"}
                   </span>
-                  <p className="mb-4 font-light text-gray-500 dark:text-gray-400">
+                  <p className="mb-2 sm:mb-4 font-light text-gray-500 dark:text-gray-400">
                     จำนวนคอร์สที่มี : {value.created_courses?.length || 0}
                   </p>
-                  <p className="text-2xl lg:text-sm flex items-center justify-center lg:justify-start">
+                  <p className="text-sm sm:text-base flex items-center justify-center sm:justify-start">
                     <span
                       className={`inline-block pt-2 px-3 py-1 text-sm font-semibold rounded-full ${
                         value.background
@@ -160,6 +169,8 @@ const LecturerAll = () => {
                         : "ยังไม่ใส่ประวัติอาจารย์"}
                     </span>
                   </p>
+
+                  {/* Rating Section */}
                   <div className="flex items-center mt-2">
                     <div className="flex items-center gap-2 font-bold text-blue-gray-500">
                       <span>{4}</span>

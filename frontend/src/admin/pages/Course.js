@@ -114,7 +114,8 @@ export function CourseView() {
     fetchCourse();
   }, []);
   return (
-    <div className="w-[1200px] mx-96 mt-11 p-8 ml-80 px-4 max-w-screen-2xl lg:px-12">
+    // <div className="w-[1200px] mx-96 mt-11 p-8 px-4 max-w-screen-2xl lg:px-12">
+    <div className="w-full lg:w-[1200px] mt-11 lg:ml-96 max-w-7xl p-4">
       <div className="mx-auto max-w-screen-sm md:max-w-screen-md lg:max-w-screen-lg xl:max-w-screen-xl text-center mb-8 lg:mb-16">
         <h2 className="mb-4 text-4xl tracking-tight font-extrabold text-gray-900 dark:text-white">
           คอร์สเรียนทั้งหมด
@@ -122,11 +123,8 @@ export function CourseView() {
         <p className="font-light text-gray-500 lg:mb-16 sm:text-xl dark:text-gray-400">
           คอร์สเรียนทั้งหมดที่มีใน TechSphere ทั้งหมด {Course.length} คอร์ส
         </p>
-        <div className="flex justify-center items-center space-x-3 bg-white p-4 rounded-lg shadow-md border border-gray-200">
-          <label
-            htmlFor="search"
-            className="text-gray-700 text-lg font-medium w-1/12"
-          >
+        <div className="flex flex-col sm:flex-row justify-center items-center space-y-3 sm:space-y-0 sm:space-x-3 bg-white p-4 rounded-lg shadow-md border border-gray-200">
+          <label htmlFor="search" className="text-gray-700 text-lg font-medium">
             ค้นหา :
           </label>
           <input
@@ -134,7 +132,7 @@ export function CourseView() {
             title="ค้นหา"
             type="text"
             placeholder="ค้นหาโดยชื่อคอร์สเรียน"
-            className="flex-none w-8/12 bg-gray-100 focus:bg-white h-10  border border-gray-300 rounded-lg px-4 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+            className="flex-none lg:w-8/12 w-full bg-gray-100 focus:bg-white h-10  border border-gray-300 rounded-lg px-4 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
             value={queryCourse}
             onChange={(e) => setQueryCourse(e.target.value)}
           />
@@ -147,14 +145,14 @@ export function CourseView() {
               setSelectedCategory(selectedOption.value);
             }}
             placeholder="เลือกประเภท"
-            className="text-gray-700 flex-auto w-3/12 z-20"
+            className="text-gray-700 flex-auto lg:w-3/12 z-20 w-full"
             classNamePrefix="custom-select"
           />
         </div>
       </div>
       <div>
         {filteredCourse.length > 0 ? (
-          <div className="h-full w-full my-7 grid grid-cols-3 gap-10 items-stretch place-content-center scrollbar-hide">
+          <div className="h-full w-full my-7 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 lg:gap-10 items-stretch scrollbar-hide">
             {filteredCourse.map((items) => (
               <motion.div
                 key={items.id}
