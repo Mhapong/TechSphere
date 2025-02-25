@@ -43,15 +43,14 @@ const AboutPage = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6 }}
-                className="relative w-full h-screen bg-gradient-to-r from-blue-600 to-purple-600 flex items-center justify-center mb-12"
+                className="relative w-full h-[80vh] sm:h-[70vh] md:h-[60vh] lg:h-[50vh] xl:h-[40vh] bg-gradient-to-r from-blue-600 to-teal-300 flex items-center justify-center mb-12"
             >
                 <img
-                    className="object-cover object-center w-full h-full opacity-70"
+                    className="object-cover object-center w-auto h-auto max-w-[90%] sm:max-w-[80%] md:max-w-[70%] lg:max-w-[60%] xl:max-w-[50%] max-h-full opacity-70"
                     src={techspherepic || "/placeholder.svg"}
                     alt="Techsphere"
                 />
             </motion.div>
-
 
             {/* Title Section */}
             <motion.div
@@ -60,7 +59,7 @@ const AboutPage = () => {
                 transition={{ duration: 0.6, delay: 0.2 }}
                 className="text-center space-y-4 mb-12"
             >
-                <h1 className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600">
+                <h1 className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600 ">
                     ศูนย์กลางการเรียนรู้ด้านเทคโนโลยี
                 </h1>
                 <p className="text-3xl font-semibold text-blue-600 dark:text-blue-400">TechSphere</p>
@@ -74,22 +73,44 @@ const AboutPage = () => {
                 className="max-w-4xl mx-8 p-8 text-xl md:text-2xl leading-relaxed text-center text-gray-700 dark:text-gray-300 
           bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 mb-12"
             >
-                <p className="italic font-medium">"TechSphere คือองค์กรที่มุ่งเน้นการเสริมสร้างความรู้และทักษะด้านเทคโนโลยีสมัยใหม่..."</p>
+                <p className="italic font-medium text-xl mb-12">"TechSphere คือองค์กรที่มุ่งเน้นการเสริมสร้างความรู้และทักษะด้านเทคโนโลยีสมัยใหม่ 
+                    ผ่านคอร์สเรียนออนไลน์ที่ออกแบบมาเพื่อให้ผู้เรียนสามารถพัฒนาทักษะได้ทุกที่ทุกเวลา พร้อมเนื้อหาที่อัปเดตตามเทรนด์เทคโนโลยีล่าสุด  
+                    โดยมีหลักสูตรที่ครอบคลุมตั้งแต่พื้นฐานไปจนถึงระดับสูง สอนโดยผู้เชี่ยวชาญในอุตสาหกรรม เพื่อให้คุณนำความรู้ไปต่อยอดในการทำงานและสร้างโอกาสใหม่ๆ ในสายอาชีพของคุณ"</p>
+
+                    <h1 className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600 mb-6">
+                Innovative
+                </h1>
+                <p className="text-xl font-semibold text-blue-600 dark:text-blue-400 mb-6">นวัตกรรมที่ล้ำสมัยในการเรียนรู้เทคโนโลยี</p>
+                <h1 className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600 mb-6">
+                Empowering
+                </h1>
+                <p className="text-xl font-semibold text-blue-600 dark:text-blue-400 mb-6">ส่งเสริมและพัฒนาทักษะให้ทุกคนก้าวสู่ยุคดิจิทัล</p>
+                <h1 className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600 mb-6">
+                Future-Ready
+                </h1>
+                <p className="text-xl font-semibold text-blue-600 dark:text-blue-400 mb-6">เตรียมความพร้อมให้คุณรับมือกับอนาคตของเทคโนโลยี</p>
             </motion.blockquote>
 
-            {/* Definition Image */}
-            <motion.div
-                initial={{ opacity: 0 }}
-                whileInView={{ opacity: 1 }}
-                transition={{ duration: 0.8 }}
-                className="w-screen overflow-hidden mb-16"
+            {/* Definition Part */}
+            {/* <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+                className="text-center space-y-4 mb-12"
             >
-                <img
-                    className="w-full h-auto object-cover transform hover:scale-105 transition-transform duration-700"
-                    src={definitionpic || "/placeholder.svg"}
-                    alt="definition"
-                />
-            </motion.div>
+                <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600 ">
+                Innovative
+                </h1>
+                <p className="text-xl font-semibold text-blue-600 dark:text-blue-400">นวัตกรรมที่ล้ำสมัยในการเรียนรู้เทคโนโลยี</p>
+                <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600 ">
+                Empowering
+                </h1>
+                <p className="text-xl font-semibold text-blue-600 dark:text-blue-400">ส่งเสริมและพัฒนาทักษะให้ทุกคนก้าวสู่ยุคดิจิทัล</p>
+                <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600 ">
+                Future-Ready
+                </h1>
+                <p className="text-xl font-semibold text-blue-600 dark:text-blue-400">เตรียมความพร้อมให้คุณรับมือกับอนาคตของเทคโนโลยี</p>
+            </motion.div> */}
 
             {/* Lecturers Section */}
             <section className="w-full py-16 bg-gradient-to-br from-blue-50 to-white dark:from-gray-800 dark:to-gray-900">
@@ -104,7 +125,8 @@ const AboutPage = () => {
                             คณาจารย์ผู้เชี่ยวชาญ
                         </h2>
                         <p className="text-blue-800 dark:text-blue-200 max-w-3xl mx-auto text-lg">
-                            เราพร้อมนำเสนอคอร์สเรียนที่ทันสมัย จากเหล่าอาจารย์ผู้มีความเชี่ยวชาญ...
+                        เราพร้อมนำเสนอคอร์สเรียนที่ทันสมัย จากเหล่าอาจารย์ผู้มีความเชี่ยวชาญหลากหลายด้านและมีประสบการณ์
+                         เพื่อช่วยให้ผู้เรียนเข้าใจเนื้อหาได้อย่างลึกซึ้ง ผ่านการสอนที่เป็นระบบ และสามารถนำไปประยุกต์ใช้ได้จริง...
                         </p>
                     </motion.div>
 
@@ -171,7 +193,7 @@ const AboutPage = () => {
                     >
                         <a
                             href="#"
-                            className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gradient-to-r from-blue-600 to-purple-600 text-white 
+                            className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gradient-to-r from-blue-500 to-purple-400 text-white 
                 dark:bg-blue-900/30 dark:text-blue-400 mb-4"
                         >
                             <svg
@@ -191,7 +213,7 @@ const AboutPage = () => {
                         <p className="text-lg text-gray-600 dark:text-gray-400 mb-6">เพิ่มพูนทักษะดิจิทัลของคุณ และก้าวสู่อนาคตอย่างมั่นใจ</p>
                         <a
                             href="/explore"
-                            className="inline-flex items-center px-6 py-3 rounded-lg bg-gradient-to-r from-blue-600 to-purple-600 hover:bg-blue-700 
+                            className="inline-flex items-center px-6 py-3 rounded-lg bg-gradient-to-r from-blue-500 to-purple-400 hover:bg-blue-700 
                 text-white font-medium transition-colors duration-300"
                         >
                             เลือกคอร์สเรียน
@@ -206,90 +228,6 @@ const AboutPage = () => {
                             </svg>
                         </a>
                     </motion.div>
-
-                    <div className="grid md:grid-cols-2 gap-8">
-                        {/* Design Card */}
-                        <motion.div
-                            initial={{ opacity: 0, x: -20 }}
-                            whileInView={{ opacity: 1, x: 0 }}
-                            transition={{ duration: 0.6 }}
-                            className="bg-gradient-to-br from-gray-50 to-white dark:from-gray-800 dark:to-gray-900 
-                border border-gray-200 dark:border-gray-700 rounded-xl p-8 shadow-lg 
-                hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
-                        >
-                            <div className="flex items-center mb-4">
-                                <span className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-green-100 dark:bg-green-900/30">
-                                    <svg
-                                        className="w-6 h-6 text-green-600 dark:text-green-400"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        viewBox="0 0 24 24"
-                                    >
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth="2"
-                                            d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-                                        />
-                                    </svg>
-                                </span>
-                                <h3 className="ml-3 text-xl font-semibold text-gray-900 dark:text-white">Design</h3>
-                            </div>
-                            <p className="text-gray-600 dark:text-gray-400 mb-4">
-                                เรียนรู้การออกแบบที่ทันสมัย พร้อมเทคนิคการสร้างประสบการณ์ผู้ใช้ที่ดีที่สุด
-                            </p>
-                            <a
-                                href="#"
-                                className="inline-flex items-center text-blue-600 hover:text-blue-700 dark:text-blue-400 
-                  dark:hover:text-blue-300 font-medium transition-colors duration-300"
-                            >
-                                อ่านเพิ่มเติม
-                                <svg className="w-4 h-4 ml-2" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
-                                </svg>
-                            </a>
-                        </motion.div>
-
-                        {/* Code Card */}
-                        <motion.div
-                            initial={{ opacity: 0, x: 20 }}
-                            whileInView={{ opacity: 1, x: 0 }}
-                            transition={{ duration: 0.6 }}
-                            className="bg-gradient-to-br from-gray-50 to-white dark:from-gray-800 dark:to-gray-900 
-                border border-gray-200 dark:border-gray-700 rounded-xl p-8 shadow-lg 
-                hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
-                        >
-                            <div className="flex items-center mb-4">
-                                <span className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-purple-100 dark:bg-purple-900/30">
-                                    <svg
-                                        className="w-6 h-6 text-purple-600 dark:text-purple-400"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        viewBox="0 0 24 24"
-                                    >
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth="2"
-                                            d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"
-                                        />
-                                    </svg>
-                                </span>
-                                <h3 className="ml-3 text-xl font-semibold text-gray-900 dark:text-white">Code</h3>
-                            </div>
-                            <p className="text-gray-600 dark:text-gray-400 mb-4">เรียนรู้การเขียนโค้ดและพัฒนาแอปพลิเคชันด้วยเทคโนโลยีล่าสุด</p>
-                            <a
-                                href="#"
-                                className="inline-flex items-center text-blue-600 hover:text-blue-700 dark:text-blue-400 
-                  dark:hover:text-blue-300 font-medium transition-colors duration-300"
-                            >
-                                อ่านเพิ่มเติม
-                                <svg className="w-4 h-4 ml-2" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
-                                </svg>
-                            </a>
-                        </motion.div>
-                    </div>
                 </div>
             </section>
         </div>
