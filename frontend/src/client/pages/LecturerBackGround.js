@@ -1,9 +1,10 @@
 "use client"
 
-import { useContext, useEffect, useState, useCallback } from "react"
+import { useContext, useEffect, useState, useCallback, useRef } from "react"
 import { AuthContext } from "../../context/Auth.context"
 import ax from "../../conf/ax"
 import { useParams } from "react-router-dom"
+import { motion } from "framer-motion"
 
 export default function LecturerProfile() {
     const { state } = useContext(AuthContext)
@@ -11,6 +12,8 @@ export default function LecturerProfile() {
     const BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:1337"
     const [lecturer, setLecturer] = useState(null)
     const [loading, setLoading] = useState(true)
+
+    const containerRef = useRef(null)
 
     const fetchLecturer = useCallback(async () => {
         if (!name || !name.includes("-")) return
@@ -25,7 +28,7 @@ export default function LecturerProfile() {
                 params: {
                     "filters[first_name][$eq]": firstName,
                     "filters[last_name][$eq]": lastName,
-                    populate: ["created_courses", "rating", "profile_picture"],
+                    populate: ["created_courses.image", "rating", "profile_picture"],
                 },
             })
 
@@ -48,6 +51,12 @@ export default function LecturerProfile() {
         console.log("useParams name:", name)
     }, [fetchLecturer, name])
 
+    useEffect(() => {
+        if (containerRef.current) {
+            window.scrollTo({ top: 0, behavior: "smooth" })
+        }
+    }, [])
+
     if (loading)
         return (
             <div className="flex justify-center items-center h-screen">
@@ -57,7 +66,13 @@ export default function LecturerProfile() {
     if (!lecturer) return <p className="text-center text-red-500 p-4 text-xl">Lecturer not found.</p>
 
     return (
-        <div className="max-w-4xl mx-auto py-6 sm:py-10 px-4 sm:px-6 lg:px-8">
+        <motion.div
+            ref={containerRef}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="max-w-4xl mx-auto py-6 sm:py-10 px-4 sm:px-6 lg:px-8"
+        >
             <div className="bg-white shadow-lg rounded-lg overflow-hidden">
                 <div className="p-6 sm:p-8">
                     {/* รูปโปรไฟล์ */}
@@ -92,17 +107,29 @@ export default function LecturerProfile() {
                         {lecturer?.created_courses?.length > 0 ? (
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 {lecturer.created_courses.map((course) => (
-                                    <div
+                                    <motion.div
                                         key={course.id}
-                                        className="bg-white shadow-lg rounded-lg overflow-hidden hover:shadow-xl transition-shadow duration-300"
+                                        initial={{ opacity: 0, scale: 0.9 }}
+                                        animate={{ opacity: 1, scale: 1 }}
+                                        whileHover={{ scale: 1.05, transition: { duration: 0.2 } }}
+                                        transition={{ duration: 0.3 }}
+                                        className="bg-white shadow-lg rounded-lg overflow-hidden hover:shadow-xl transition-all duration-300"
                                     >
                                         {/* Course Image */}
                                         <div className="w-full h-48 bg-gray-200">
-                                            <img
-                                                src="/placeholder.svg?height=192&width=384"
-                                                alt={course?.Name}
-                                                className="w-full h-full object-cover"
-                                            />
+                                            {course.image && course.image.length > 0 ? (
+                                                <img
+                                                    src={`${BASE_URL}${course.image[0].url}`}
+                                                    alt={course?.Name}
+                                                    className="w-full h-full object-cover"
+                                                />
+                                            ) : (
+                                                <img
+                                                    src="/placeholder.svg?height=192&width=384"
+                                                    alt={course?.Name}
+                                                    className="w-full h-full object-cover"
+                                                />
+                                            )}
                                         </div>
 
                                         {/* Course Content */}
@@ -120,11 +147,6 @@ export default function LecturerProfile() {
                                                     <span className="mr-2">👨‍🏫</span>
                                                     ผู้สอน: {lecturer.first_name} {lecturer.last_name}
                                                 </p>
-                                                <p className="text-sm flex items-center text-gray-600">
-                                                    <span className="mr-2">⭐</span>
-                                                    <span className="text-orange-400">({lecturer.rating?.length || 0} reviews)</span>
-                                                    <span className="ml-2">ขายแล้ว: 1</span>
-                                                </p>
                                             </div>
 
                                             {/* Price */}
@@ -132,7 +154,7 @@ export default function LecturerProfile() {
                                                 <p className="text-xl font-bold text-gray-800">{course?.Price?.toLocaleString()} ฿</p>
                                             </div>
                                         </div>
-                                    </div>
+                                    </motion.div>
                                 ))}
                             </div>
                         ) : (
@@ -147,16 +169,26 @@ export default function LecturerProfile() {
                         </h3>
                         {lecturer?.rating?.length > 0 ? (
                             <div>
-                                <p className="text-yellow-500 font-semibold text-lg sm:text-xl flex items-center mb-4">
-                                    <span className="text-2xl mr-2">⭐</span>
-                                    {(lecturer.rating.reduce((acc, review) => acc + review.star, 0) / lecturer.rating.length).toFixed(1)}
+                                <div className="flex items-center mb-4">
+                                    <span className="text-2xl text-yellow-500 mr-2">⭐</span>
+                                    <span className="text-yellow-500 font-semibold text-lg sm:text-xl">
+                                        {(lecturer.rating.reduce((acc, review) => acc + review.star, 0) / lecturer.rating.length).toFixed(
+                                            1,
+                                        )}
+                                    </span>
                                     <span className="text-gray-500 text-base ml-2">/ 5</span>
-                                </p>
+                                </div>
                                 <ul className="space-y-4">
                                     {lecturer.rating.map((review) => {
                                         const stars = review?.star ?? 0
                                         return (
-                                            <li key={review.id} className="border-b pb-4 last:border-none">
+                                            <motion.li
+                                                key={review.id}
+                                                initial={{ opacity: 0, x: -20 }}
+                                                animate={{ opacity: 1, x: 0 }}
+                                                transition={{ duration: 0.3 }}
+                                                className="border-b pb-4 last:border-none"
+                                            >
                                                 <div className="flex items-start">
                                                     <div className="flex-shrink-0 mr-3">
                                                         {Array.from({ length: 5 }, (_, i) => (
@@ -169,7 +201,7 @@ export default function LecturerProfile() {
                                                         <p className="text-gray-700 text-sm sm:text-base italic">"{review?.comment}"</p>
                                                     </div>
                                                 </div>
-                                            </li>
+                                            </motion.li>
                                         )
                                     })}
                                 </ul>
@@ -180,7 +212,7 @@ export default function LecturerProfile() {
                     </div>
                 </div>
             </div>
-        </div>
+        </motion.div>
     )
 }
 
