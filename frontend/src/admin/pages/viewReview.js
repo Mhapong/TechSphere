@@ -12,6 +12,13 @@ const ReviewAdmin = () => {
   const [error, setError] = useState(null);
   const [selectedLecturer, setSelectedLecturer] = useState(null);
   const [selectedCourse, setSelectedCourse] = useState(null);
+  // state สำหรับฟิลเตอร์รีวิวคอร์ส
+  const [selectedRating, setSelectedRating] = useState(null);
+  const [showFilterOptions, setShowFilterOptions] = useState(false);
+  // state สำหรับฟิลเตอร์รีวิวอาจารย์
+  const [lecturerSelectedRating, setLecturerSelectedRating] = useState(null);
+  const [lecturerShowFilterOptions, setLecturerShowFilterOptions] = useState(false);
+
   const BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:1337";
 
   const fetchReview = useCallback(async () => {
@@ -65,6 +72,26 @@ const ReviewAdmin = () => {
     }
   }, [BASE_URL]);
 
+  // ฟังก์ชันสำหรับฟิลเตอร์รีวิวคอร์ส
+  const filterReviews = (rating) => {
+    if (!selectedCourse) return [];
+    if (rating === null) return selectedCourse.rating;
+    return selectedCourse.rating.filter((review) => review.star === rating);
+  };
+
+  const filteredReviews = selectedCourse ? filterReviews(selectedRating) : [];
+
+  // ฟังก์ชันสำหรับฟิลเตอร์รีวิวอาจารย์
+  const filterLecturerReviews = (rating) => {
+    if (!selectedLecturer) return [];
+    if (rating === null) return selectedLecturer.rating;
+    return selectedLecturer.rating.filter((review) => review.star === rating);
+  };
+
+  const filteredLecturerReviews = selectedLecturer
+    ? filterLecturerReviews(lecturerSelectedRating)
+    : [];
+
   useEffect(() => {
     fetchReview();
     fetchCourseReview();
@@ -72,8 +99,7 @@ const ReviewAdmin = () => {
 
   return (
     <div className="container w-full lg:w-[1000px] mt-11 lg:ml-96 max-w-7xl p-4">
-
-      {/* รีวิวของอาจารย์*/}
+      {/* รีวิวของอาจารย์ */}
       <div className="mx-auto text-center mb-8 lg:mb-16">
         <h2 className="mb-4 text-4xl tracking-tight font-extrabold text-gray-900 dark:text-white">
           รีวิวทั้งหมดของอาจารย์
@@ -93,28 +119,46 @@ const ReviewAdmin = () => {
               ? `${BASE_URL}${lecturer.profile_picture[0].url}`
               : "/default-profile.png";
 
-            // คำนวณคะแนนเฉลี่ย
+            // คำนวณคะแนนเฉลี่ยของอาจารย์
             const averageRating =
-              lecturer.rating.length > 0
-                ? (lecturer.rating.reduce((acc, review) => acc + review.star, 0) / lecturer.rating.length).toFixed(1)
+              lecturer.rating && lecturer.rating.length > 0
+                ? (
+                    lecturer.rating.reduce((acc, review) => acc + review.star, 0) /
+                    lecturer.rating.length
+                  ).toFixed(1)
                 : "0.0";
 
             return (
               <motion.div
                 key={lecturer.id}
                 className="flex items-center p-6 border rounded-lg shadow-lg cursor-pointer hover:bg-gray-100 transition"
-                onClick={() => setSelectedLecturer(selectedLecturer?.id === lecturer.id ? null : lecturer)}
+                onClick={() => {
+                  // เมื่อเลือกอาจารย์ใหม่ ให้รีเซ็ตฟิลเตอร์ของรีวิวอาจารย์
+                  setSelectedLecturer(
+                    selectedLecturer?.id === lecturer.id ? null : lecturer
+                  );
+                  setLecturerSelectedRating(null);
+                  setLecturerShowFilterOptions(false);
+                }}
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.3 }}
               >
-                <img src={profileImage} alt={`${lecturer.first_name} ${lecturer.last_name}`} className="w-20 h-20 rounded-full object-cover mr-6" />
+                <img
+                  src={profileImage}
+                  alt={`${lecturer.first_name} ${lecturer.last_name}`}
+                  className="w-20 h-20 rounded-full object-cover mr-6"
+                />
                 <div>
-                  <h3 className="text-xl font-semibold text-blue-700">{lecturer.first_name} {lecturer.last_name}</h3>
+                  <h3 className="text-xl font-semibold text-blue-700">
+                    {lecturer.first_name} {lecturer.last_name}
+                  </h3>
                   {/* แสดงคะแนนเฉลี่ย */}
                   <div className="flex items-center mt-2">
                     <span className="text-2xl text-yellow-500 mr-2">⭐</span>
-                    <span className="text-yellow-500 font-semibold text-lg sm:text-xl">{averageRating}</span>
+                    <span className="text-yellow-500 font-semibold text-lg sm:text-xl">
+                      {averageRating}
+                    </span>
                     <span className="text-gray-500 text-base ml-2">/ 5</span>
                   </div>
                 </div>
@@ -124,7 +168,7 @@ const ReviewAdmin = () => {
         </div>
       )}
 
-
+      {/* ส่วนรายละเอียดรีวิวอาจารย์ (รวมฟิลเตอร์) */}
       {selectedLecturer && (
         <div className="bg-white shadow-md rounded-lg p-6 mt-8">
           <div className="flex justify-between items-center">
@@ -133,16 +177,74 @@ const ReviewAdmin = () => {
             </h3>
             <button
               className="text-gray-500 hover:text-gray-800"
-              onClick={() => setSelectedLecturer(null)}
+              onClick={() => {
+                setSelectedLecturer(null);
+                setLecturerShowFilterOptions(false);
+                setLecturerSelectedRating(null);
+              }}
             >
               ✖
             </button>
           </div>
           <div className="mt-4">
             <h4 className="text-lg font-semibold text-gray-800">Reviews:</h4>
-            {selectedLecturer?.rating?.length > 0 ? (
+
+            {/* ฟิลเตอร์สำหรับรีวิวอาจารย์ */}
+            <div className="mt-2">
+              {!lecturerShowFilterOptions ? (
+                <button
+                  className="px-4 py-2 text-sm rounded bg-green-500 text-white"
+                  onClick={() => setLecturerShowFilterOptions(true)}
+                >
+                  แสดงตัวเลือกฟิลเตอร์
+                </button>
+              ) : (
+                <div>
+                  <div className="mb-2">
+                    <button
+                      className="px-4 py-2 text-sm rounded bg-red-500 text-white"
+                      onClick={() => {
+                        setLecturerShowFilterOptions(false);
+                        setLecturerSelectedRating(null);
+                      }}
+                    >
+                      ปิดฟิลเตอร์
+                    </button>
+                  </div>
+                  <div>
+                    {[5, 4, 3, 2, 1].map((star) => (
+                      <button
+                        key={star}
+                        className={`px-4 py-2 text-sm rounded mr-2 border-2 transition-all 
+                          ${
+                            lecturerSelectedRating === star
+                              ? "bg-green-600 text-white border-green-700 shadow-lg scale-105"
+                              : "bg-green-500 text-white border-transparent"
+                          }`}
+                        onClick={() => setLecturerSelectedRating(star)}
+                      >
+                        {star} ดาว
+                      </button>
+                    ))}
+                    <button
+                      className={`px-4 py-2 text-sm rounded border-2 transition-all
+                          ${
+                            lecturerSelectedRating === null
+                              ? "bg-green-600 text-white border-green-700 shadow-lg scale-105"
+                              : "bg-green-500 text-white border-transparent"
+                          }`}
+                      onClick={() => setLecturerSelectedRating(null)}
+                    >
+                      รีวิวทั้งหมด
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {filteredLecturerReviews && filteredLecturerReviews.length > 0 ? (
               <ul className="space-y-4 mt-2">
-                {selectedLecturer.rating.map((review) => (
+                {filteredLecturerReviews.map((review) => (
                   <motion.li
                     key={review.id}
                     initial={{ opacity: 0, x: -20 }}
@@ -153,13 +255,20 @@ const ReviewAdmin = () => {
                     <div className="flex items-start">
                       <div className="flex-shrink-0 mr-3">
                         {Array.from({ length: 5 }, (_, i) => (
-                          <span key={i} className={`text-lg ${i < review.star ? "text-yellow-500" : "text-gray-300"}`}>
+                          <span
+                            key={i}
+                            className={`text-lg ${
+                              i < review.star ? "text-yellow-500" : "text-gray-300"
+                            }`}
+                          >
                             ★
                           </span>
                         ))}
                       </div>
                       <div>
-                        <p className="text-gray-700 text-sm sm:text-base italic">"{review.comment}"</p>
+                        <p className="text-gray-700 text-sm sm:text-base italic">
+                          "{review.comment}"
+                        </p>
                       </div>
                     </div>
                   </motion.li>
@@ -173,7 +282,7 @@ const ReviewAdmin = () => {
       )}
 
       {/* รีวิวของคอร์ส */}
-      <div className="mx-auto text-center mb-8 lg:mb-16">
+      <div className="mx-auto text-center mt-12 mb-8 lg:mb-16">
         <h2 className="mb-4 text-4xl tracking-tight font-extrabold text-gray-900 dark:text-white">
           รีวิวทั้งหมดของคอร์ส
         </h2>
@@ -194,25 +303,41 @@ const ReviewAdmin = () => {
             // คำนวณคะแนนเฉลี่ยของคอร์ส
             const averageRating =
               course.rating && course.rating.length > 0
-                ? (course.rating.reduce((acc, review) => acc + review.star, 0) / course.rating.length).toFixed(1)
+                ? (
+                    course.rating.reduce((acc, review) => acc + review.star, 0) /
+                    course.rating.length
+                  ).toFixed(1)
                 : "0.0";
 
             return (
               <motion.div
                 key={course.id}
                 className="flex items-center p-6 border rounded-lg shadow-lg cursor-pointer hover:bg-gray-100 transition"
-                onClick={() => setSelectedCourse(selectedCourse?.id === course.id ? null : course)}
+                onClick={() => {
+                  // เมื่อเลือกคอร์สใหม่ ให้รีเซ็ต selectedRating กับ showFilterOptions
+                  setSelectedCourse(selectedCourse?.id === course.id ? null : course);
+                  setSelectedRating(null);
+                  setShowFilterOptions(false);
+                }}
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.3 }}
               >
-                <img src={courseImage} alt={`${course.Name}`} className="w-20 h-20 rounded-full object-cover mr-6" />
+                <img
+                  src={courseImage}
+                  alt={`${course.Name}`}
+                  className="w-20 h-20 rounded-full object-cover mr-6"
+                />
                 <div>
-                  <h3 className="text-xl font-semibold text-blue-700">{course.Name}</h3>
+                  <h3 className="text-xl font-semibold text-blue-700">
+                    {course.Name}
+                  </h3>
                   {/* แสดงคะแนนเฉลี่ย */}
                   <div className="flex items-center mt-2">
                     <span className="text-2xl text-yellow-500 mr-2">⭐</span>
-                    <span className="text-yellow-500 font-semibold text-lg sm:text-xl">{averageRating}</span>
+                    <span className="text-yellow-500 font-semibold text-lg sm:text-xl">
+                      {averageRating}
+                    </span>
                     <span className="text-gray-500 text-base ml-2">/ 5</span>
                   </div>
                 </div>
@@ -222,7 +347,6 @@ const ReviewAdmin = () => {
         </div>
       )}
 
-
       {selectedCourse && (
         <div className="bg-white shadow-md rounded-lg p-6 mt-8">
           <div className="flex justify-between items-center">
@@ -231,16 +355,74 @@ const ReviewAdmin = () => {
             </h3>
             <button
               className="text-gray-500 hover:text-gray-800"
-              onClick={() => setSelectedCourse(null)}
+              onClick={() => {
+                setSelectedCourse(null);
+                setShowFilterOptions(false);
+                setSelectedRating(null);
+              }}
             >
               ✖
             </button>
           </div>
           <div className="mt-4">
             <h4 className="text-lg font-semibold text-gray-800">Reviews:</h4>
-            {selectedCourse?.rating?.length > 0 ? (
+
+            {/* ฟิลเตอร์สำหรับรีวิวคอร์ส */}
+            <div className="mt-2">
+              {!showFilterOptions ? (
+                <button
+                  className="px-4 py-2 text-sm rounded bg-green-500 text-white"
+                  onClick={() => setShowFilterOptions(true)}
+                >
+                  แสดงตัวเลือกฟิลเตอร์
+                </button>
+              ) : (
+                <div>
+                  <div className="mb-2">
+                    <button
+                      className="px-4 py-2 text-sm rounded bg-red-500 text-white"
+                      onClick={() => {
+                        setShowFilterOptions(false);
+                        setSelectedRating(null); // รีเซ็ต selectedRating เมื่อปิดฟิลเตอร์
+                      }}
+                    >
+                      ปิดฟิลเตอร์
+                    </button>
+                  </div>
+                  <div>
+                    {[5, 4, 3, 2, 1].map((star) => (
+                      <button
+                        key={star}
+                        className={`px-4 py-2 text-sm rounded mr-2 border-2 transition-all 
+              ${
+                selectedRating === star
+                  ? "bg-green-600 text-white border-green-700 shadow-lg scale-105"
+                  : "bg-green-500 text-white border-transparent"
+              }`}
+                        onClick={() => setSelectedRating(star)}
+                      >
+                        {star} ดาว
+                      </button>
+                    ))}
+                    <button
+                      className={`px-4 py-2 text-sm rounded border-2 transition-all
+            ${
+              selectedRating === null
+                ? "bg-green-600 text-white border-green-700 shadow-lg scale-105"
+                : "bg-green-500 text-white border-transparent"
+            }`}
+                      onClick={() => setSelectedRating(null)}
+                    >
+                      รีวิวทั้งหมด
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {filteredReviews && filteredReviews.length > 0 ? (
               <ul className="space-y-4 mt-2">
-                {selectedCourse.rating.map((review) => (
+                {filteredReviews.map((review) => (
                   <motion.li
                     key={review.id}
                     initial={{ opacity: 0, x: -20 }}
@@ -251,13 +433,20 @@ const ReviewAdmin = () => {
                     <div className="flex items-start">
                       <div className="flex-shrink-0 mr-3">
                         {Array.from({ length: 5 }, (_, i) => (
-                          <span key={i} className={`text-lg ${i < review.star ? "text-yellow-500" : "text-gray-300"}`}>
+                          <span
+                            key={i}
+                            className={`text-lg ${
+                              i < review.star ? "text-yellow-500" : "text-gray-300"
+                            }`}
+                          >
                             ★
                           </span>
                         ))}
                       </div>
                       <div>
-                        <p className="text-gray-700 text-sm sm:text-base italic">"{review.comment}"</p>
+                        <p className="text-gray-700 text-sm sm:text-base italic">
+                          "{review.comment}"
+                        </p>
                       </div>
                     </div>
                   </motion.li>
@@ -269,9 +458,10 @@ const ReviewAdmin = () => {
           </div>
         </div>
       )}
-
     </div>
   );
 };
 
 export default ReviewAdmin;
+
+
