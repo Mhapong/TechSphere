@@ -30,8 +30,17 @@ const Explore = () => {
   const { addToCart } = useCart();
   const navigate = useNavigate();
   const baseURL = process.env.REACT_APP_API_URL || conf.apiUrl;
-
+  const [queryCourse, setQueryCourse] = useState("");
   const category_from_home = location.state || "";
+  const allcategories = [
+    { name: "ALL", img: allpic, path: "ALL" },
+    { name: "Web Develop", img: webpic, path: "Web Develop" },
+    { name: "Data Analysis", img: datapic, path: "Data Analysis" },
+    { name: "IoT & Hardware", img: hardwarepic, path: "Hardware" },
+    { name: "Network", img: networkpic, path: "Network" },
+    { name: "Game Develop", img: gamepic, path: "Game Develop" },
+    { name: "AI", img: morepic, path: "AI" },
+  ];
 
   const fetchCourses = async () => {
     try {

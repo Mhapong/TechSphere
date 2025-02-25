@@ -592,7 +592,6 @@ export interface ApiCourseCourse extends Struct.CollectionTypeSchema {
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     Description: Schema.Attribute.RichText;
-    end_date: Schema.Attribute.DateTime;
     image: Schema.Attribute.Media<'images' | 'files', true> &
       Schema.Attribute.Required;
     lecturer_owner: Schema.Attribute.Relation<
@@ -613,7 +612,6 @@ export interface ApiCourseCourse extends Struct.CollectionTypeSchema {
     >;
     publishedAt: Schema.Attribute.DateTime;
     rating: Schema.Attribute.Relation<'oneToMany', 'api::review.review'>;
-    start_date: Schema.Attribute.DateTime;
     status_coure: Schema.Attribute.Enumeration<['Activate', 'Deactivate']>;
     sum_progresses: Schema.Attribute.Relation<
       'oneToMany',
@@ -1331,6 +1329,7 @@ export interface PluginUsersPermissionsUser
       Schema.Attribute.SetMinMaxLength<{
         minLength: 6;
       }>;
+    position: Schema.Attribute.Text;
     profile_picture: Schema.Attribute.Media<
       'images' | 'files' | 'videos' | 'audios',
       true

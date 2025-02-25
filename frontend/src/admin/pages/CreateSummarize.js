@@ -55,7 +55,8 @@ export default function CourseDetails() {
   }, []);
   return (
     // <div className="min-h-screen w-[1400px] mx-64  mt-11 bg-gray-50 p-4 md:p-8">
-    <div className="w-[1000px] mx-96 mt-11 p-8">
+    // <div className="w-[1000px] mx-96 mt-11 p-8">
+    <div className="w-full lg:w-[1000px] mt-11 lg:ml-96 pt-12 max-w-7xl p-8">
       {/* Course Header */}
       <ol class="flex flex-col gap-4 rounded-lg border border-gray-200 bg-gray-50 p-4 dark:border-gray-700 dark:bg-gray-800 sm:justify-center md:flex-row md:items-center lg:gap-6">
         <div class="hidden h-px w-8 shrink-0 bg-gray-200 dark:bg-gray-700 md:block xl:w-16"></div>

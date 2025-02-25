@@ -146,6 +146,9 @@
     },
     "background": {
       "type": "text"
+    },
+    "position": {
+      "type": "text"
     }
   }
 }

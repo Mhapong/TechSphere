@@ -13,6 +13,7 @@ import {
 } from "@headlessui/react";
 import { Edit } from "@mui/icons-material";
 import { useNavigate } from "react-router";
+import conf from "../../conf/main";
 
 const FinanceOrder = () => {
   const { state: ContextState } = useContext(AuthContext);
@@ -135,8 +136,7 @@ const FinanceOrder = () => {
         </p>
 
         <div className="mb-1">
-          {/* <h2 className="text-lg font-semibold mb-2">ตัวกรอง:</h2> */}
-          <div className="flex justify-center items-center space-x-3 bg-white p-4 rounded-lg shadow-md border border-gray-200">
+          <div className="flex flex-col sm:flex-row justify-center items-center space-y-3 sm:space-y-0 sm:space-x-3 bg-white p-4 rounded-lg shadow-md border border-gray-200">
             <label
               htmlFor="search"
               className="text-gray-700 text-lg font-medium"
@@ -145,15 +145,14 @@ const FinanceOrder = () => {
             </label>
             <input
               id="search"
-              title="ค้นหา"
               type="text"
               placeholder="ค้นหาโดยชื่อผู้ชำระเงิน"
-              className="flex-1 bg-gray-100 focus:bg-white h-10 w-72 border border-gray-300 rounded-lg px-4 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+              className="flex-1 bg-gray-100 focus:bg-white h-10 w-full sm:w-72 border border-gray-300 rounded-lg px-4 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
               value={queryPayments}
               onChange={(e) => setQueryPayments(e.target.value)}
             />
             <select
-              className="w-48 border border-gray-300 rounded-lg px-4 py-2 text-gray-700 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-gray-400"
+              className="w-full sm:w-48 h-10 border border-gray-300 rounded-lg px-4 py-2 text-gray-700 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-gray-400"
               value={queryPayments}
               onChange={(e) => setQueryPayments(e.target.value)}
             >
@@ -326,7 +325,7 @@ const FinanceOrder = () => {
                       <img
                         src={
                           currentData?.url
-                            ? `http://localhost:1337${currentData.url}`
+                            ? `${conf.apiUrl}${currentData.url}`
                             : Error
                         }
                         className="px-3 py-1 flex justify-center h-fit self-center relative pl-12 left-2"
@@ -342,21 +341,21 @@ const FinanceOrder = () => {
                   type="button"
                   data-autofocus
                   onClick={() => Approve(detail, "confirmed")}
-                  className="inline-flex w-max justify-center rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-green-500 sm:ml-3 sm:w-auto"
+                  className="inline-flex w-full justify-center rounded-md border border-transparent bg-green-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 sm:ml-3 sm:w-auto sm:text-sm"
                 >
                   อนุมัติ
                 </button>
                 <button
                   type="button"
                   onClick={() => Approve(detail, "unapproved")}
-                  className="inline-flex w-max justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-red-500 sm:ml-3 sm:w-auto"
+                  className="mt-3 inline-flex w-full justify-center rounded-md border border-red-600 bg-red-800 px-4 py-2 text-base font-medium text-brown-50 shadow-sm hover:bg-red-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
                 >
                   ไม่อนุมัติ
                 </button>
                 <button
                   type="button"
                   onClick={() => closeModal()}
-                  className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 shadow-xs ring-gray-300 ring-inset hover:bg-gray-50 sm:mt-0 sm:w-auto"
+                  className="mt-3 inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
                 >
                   ยกเลิก
                 </button>

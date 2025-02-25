@@ -3,6 +3,7 @@ import ax from "../../conf/ax";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { AuthContext } from "../../context/Auth.context.js";
+import axios from "axios";
 
 // รีวิวคอร์สเรียน
 const ReviewModal = ({
@@ -258,84 +259,96 @@ export default function MyCourse() {
   const [hasReviewedTeacher, setHasReviewedTeacher] = useState(false);
   const [hasReviewedCourses, setHasReviewedCourses] = useState({});
   const { state } = useContext(AuthContext);
-
+  const BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:1337";
   // ฟังก์ชันดึงข้อมูลรีวิวจาก Backend
-  const fetchAllReviews = useCallback(async (currentUser) => {
-    if (!currentUser) return;
+  const fetchAllReviews = useCallback(
+    async (currentUser) => {
+      if (!currentUser) return;
 
-    try {
-      const params = {
-        populate: "*",
-        "filters[users_review][id][$eq]": currentUser.id,
-      };
+      try {
+        const params = {
+          populate: "*",
+          "filters[users_review][id][$eq]": currentUser.id,
+        };
 
-      const response = await ax.get("http://localhost:1337/api/reviews", {
-        params,
-      });
-      console.log("API Response:", response.data);
+        const response = await axios.get(`${BASE_URL}/api/reviews`, { params });
+        console.log("API Response:", response.data);
 
-      const reviewedCourses = {};
-      response.data.data.forEach((review) => {
-        // ใช้ review_id.id เป็น key ของคอร์สที่รีวิว
-        const courseId = String(review.review_id?.id);
-        // ดึง id ของผู้รีวิว
-        const userId = String(review.users_review?.id);
-        if (userId === String(currentUser.id)) {
-          reviewedCourses[courseId] = {
-            rating: review.star,
-            comment: review.comment,
-          };
-        }
-      });
+        const reviewedCourses = {};
 
-      console.log("🎯 Reviewed Courses Data:", reviewedCourses);
-      setHasReviewedCourses(reviewedCourses);
-    } catch (error) {
-      console.error("Error fetching reviews:", error);
-    }
-  }, []);
+        response.data.data.forEach((review) => {
+          // ✅ ใช้ optional chaining ป้องกัน error ถ้าข้อมูลบางตัวหาย
+          const courseId = String(review.review_id?.id);
+          const userId = String(review.users_review?.id);
+
+          if (userId === String(currentUser.id)) {
+            reviewedCourses[courseId] = {
+              rating: review.star ?? 0, // ⭐ ใส่ default ถ้าไม่มีคะแนน
+              comment: review.comment ?? "", // 💬 ใส่ default ถ้าไม่มีคอมเมนต์
+            };
+          }
+        });
+
+        console.log("🎯 Reviewed Courses Data:", reviewedCourses);
+        setHasReviewedCourses(reviewedCourses);
+      } catch (error) {
+        console.error(
+          "❌ Error fetching reviews:",
+          error.response?.data || error.message
+        );
+      }
+    },
+    [BASE_URL]
+  ); // ✅ เพิ่ม BASE_URL เป็น dependency
 
   // Add fetchTeacherReviews function in MyCourse component
-  const fetchTeacherReviews = useCallback(async (currentUser) => {
-    if (!currentUser) return;
+  const fetchTeacherReviews = useCallback(
+    async (currentUser) => {
+      if (!currentUser) return;
 
-    try {
-      const params = {
-        populate: "*",
-        "filters[review][id][$eq]": currentUser.id,
-      };
+      try {
+        const params = {
+          populate: "*", // ✅ ดึงข้อมูลทุกความสัมพันธ์
+          "filters[review][id][$eq]": currentUser.id, // ✅ ฟิลเตอร์เฉพาะรีวิวของ currentUser
+        };
 
-      const response = await ax.get(
-        "http://localhost:1337/api/lecturer-reviews",
-        { params }
-      );
-      console.log("Teacher Reviews API Response:", response.data);
+        const response = await axios.get(`${BASE_URL}/api/lecturer-reviews`, {
+          params,
+        });
+        console.log("Teacher Reviews API Response:", response.data);
 
-      const reviewedTeachers = {};
-      response.data.data.forEach((review) => {
-        const teacherId = String(review.lecturer_review_id?.id);
-        const userId = String(review.review?.id);
-        if (userId === String(currentUser.id)) {
-          reviewedTeachers[teacherId] = {
-            rating: review.star,
-            comment: review.comment,
-          };
-        }
-      });
+        const reviewedTeachers = {};
 
-      console.log("🎯 Reviewed Teachers Data:", reviewedTeachers);
-      setHasReviewedTeacher(reviewedTeachers);
-    } catch (error) {
-      console.error("Error fetching teacher reviews:", error);
-    }
-  }, []);
+        response.data.data.forEach((review) => {
+          const teacherId = String(review.lecturer_review_id?.id);
+          const userId = String(review.review?.id);
+
+          if (userId === String(currentUser.id)) {
+            reviewedTeachers[teacherId] = {
+              rating: review.star ?? 0,
+              comment: review.comment ?? "",
+            };
+          }
+        });
+
+        console.log("🎯 Reviewed Teachers Data:", reviewedTeachers);
+        setHasReviewedTeacher(reviewedTeachers);
+      } catch (error) {
+        console.error(
+          "❌ Error fetching teacher reviews:",
+          error.response?.data || error.message
+        );
+      }
+    },
+    [BASE_URL]
+  ); // ✅ เพิ่ม BASE_URL เป็น dependency
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         // ดึงข้อมูลผู้ใช้และคอร์สที่ลงทะเบียน
         const userResponse = await ax.get(
-          "http://localhost:1337/api/users/me?populate=owned_course"
+          `${BASE_URL}/api/users/me?populate=owned_course.image`
         );
         console.log("✅ User Data:", userResponse.data);
         const currentUser = userResponse.data;
@@ -343,8 +356,8 @@ export default function MyCourse() {
         setOwnedCourses(currentUser.owned_course || []);
 
         // ดึงข้อมูลคอร์สทั้งหมด
-        const coursesResponse = await ax.get(
-          "http://localhost:1337/api/courses?populate=*"
+        const coursesResponse = await axios.get(
+          `${BASE_URL}/api/courses?populate=image`
         );
         console.log("✅ Course Data:", coursesResponse.data.data);
         setCourseData(coursesResponse.data.data);
@@ -371,7 +384,7 @@ export default function MyCourse() {
     const fetchCourseProgresses = async () => {
       try {
         const response = await ax.get(
-          "http://localhost:1337/api/course-progresses?populate=*",
+          `${BASE_URL}/api/course-progresses?populate=*`,
           {
             params: {
               "filters[course_progress_owner][id][$eq]": user.id,
@@ -448,7 +461,7 @@ export default function MyCourse() {
       </div>
 
       {filteredCourses.length > 0 ? (
-        <div className="border border-gray-300 p-5 rounded-xl overflow-visible shadow-lg">
+        <div className="border border-gray-300 p-5 rounded-xl shadow-lg">
           <h2 className="text-2xl font-bold">คอร์สของคุณ</h2>
           <div
             id="slider"
@@ -458,19 +471,22 @@ export default function MyCourse() {
               <motion.div
                 key={item.id}
                 whileHover={{ scale: 1.1 }}
-                className="min-w-80 border overflow-visible border-blue-200 rounded-lg shadow-md p-4 cursor-pointer"
+                className="min-w-80 border border-blue-200 rounded-lg shadow-md p-4 cursor-pointer"
               >
                 <div
-                  className=" rounded-lg"
+                  className="overflow-hidden rounded-lg"
                   onClick={() => navigate(`/contentstudy/${item.documentId}`)}
                 >
                   <img
-                    src={item.image || "/placeholder.svg"}
+                    src={
+                      item.image && item.image.length > 0
+                        ? `${BASE_URL}${item.image[0].url}`
+                        : "/placeholder.svg"
+                    }
                     alt="Course Image"
-                    className="object-contain overflow-hidden w-full h-[270px]"
+                    className="object-contain w-full h-[270px]"
                   />
                 </div>
-
                 <div className="mt-4 w-72">
                   <p className="truncate whitespace-nowrap overflow-hidden">
                     {item.Name}

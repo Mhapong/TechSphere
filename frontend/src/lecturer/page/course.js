@@ -7,7 +7,7 @@ import {
   Button,
   Tooltip,
 } from "@material-tailwind/react";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import ax from "../../conf/ax";
 import datapic from "../../client/components/data.png";
 import webpic from "../../client/components/web-100.png";
@@ -15,11 +15,11 @@ import gamepic from "../../client/components/game.png";
 import hardwarepic from "../../client/components/hardware.png";
 import networkpic from "../../client/components/network.png";
 import morepic from "../../client/components/more.png";
-import allpic from "../components/Image/All.png";
+import allpic from "../../admin/components/Image/All.png";
 // import ReactMarkdown from "react-markdown";
 import { useNavigate } from "react-router";
 // import remarkGfm from "remark-gfm";
-import CourseEx from "../components/Image/htmlcssJS.webp";
+import CourseEx from "../../admin/components/Image/htmlcssJS.webp";
 import Select from "react-select";
 import {
   Dialog,
@@ -31,15 +31,17 @@ import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 import { Delete, Add } from "@mui/icons-material";
 import { motion } from "framer-motion";
 import conf from "../../conf/main";
-import Error from "../components/Image/404.png";
-import { Rating } from "@material-tailwind/react";
+import Error from "../../admin/components/Image/404.png";
+import { AuthContext } from "../../context/Auth.context";
 
-export function CourseView() {
+export function CourseAdminView() {
   const [Course, setCourse] = useState([]);
   const Navigate = useNavigate();
   const [queryCourse, setQueryCourse] = useState("");
   const [open, setOpen] = useState(false);
   const [DeleteCourse, setDeleteCourse] = useState([]);
+  const { state: ContextState } = useContext(AuthContext);
+  const { user } = ContextState;
 
   const handleRowDeleted = async (itemId) => {
     try {
@@ -97,7 +99,9 @@ export function CourseView() {
 
   const fetchCourse = async () => {
     try {
-      const response = await ax.get("courses?populate=*");
+      const response = await ax.get(
+        `courses?filters[id][$eq]=${user.id}&&populate=*`
+      );
       console.log(response.data.data);
       setCourse(response.data.data);
       console.log(
@@ -115,8 +119,7 @@ export function CourseView() {
     fetchCourse();
   }, []);
   return (
-    // <div className="w-[1200px] mx-96 mt-11 p-8 px-4 max-w-screen-2xl lg:px-12">
-    <div className="w-full lg:w-[1200px] mt-11 lg:ml-96 max-w-7xl p-4">
+    <div className="w-[1200px] mx-96 mt-11 p-8 ml-80 px-4 max-w-screen-2xl lg:px-12">
       <div className="mx-auto max-w-screen-sm md:max-w-screen-md lg:max-w-screen-lg xl:max-w-screen-xl text-center mb-8 lg:mb-16">
         <h2 className="mb-4 text-4xl tracking-tight font-extrabold text-gray-900 dark:text-white">
           คอร์สเรียนทั้งหมด
@@ -124,8 +127,11 @@ export function CourseView() {
         <p className="font-light text-gray-500 lg:mb-16 sm:text-xl dark:text-gray-400">
           คอร์สเรียนทั้งหมดที่มีใน TechSphere ทั้งหมด {Course.length} คอร์ส
         </p>
-        <div className="flex flex-col sm:flex-row justify-center items-center space-y-3 sm:space-y-0 sm:space-x-3 bg-white p-4 rounded-lg shadow-md border border-gray-200">
-          <label htmlFor="search" className="text-gray-700 text-lg font-medium">
+        <div className="flex justify-center items-center space-x-3 bg-white p-4 rounded-lg shadow-md border border-gray-200">
+          <label
+            htmlFor="search"
+            className="text-gray-700 text-lg font-medium w-1/12"
+          >
             ค้นหา :
           </label>
           <input
@@ -133,7 +139,7 @@ export function CourseView() {
             title="ค้นหา"
             type="text"
             placeholder="ค้นหาโดยชื่อคอร์สเรียน"
-            className="flex-none lg:w-8/12 w-full bg-gray-100 focus:bg-white h-10  border border-gray-300 rounded-lg px-4 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+            className="flex-none w-8/12 bg-gray-100 focus:bg-white h-10  border border-gray-300 rounded-lg px-4 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
             value={queryCourse}
             onChange={(e) => setQueryCourse(e.target.value)}
           />
@@ -146,14 +152,14 @@ export function CourseView() {
               setSelectedCategory(selectedOption.value);
             }}
             placeholder="เลือกประเภท"
-            className="text-gray-700 flex-auto lg:w-3/12 z-20 w-full"
+            className="text-gray-700 flex-auto w-3/12 z-20"
             classNamePrefix="custom-select"
           />
         </div>
       </div>
       <div>
         {filteredCourse.length > 0 ? (
-          <div className="h-full w-full my-7 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 lg:gap-10 items-stretch scrollbar-hide">
+          <div className="h-full w-full my-7 grid grid-cols-3 gap-10 items-stretch place-content-center scrollbar-hide">
             {filteredCourse.map((items) => (
               <motion.div
                 key={items.id}
@@ -205,27 +211,21 @@ export function CourseView() {
                         </Typography>
                         <Typography
                           color="blue-gray"
-                          className="flex flex-col sm:flex-row items-start sm:items-center gap-2 font-normal"
+                          className="flex items-center gap-1.5 font-normal"
                         >
-                          {/* Rating Section */}
-                          <div className="flex items-center gap-2">
-                            <Rating
-                              value={
-                                items.rating.length === 0
-                                  ? 0
-                                  : items.rating.reduce(
-                                      (sum, item) => sum + (item?.star || 0),
-                                      0
-                                    ) / items.rating.length
-                              }
-                              readonly
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 24 24"
+                            fill="currentColor"
+                            className="-mt-0.5 h-5 w-5 text-yellow-700"
+                          >
+                            <path
+                              fillRule="evenodd"
+                              d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z"
+                              clipRule="evenodd"
                             />
-                            <span className="text-sm mt-2 text-amber-700 whitespace-nowrap">
-                              {items.rating && items.rating.length === 0
-                                ? "ยังไม่มีรีวิว"
-                                : `(${items.rating.length} reviews)`}
-                            </span>
-                          </div>
+                          </svg>
+                          5.0
                         </Typography>
                       </div>
                       <Typography color="gray">
@@ -263,7 +263,9 @@ export function CourseView() {
                       <div className="grid grid-cols-2 gap-2">
                         <Button
                           onClick={() => {
-                            Navigate(`/create-summarize/${items.documentId}`);
+                            Navigate(
+                              `/view-product/${items.Name}/${items.documentId}`
+                            );
                           }}
                           size="lg"
                           className="w-full"
