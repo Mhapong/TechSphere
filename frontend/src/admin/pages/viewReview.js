@@ -84,7 +84,7 @@ const ReviewAdmin = () => {
     }
     return "/placeholder.svg";
   };
-  
+
 
   useEffect(() => {
     fetchReview()
@@ -232,7 +232,9 @@ const ReviewAdmin = () => {
                       />
 
                       <div>
-                        <h3 className="text-xl font-semibold">{item.first_name || item.Name}</h3>
+                        <h3 className="text-xl font-semibold">
+                          {item.first_name && item.last_name ? `${item.first_name} ${item.last_name}` : item.Name}
+                        </h3>
                         <p className="text-gray-500">
                           {Array.isArray(item.rating)
                             ? `⭐ ${(item.rating.reduce((sum, r) => sum + r.star, 0) / item.rating.length).toFixed(1)}`
@@ -240,9 +242,9 @@ const ReviewAdmin = () => {
                               ? `⭐ ${item.rating.average.toFixed(1)}`
                               : "ไม่มีคะแนน"}
                         </p>
-
                       </div>
                     </motion.div>
+
                   )}
                 </AnimatePresence>
               );
