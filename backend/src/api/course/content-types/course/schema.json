@@ -88,7 +88,6 @@
       "target": "api::progress.progress",
       "mappedBy": "course_of_progress"
     },
-    
     "rating": {
       "type": "relation",
       "relation": "oneToMany",
