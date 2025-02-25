@@ -1,79 +1,80 @@
-import { useState, useEffect, useContext, useCallback } from "react"
-import { motion, AnimatePresence } from "framer-motion"
-import { AuthContext } from "../../context/Auth.context"
-import ax from "../../conf/ax"
+import { useState, useEffect, useContext, useCallback } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { AuthContext } from "../../context/Auth.context";
+import ax from "../../conf/ax";
 
 const ReviewAdmin = () => {
-  const { state: ContextState } = useContext(AuthContext)
-  const { user } = ContextState
-  const [reviewData, setReviewData] = useState([])
-  const [reviewCourseData, setReviewCourseData] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
-  const [selectedLecturer, setSelectedLecturer] = useState(null)
-  const [selectedCourse, setSelectedCourse] = useState(null)
-  const [selectedRating, setSelectedRating] = useState(null)
-  const [showFilterOptions, setShowFilterOptions] = useState(false)
-  const [lecturerSelectedRating, setLecturerSelectedRating] = useState(null)
-  const [lecturerShowFilterOptions, setLecturerShowFilterOptions] = useState(false)
+  const { state: ContextState } = useContext(AuthContext);
+  const { user } = ContextState;
+  const [reviewData, setReviewData] = useState([]);
+  const [reviewCourseData, setReviewCourseData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [selectedLecturer, setSelectedLecturer] = useState(null);
+  const [selectedCourse, setSelectedCourse] = useState(null);
+  const [selectedRating, setSelectedRating] = useState(null);
+  const [showFilterOptions, setShowFilterOptions] = useState(false);
+  const [lecturerSelectedRating, setLecturerSelectedRating] = useState(null);
+  const [lecturerShowFilterOptions, setLecturerShowFilterOptions] =
+    useState(false);
 
-  const BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:1337"
+  const BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:1337";
 
   const fetchReview = useCallback(async () => {
-    setLoading(true)
-    setError(null)
+    setLoading(true);
+    setError(null);
     try {
       const response = await ax.get(`${BASE_URL}/api/users`, {
         params: {
           "filters[role][name][$eq]": "Lecturer",
           populate: ["rating", "profile_picture"],
         },
-      })
+      });
 
-      console.log("Lecturer Data Response:", response.data)
+      console.log("Lecturer Data Response:", response.data);
 
       if (response.data && Array.isArray(response.data)) {
-        setReviewData(response.data)
+        setReviewData(response.data);
       } else {
-        setReviewData([])
+        setReviewData([]);
       }
     } catch (error) {
-      console.error("Error fetching lecturer review:", error)
-      setError(error.message)
+      console.error("Error fetching lecturer review:", error);
+      setError(error.message);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }, [BASE_URL])
+  }, [BASE_URL]);
 
   const fetchCourseReview = useCallback(async () => {
-    setLoading(true)
-    setError(null)
+    setLoading(true);
+    setError(null);
     try {
       const response = await ax.get(`${BASE_URL}/api/courses`, {
         params: {
           populate: ["rating", "image"],
         },
-      })
+      });
 
-      console.log("Course Data Response:", response.data.data)
+      console.log("Course Data Response:", response.data.data);
 
       if (response.data?.data && Array.isArray(response.data.data)) {
-        setReviewCourseData(response.data.data)
+        setReviewCourseData(response.data.data);
       } else {
-        setReviewCourseData([])
+        setReviewCourseData([]);
       }
     } catch (error) {
-      console.error("Error fetching course review:", error)
-      setError(error.message)
+      console.error("Error fetching course review:", error);
+      setError(error.message);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }, [BASE_URL])
+  }, [BASE_URL]);
 
   const filterReviews = (rating, reviews) => {
-    if (rating === null) return reviews
-    return reviews.filter((review) => review.star === rating)
-  }
+    if (rating === null) return reviews;
+    return reviews.filter((review) => review.star === rating);
+  };
 
   const getImageUrl = (imageArray) => {
     const BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:1337";
@@ -85,10 +86,9 @@ const ReviewAdmin = () => {
     return "/placeholder.svg";
   };
 
-
   useEffect(() => {
-    fetchReview()
-    fetchCourseReview()
+    fetchReview();
+    fetchCourseReview();
   }, [fetchReview, fetchCourseReview]);
 
   useEffect(() => {
@@ -106,17 +106,25 @@ const ReviewAdmin = () => {
     showFilterOptions,
     setShowFilterOptions,
   }) => {
-    const filteredReviews = selected ? filterReviews(selectedRating, selected.rating) : []
+    const filteredReviews = selected
+      ? filterReviews(selectedRating, selected.rating)
+      : [];
 
     return (
-      <div className="mb-12">
+      <div className="mb-12 pt-12">
         <h2 className="mb-4 text-4xl tracking-tight font-extrabold text-gray-900 dark:text-white text-center">
           {title}
         </h2>
 
-        {loading && <p className="text-center text-gray-500">กำลังโหลดข้อมูล...</p>}
-        {error && <p className="text-center text-red-500">เกิดข้อผิดพลาด: {error}</p>}
-        {!loading && !error && data.length === 0 && <p className="text-center text-gray-500">ไม่มีรีวิวที่จะแสดง</p>}
+        {loading && (
+          <p className="text-center text-gray-500">กำลังโหลดข้อมูล...</p>
+        )}
+        {error && (
+          <p className="text-center text-red-500">เกิดข้อผิดพลาด: {error}</p>
+        )}
+        {!loading && !error && data.length === 0 && (
+          <p className="text-center text-gray-500">ไม่มีรีวิวที่จะแสดง</p>
+        )}
 
         {/* แสดงรายการรีวิว */}
         {!loading && !error && data.length > 0 && (
@@ -136,7 +144,9 @@ const ReviewAdmin = () => {
                       {/* แสดงรายละเอียดแทนการ์ด */}
                       <div className="flex justify-between items-center mb-4">
                         <h3 className="text-2xl font-semibold text-black">
-                          {selected.first_name ? `${selected.first_name} ${selected.last_name}` : selected.Name}
+                          {selected.first_name
+                            ? `${selected.first_name} ${selected.last_name}`
+                            : selected.Name}
                         </h3>
                         <button
                           className="text-gray-500 hover:text-gray-800"
@@ -174,16 +184,25 @@ const ReviewAdmin = () => {
                                 <button
                                   key={star}
                                   className={`px-4 py-2 text-sm rounded border-2 
-                                    ${selectedRating === star ? "bg-gray-900 text-white border-gray-900 shadow-lg" : "bg-gray-700 text-white border-transparent"}
+                                    ${
+                                      selectedRating === star
+                                        ? "bg-gray-900 text-white border-gray-900 shadow-lg"
+                                        : "bg-gray-700 text-white border-transparent"
+                                    }
                                   `}
                                   onClick={() => setSelectedRating(star)}
                                 >
-                                  {star} ดาว ({filterReviews(star, selected.rating).length})
+                                  {star} ดาว (
+                                  {filterReviews(star, selected.rating).length})
                                 </button>
                               ))}
                               <button
                                 className={`px-4 py-2 text-sm rounded border-2 
-                                  ${selectedRating === null ? "bg-gray-900 text-white border-gray-900 shadow-lg" : "bg-gray-700 text-white border-transparent"}
+                                  ${
+                                    selectedRating === null
+                                      ? "bg-gray-900 text-white border-gray-900 shadow-lg"
+                                      : "bg-gray-700 text-white border-transparent"
+                                  }
                                 `}
                                 onClick={() => setSelectedRating(null)}
                               >
@@ -194,20 +213,34 @@ const ReviewAdmin = () => {
                         )}
                       </div>
 
-                      <h4 className="text-lg font-semibold text-gray-800 mb-2">Reviews ({filteredReviews.length}):</h4>
+                      <h4 className="text-lg font-semibold text-gray-800 mb-2">
+                        Reviews ({filteredReviews.length}):
+                      </h4>
                       {filteredReviews.length > 0 ? (
                         <ul className="space-y-4">
                           {filteredReviews.map((review) => (
-                            <li key={review.id} className="border-b pb-4 last:border-none">
+                            <li
+                              key={review.id}
+                              className="border-b pb-4 last:border-none"
+                            >
                               <div className="flex items-start">
                                 <div className="flex-shrink-0 mr-3">
                                   {Array.from({ length: 5 }, (_, i) => (
-                                    <span key={i} className={`text-lg ${i < review.star ? "text-yellow-500" : "text-gray-300"}`}>
+                                    <span
+                                      key={i}
+                                      className={`text-lg ${
+                                        i < review.star
+                                          ? "text-yellow-500"
+                                          : "text-gray-300"
+                                      }`}
+                                    >
                                       ★
                                     </span>
                                   ))}
                                 </div>
-                                <p className="text-gray-700 text-sm sm:text-base italic">"{review.comment}"</p>
+                                <p className="text-gray-700 text-sm sm:text-base italic">
+                                  "{review.comment}"
+                                </p>
                               </div>
                             </li>
                           ))}
@@ -233,18 +266,24 @@ const ReviewAdmin = () => {
 
                       <div>
                         <h3 className="text-xl font-semibold">
-                          {item.first_name && item.last_name ? `${item.first_name} ${item.last_name}` : item.Name}
+                          {item.first_name && item.last_name
+                            ? `${item.first_name} ${item.last_name}`
+                            : item.Name}
                         </h3>
                         <p className="text-gray-500">
                           {Array.isArray(item.rating)
-                            ? `⭐ ${(item.rating.reduce((sum, r) => sum + r.star, 0) / item.rating.length).toFixed(1)}`
+                            ? `⭐ ${(
+                                item.rating.reduce(
+                                  (sum, r) => sum + r.star,
+                                  0
+                                ) / item.rating.length
+                              ).toFixed(1)}`
                             : item.rating?.average
-                              ? `⭐ ${item.rating.average.toFixed(1)}`
-                              : "ไม่มีคะแนน"}
+                            ? `⭐ ${item.rating.average.toFixed(1)}`
+                            : "ไม่มีคะแนน"}
                         </p>
                       </div>
                     </motion.div>
-
                   )}
                 </AnimatePresence>
               );
@@ -253,8 +292,7 @@ const ReviewAdmin = () => {
         )}
       </div>
     );
-
-  }
+  };
 
   return (
     <div className="container mx-auto px-4 py-8 lg:w-[1000px] lg:ml-96 max-w-7xl">
@@ -279,8 +317,7 @@ const ReviewAdmin = () => {
         setShowFilterOptions={setShowFilterOptions}
       />
     </div>
-  )
-}
+  );
+};
 
-export default ReviewAdmin
-
+export default ReviewAdmin;
