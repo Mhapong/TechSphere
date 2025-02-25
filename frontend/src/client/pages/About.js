@@ -1,14 +1,18 @@
-import { useState, useEffect, useCallback } from "react"
+import { useState, useEffect, useCallback, useContext } from "react"
 import techspherepic from "../components/logo.png"
 import definitionpic from "../components/definition.png"
 import { useNavigate } from "react-router-dom"
 import axios from "axios"
 import { motion } from "framer-motion"
+import { AuthContext } from "../../context/Auth.context";
 
 const AboutPage = () => {
     const navigate = useNavigate()
     const [lecturers, setLecturers] = useState([])
     const [loading, setLoading] = useState(true)
+    const { state } = useContext(AuthContext);
+    const { user } = state;
+    const isAuthenticated = !!user;
     const BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:1337"
 
     const fetchLecturers = useCallback(async () => {
@@ -73,20 +77,20 @@ const AboutPage = () => {
                 className="max-w-4xl mx-8 p-8 text-xl md:text-2xl leading-relaxed text-center text-gray-700 dark:text-gray-300 
           bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 mb-12"
             >
-                <p className="italic font-medium text-xl mb-12">"TechSphere คือองค์กรที่มุ่งเน้นการเสริมสร้างความรู้และทักษะด้านเทคโนโลยีสมัยใหม่ 
-                    ผ่านคอร์สเรียนออนไลน์ที่ออกแบบมาเพื่อให้ผู้เรียนสามารถพัฒนาทักษะได้ทุกที่ทุกเวลา พร้อมเนื้อหาที่อัปเดตตามเทรนด์เทคโนโลยีล่าสุด  
+                <p className="italic font-medium text-xl mb-12">"TechSphere คือองค์กรที่มุ่งเน้นการเสริมสร้างความรู้และทักษะด้านเทคโนโลยีสมัยใหม่
+                    ผ่านคอร์สเรียนออนไลน์ที่ออกแบบมาเพื่อให้ผู้เรียนสามารถพัฒนาทักษะได้ทุกที่ทุกเวลา พร้อมเนื้อหาที่อัปเดตตามเทรนด์เทคโนโลยีล่าสุด
                     โดยมีหลักสูตรที่ครอบคลุมตั้งแต่พื้นฐานไปจนถึงระดับสูง สอนโดยผู้เชี่ยวชาญในอุตสาหกรรม เพื่อให้คุณนำความรู้ไปต่อยอดในการทำงานและสร้างโอกาสใหม่ๆ ในสายอาชีพของคุณ"</p>
 
-                    <h1 className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600 mb-6">
-                Innovative
+                <h1 className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600 mb-6">
+                    Innovative
                 </h1>
                 <p className="text-xl font-semibold text-blue-600 dark:text-blue-400 mb-6">นวัตกรรมที่ล้ำสมัยในการเรียนรู้เทคโนโลยี</p>
                 <h1 className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600 mb-6">
-                Empowering
+                    Empowering
                 </h1>
                 <p className="text-xl font-semibold text-blue-600 dark:text-blue-400 mb-6">ส่งเสริมและพัฒนาทักษะให้ทุกคนก้าวสู่ยุคดิจิทัล</p>
                 <h1 className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600 mb-6">
-                Future-Ready
+                    Future-Ready
                 </h1>
                 <p className="text-xl font-semibold text-blue-600 dark:text-blue-400 mb-6">เตรียมความพร้อมให้คุณรับมือกับอนาคตของเทคโนโลยี</p>
             </motion.blockquote>
@@ -125,8 +129,8 @@ const AboutPage = () => {
                             คณาจารย์ผู้เชี่ยวชาญ
                         </h2>
                         <p className="text-blue-800 dark:text-blue-200 max-w-3xl mx-auto text-lg">
-                        เราพร้อมนำเสนอคอร์สเรียนที่ทันสมัย จากเหล่าอาจารย์ผู้มีความเชี่ยวชาญหลากหลายด้านและมีประสบการณ์
-                         เพื่อช่วยให้ผู้เรียนเข้าใจเนื้อหาได้อย่างลึกซึ้ง ผ่านการสอนที่เป็นระบบ และสามารถนำไปประยุกต์ใช้ได้จริง...
+                            เราพร้อมนำเสนอคอร์สเรียนที่ทันสมัย จากเหล่าอาจารย์ผู้มีความเชี่ยวชาญหลากหลายด้านและมีประสบการณ์
+                            เพื่อช่วยให้ผู้เรียนเข้าใจเนื้อหาได้อย่างลึกซึ้ง ผ่านการสอนที่เป็นระบบ และสามารถนำไปประยุกต์ใช้ได้จริง...
                         </p>
                     </motion.div>
 
@@ -181,7 +185,7 @@ const AboutPage = () => {
                 </div>
             </section>
 
-            {/* Courses Section */}
+            {/* Navigate Section */}
             <section className="w-full bg-white dark:bg-gray-900 py-16">
                 <div className="max-w-screen-xl mx-auto px-4 lg:px-8">
                     <motion.div
@@ -192,7 +196,6 @@ const AboutPage = () => {
               dark:border-gray-700 rounded-2xl p-8 md:p-12 mb-8 shadow-lg hover:shadow-xl transition-shadow duration-300"
                     >
                         <a
-                            href="#"
                             className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gradient-to-r from-blue-500 to-purple-400 text-white 
                 dark:bg-blue-900/30 dark:text-blue-400 mb-4"
                         >
@@ -229,7 +232,50 @@ const AboutPage = () => {
                         </a>
                     </motion.div>
                 </div>
+                {!isAuthenticated && (
+                    <div className="grid md:grid-cols-2 gap-8 max-w-screen-xl mx-auto px-4 lg:px-8">
+                        {[{
+                            title: "คุณมีบัญชีแล้ว? กลับมาเรียนกันเถอะ",
+                            link: "/login",
+                            btnText: "เข้าสู่ระบบ",
+                            gradient: "from-blue-500 to-teal-400"
+                        }, {
+                            title: "ยังไม่มีบัญชีใช่ไหม?",
+                            link: "/sign-up",
+                            btnText: "ลงทะเบียน",
+                            gradient: "from-green-300 to-teal-400"
+                        }].map((card, index) => (
+                            <motion.div
+                                key={index}
+                                initial={{ opacity: 0, x: index === 0 ? -20 : 20 }}
+                                whileInView={{ opacity: 1, x: 0 }}
+                                transition={{ duration: 0.6 }}
+                                className="flex flex-col justify-between bg-gradient-to-br from-gray-50 to-white dark:from-gray-800 dark:to-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 min-h-[280px]"
+                            >
+                                <div>
+                                    <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">{card.title}</h3>
+                                    <p className="text-lg text-gray-600 dark:text-gray-400">
+                                        {index === 0
+                                            ? "กลับมาพัฒนาทักษะของคุณต่อ และก้าวสู่อนาคตอย่างมั่นใจ! ไม่ว่าคุณจะหยุดไปนานแค่ไหน เรียนรู้ต่อได้ทุกเมื่อที่นี่!"
+                                            : "เริ่มต้นเส้นทางการเรียนรู้ของคุณวันนี้ แล้วเตรียมพร้อมสำหรับโลกดิจิทัล! ลงทะเบียนตอนนี้เพื่อเปิดประตูสู่โอกาสใหม่ ๆ ที่รอคุณอยู่!"}
+                                    </p>
+                                </div>
+                                <a
+                                    href={card.link}
+                                    className={`inline-flex items-center px-6 py-3 rounded-lg bg-gradient-to-r ${card.gradient} hover:bg-blue-700 text-white font-medium transition-colors duration-300`}
+                                >
+                                    {card.btnText}
+                                    <svg className="w-4 h-4 ml-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
+                                    </svg>
+                                </a>
+
+                            </motion.div>
+                        ))}
+                    </div>
+                )}
             </section>
+
         </div>
     )
 }
