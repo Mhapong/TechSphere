@@ -665,7 +665,7 @@ export interface ApiLecturerReviewLecturerReview
       Schema.Attribute.SetMinMax<
         {
           max: 5;
-          min: 0;
+          min: 1;
         },
         number
       >;

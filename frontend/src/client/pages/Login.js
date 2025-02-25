@@ -1,8 +1,8 @@
-import React, { useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { useSetState } from "react-use";
 import { AuthContext } from "../../context/Auth.context.js";
 import { useNavigate } from "react-router";
-import { Toaster, toast } from "sonner";
+import { toast } from "sonner";
 import background from "../../admin/components/Image/background.png";
 import WebDev_Logo from "../../admin/components/Image/WebDev_Logo.png";
 
@@ -15,27 +15,52 @@ export default function Login() {
   const { state: ContextState, login } = useContext(AuthContext);
   const { isLoginPending, isLoggedIn, loginError } = ContextState;
   const [state, setState] = useSetState(initialState);
+  const [hasLoggedIn, setHasLoggedIn] = useState(false);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (loginError) {
+      toast.error(`${loginError}`, {
+        position: "bottom-left",
+        duration: 5000,
+        style: {
+          fontSize: "1.1rem",
+          padding: "20px",
+          fontWeight: "bold",
+          textAlign: "center",
+          borderRadius: "10px",
+          color: "red",
+        },
+      });
+    }
+    if (isLoggedIn && !hasLoggedIn) {
+      toast.success(`Welcome. Login Successfully`, {
+        position: "bottom-left",
+        duration: 5000,
+        style: {
+          fontSize: "1.1rem",
+          padding: "20px",
+          fontWeight: "bold",
+          textAlign: "center",
+          borderRadius: "10px",
+          color: "green",
+        },
+      });
+      setHasLoggedIn(true);
+    }
+  }, [loginError, isLoggedIn, hasLoggedIn]);
 
   const onSubmit = (e) => {
     e.preventDefault();
     const { username, password } = state;
-    login(username, password);
-    toast.success(`Welcome. Login, Successefully`, {
-      position: "top-right",
-      duration: 5000,
-      style: {
-        fontSize: "1.1rem",
-        padding: "20px",
-        fontWeight: "bold",
-        textAlign: "center",
-        borderRadius: "10px",
-        color: "green",
-      },
-    });
-    setTimeout(() => {
-      navigate("/");
-    }, 1000);
+    if (!username || !password) {
+      toast.error("Please enter both username and password.", {
+        position: "bottom-left",
+        duration: 4000,
+      });
+      return;
+    }
+    login(username, password, navigate);
     setState({ username: "", password: "" });
   };
 
