@@ -48,6 +48,22 @@ export default function Nav() {
       : []),
   ];
 
+  const markAsRead = async (notificationId) => {
+    // อัพเดตใน Local State
+    setNotifications((prev) =>
+      prev.map((notif) =>
+        notif.id === notificationId ? { ...notif, read: true } : notif
+      )
+    );
+
+    // (Optional) อัพเดตใน Backend ถ้ามี API รองรับ
+    try {
+      await ax.put(`/promotions/${notificationId}`, { read: true });
+    } catch (error) {
+      console.error("Failed to mark notification as read:", error);
+    }
+  };
+
   return (
     <Disclosure as="nav" className="bg-white shadow-sm sticky top-0 z-50">
       {({ open }) => (
@@ -85,7 +101,7 @@ export default function Nav() {
                         to={item.href}
                         className={classNames(
                           item.current
-                            ? "bg-gray-100 text-black"
+                            ? " text-black hover:bg-gray-100 transition-all delay-[50]"
                             : "text-gray-700 hover:bg-gray-50 hover:text-black",
                           "rounded-md px-3 py-2 text-sm font-medium"
                         )}
@@ -137,28 +153,23 @@ export default function Nav() {
                         <div className="px-4 py-2 text-sm font-medium text-gray-900 border-b">
                           การแจ้งเตือน
                         </div>
-                        {notifications.length === 0 ? (
-                          <div className="px-4 py-2 text-sm text-gray-500">
-                            ไม่มีการแจ้งเตือน
-                          </div>
-                        ) : (
-                          notifications.map((notification) => (
-                            <Menu.Item key={notification.id}>
-                              {({ active }) => (
-                                <div
-                                  className={`px-4 py-2 text-sm ${
-                                    !notification.read
-                                      ? "bg-blue-50 font-medium text-blue-800"
-                                      : "text-gray-700"
-                                  } ${active ? "bg-gray-100" : ""}`}
-                                >
-                                  {notification.Code} สำหรับส่วนลด{" "}
-                                  {notification.discount}%
-                                </div>
-                              )}
-                            </Menu.Item>
-                          ))
-                        )}
+                        {notifications.map((notification) => (
+                          <Menu.Item key={notification.id}>
+                            {({ active }) => (
+                              <div
+                                onClick={() => markAsRead(notification.id)}
+                                className={`px-4 py-2 text-sm cursor-pointer ${
+                                  !notification.read
+                                    ? "bg-blue-50 font-medium text-blue-800"
+                                    : "text-gray-700"
+                                } ${active ? "bg-gray-100 text-black" : ""}`}
+                              >
+                                {notification.Code} สำหรับส่วนลด{" "}
+                                {notification.discount}%
+                              </div>
+                            )}
+                          </Menu.Item>
+                        ))}
                         <div className="border-t">
                           <Menu.Item>
                             {({ active }) => (
@@ -202,19 +213,6 @@ export default function Nav() {
                       leaveTo="transform opacity-0 scale-95"
                     >
                       <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ">
-                        {/* <Menu.Item>
-                          {({ active }) => (
-                            <Link
-                              to="/explore"
-                              className={classNames(
-                                active ? "bg-gray-100" : "",
-                                "block px-4 py-2 text-sm text-gray-700"
-                              )}
-                            >
-                              View
-                            </Link>
-                          )}
-                        </Menu.Item> */}
                         <Menu.Item>
                           {({ active }) => (
                             <Link
