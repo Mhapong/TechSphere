@@ -249,12 +249,11 @@ const Explore = () => {
                     d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                   />
                 </svg>
-                <h2 className="text-2xl font-bold text-gray-700 mb-2">
-                  No courses found
-                </h2>
-                <p className="text-gray-500">
-                  Try adjusting your search or filter to find what you're
-                  looking for.
+                <h3 className="text-2xl font-bold text-gray-600">
+                  ❌ ไม่พบคอร์สที่ต้องการ
+                </h3>
+                <p className="text-gray-500 mt-2">
+                  ลองเปลี่ยนหมวดหมู่หรือช่วงราคา แล้วค้นหาอีกครั้ง
                 </p>
               </div>
             ) : (
@@ -313,8 +312,8 @@ const Explore = () => {
                             : "ไม่ระบุ"}
                         </p>
                         <div className=" flex justify-between ">
-                          <span className="text-amber-900 flex items-center gap-0.5">
-                            {course.rating.length === 0
+                          <span className="text-amber-600 flex items-center gap-0.5">
+                            {course?.rating.length === 0
                               ? 0
                               : (
                                   course.rating.reduce(

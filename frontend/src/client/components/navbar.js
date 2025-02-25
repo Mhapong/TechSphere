@@ -202,7 +202,7 @@ export default function Nav() {
                       leaveTo="transform opacity-0 scale-95"
                     >
                       <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ">
-                        <Menu.Item>
+                        {/* <Menu.Item>
                           {({ active }) => (
                             <Link
                               to="/explore"
@@ -214,7 +214,7 @@ export default function Nav() {
                               View
                             </Link>
                           )}
-                        </Menu.Item>
+                        </Menu.Item> */}
                         <Menu.Item>
                           {({ active }) => (
                             <Link
@@ -224,7 +224,7 @@ export default function Nav() {
                                 "block px-4 py-2 text-sm text-gray-700"
                               )}
                             >
-                              Check Status
+                              สถานะการซื้อ
                             </Link>
                           )}
                         </Menu.Item>
@@ -237,7 +237,7 @@ export default function Nav() {
                                 "block px-4 py-2 text-sm text-gray-700"
                               )}
                             >
-                              Profile
+                              โปรไฟล์
                             </Link>
                           )}
                         </Menu.Item>
@@ -250,7 +250,7 @@ export default function Nav() {
                                 "block w-full text-left px-4 py-2 text-sm text-gray-700"
                               )}
                             >
-                              <Link to="/">Logout</Link>
+                              ลงชื่อออก
                             </button>
                           )}
                         </Menu.Item>

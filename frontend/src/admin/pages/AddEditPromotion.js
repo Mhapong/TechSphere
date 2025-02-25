@@ -187,8 +187,8 @@ const AddEditPromotion = () => {
                 style={{ backgroundColor: "#f6f6f6", padding: "0" }}
               >
                 <option value="">เลือกสถานะโปรโมชั่น</option>
-                <option value="Activate">เปิดใช้งาน</option>
-                <option value="Deactivate">ปิดใช้งาน</option>
+                <option value="Activate">กำลังใช้งาน</option>
+                <option value="Deactivate">หยุดใช้งาน</option>
               </select>
             </div>
           </div>

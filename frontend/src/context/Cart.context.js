@@ -1,10 +1,4 @@
-import {
-  createContext,
-  useContext,
-  useEffect,
-  useReducer,
-  useState,
-} from "react";
+import { createContext, useContext, useEffect, useReducer } from "react";
 
 const CartContext = createContext(null);
 
@@ -21,6 +15,7 @@ const cartReducer = (state, action) => {
       return state;
   }
 };
+
 const CartProvider = ({ children }) => {
   const [cartItems, setCartItems] = useReducer(cartReducer, [], () => {
     const localData = localStorage.getItem("cartItems");
@@ -44,6 +39,14 @@ const CartProvider = ({ children }) => {
           course.image?.length > 0
             ? `http://localhost:1337${course.image[0].url}`
             : null,
+        lecturer_owner: course.lecturer_owner
+          ? `${course.lecturer_owner.first_name} ${course.lecturer_owner.last_name}`
+          : "ไม่ทราบชื่อผู้สอน",
+        rating:
+          course.rating?.length > 0
+            ? course.rating.reduce((sum, item) => sum + (item?.star || 0), 0) /
+              course.rating.length
+            : 0,
       },
     });
   };
@@ -62,6 +65,5 @@ const CartProvider = ({ children }) => {
   );
 };
 
-// ✅ ใช้ export default สำหรับ CartProvider
 export default CartProvider;
 export const useCart = () => useContext(CartContext);

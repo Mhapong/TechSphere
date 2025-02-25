@@ -149,9 +149,6 @@ export default function Home() {
               <h3 className="text-2xl font-bold text-gray-600">
                 ❌ ไม่พบคอร์สที่ต้องการ
               </h3>
-              <p className="text-gray-500 mt-2">
-                ลองเปลี่ยนหมวดหมู่หรือช่วงราคา แล้วค้นหาอีกครั้ง
-              </p>
             </div>
           ) : (
             <motion.div
