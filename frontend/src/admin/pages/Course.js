@@ -98,13 +98,13 @@ export function CourseView() {
   const fetchCourse = async () => {
     try {
       const response = await ax.get("courses?populate=*");
-      console.log(response.data.data);
+      // console.log(response.data.data);
       setCourse(response.data.data);
-      console.log(
-        "Type of Description:",
-        typeof response.data.data[0].Description
-      );
-      console.log("Description:", response.data.data[0].Description);
+      // console.log(
+      //   "Type of Description:",
+      //   typeof response.data.data[0].Description
+      // );
+      // console.log("Description:", response.data.data[0].Description);
     } catch (error) {
       console.error("Error fetching team members:", error);
     }
