@@ -1,12 +1,13 @@
 "use client"
 
-import { useContext, useEffect, useState, useCallback } from "react"
+import { useContext, useEffect, useState, useCallback, useRef } from "react"
 import { AuthContext } from "../../context/Auth.context"
 import ax from "../../conf/ax"
 import { useParams, useNavigate } from "react-router-dom"
 import { motion } from "framer-motion"
 import Confirm from "../components/confirm.png"
 import Unapproved from "../components/unapproved.png"
+import { ChevronLeft, ChevronRight } from "lucide-react"
 
 export default function CheckCourseStatus() {
     const { state } = useContext(AuthContext)
@@ -21,6 +22,7 @@ export default function CheckCourseStatus() {
         unapproved: true,
     })
     const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+    const scrollContainerRefs = useRef({})
 
     // ตั้งสถานะสี
     const statusBackgroundColor = useCallback((status) => {
@@ -62,6 +64,40 @@ export default function CheckCourseStatus() {
 
     const toggleSidebar = () => {
         setIsSidebarOpen(!isSidebarOpen)
+    }
+
+    const filteredData = confirmData.filter((item) => {
+        const matchesFilter = filters[item.status_confirm]
+        const matchesSearch = item.course_purchase[0]?.Name.toLowerCase().includes(courseFilter.toLowerCase())
+        return matchesFilter && matchesSearch
+    })
+
+    const sortedData = {
+        unapproved: filteredData.filter((item) => item.status_confirm === "unapproved"),
+        confirmed: filteredData.filter((item) => item.status_confirm === "confirmed"),
+        waiting: filteredData.filter((item) => item.status_confirm === "waiting"),
+    }
+
+    // เปลี่ยนภาษาอังกฤษเป็นไทย
+    const getThaiStatus = (status) => {
+        switch (status) {
+            case "waiting":
+                return "รอดำเนินการ"
+            case "confirmed":
+                return "ยืนยันแล้ว"
+            case "unapproved":
+                return "ไม่อนุมัติ"
+            default:
+                return status
+        }
+    }
+
+    const scroll = (direction, status) => {
+        const container = scrollContainerRefs.current[status]
+        if (container) {
+            const scrollAmount = direction === "left" ? -300 : 300
+            container.scrollBy({ left: scrollAmount, behavior: "smooth" })
+        }
     }
 
     return (
@@ -123,67 +159,88 @@ export default function CheckCourseStatus() {
                         {isSidebarOpen ? "ปิดตัวกรอง" : "เปิดตัวกรอง"}
                     </button>
                 </div>
-                <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
-                    {confirmData.length > 0 ? (
-                        confirmData
-                            .filter((item) => filters[item.status_confirm])
-                            .filter((item) => item.course_purchase[0]?.Name.toLowerCase().includes(courseFilter.toLowerCase()))
-                            .map((item, index) => (
-                                <motion.div
-                                    key={index}
-                                    className={`p-4 border border-gray-300 rounded-lg flex flex-col min-h-[180px] relative ${statusBackgroundColor(item.status_confirm)}`}
-                                    initial={{ opacity: 0, y: 20 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ duration: 0.3, delay: index * 0.1 }}
-                                    whileHover={{ scale: 1.02 }}
-                                >
-                                    {/* แสดงรูปสถานะที่มุมขวาบน */}
-                                    {item.status_confirm === "confirmed" && (
-                                        <img
-                                            src={Confirm || "/placeholder.svg"}
-                                            alt="Confirmed"
-                                            className="absolute top-2 right-2 w-16 h-16 lg:w-24 lg:h-24"
-                                        />
-                                    )}
-                                    {item.status_confirm === "unapproved" && (
-                                        <img
-                                            src={Unapproved || "/placeholder.svg"}
-                                            alt="Unapproved"
-                                            className="absolute top-2 right-2 w-16 h-16 lg:w-24 lg:h-24"
-                                        />
-                                    )}
 
-                                    {/* ข้อความขยับขึ้นไปติดขอบบน */}
-                                    <div className="mt-0 pt-2">
-                                        <p className="text-black text-xs lg:text-sm mb-2">หมายเลขคำสั่งซื้อ: {item.id}</p>
-                                        <p className="text-black font-semibold text-lg lg:text-2xl pr-20">
-                                            ชื่อคอร์ส: {item.course_purchase[0]?.Name}
-                                        </p>
-                                        <p className="text-black text-sm lg:text-base">
-                                            จำนวนเงิน: {item.amount && item.amount > 0 ? `${item.amount} บาท` : "ฟรี"}
-                                        </p>
+                {Object.entries(sortedData).map(
+                    ([status, items]) =>
+                        items.length > 0 && (
+                            <div key={status} className="mb-8">
+                                <h3 className="text-lg font-bold mb-4 capitalize">{getThaiStatus(status)}</h3>
+                                <div className="relative">
+                                    <button
+                                        className="absolute -left-4 top-1/2 -translate-y-1/2 z-10 bg-white rounded-full shadow-md p-2"
+                                        onClick={() => scroll("left", status)}
+                                    >
+                                        <ChevronLeft className="h-6 w-6" />
+                                    </button>
+                                    <div
+                                        ref={(el) => (scrollContainerRefs.current[status] = el)}
+                                        className="flex overflow-x-auto space-x-4 pb-4 px-4 scrollbar-hide"
+                                        style={{ scrollSnapType: "x mandatory" }}
+                                    >
+                                        {items.map((item, index) => (
+                                            <motion.div
+                                                key={index}
+                                                className={`flex-none w-[300px] md:w-[400px] p-3 md:p-4 border border-gray-300 rounded-lg flex flex-col min-h-[160px] md:min-h-[180px] relative ${statusBackgroundColor(
+                                                    item.status_confirm,
+                                                )}`}
+                                                style={{ scrollSnapAlign: "start" }}
+                                                initial={{ opacity: 0, y: 20 }}
+                                                animate={{ opacity: 1, y: 0 }}
+                                                transition={{ duration: 0.3, delay: index * 0.1 }}
+                                                whileHover={{ scale: 1.02 }}
+                                            >
+                                                {item.status_confirm === "confirmed" && (
+                                                    <img
+                                                        src={Confirm || "/placeholder.svg"}
+                                                        alt="Confirmed"
+                                                        className="absolute top-2 right-2 w-14 h-14 lg:w-24 lg:h-24"
+                                                    />
+                                                )}
+                                                {item.status_confirm === "unapproved" && (
+                                                    <img
+                                                        src={Unapproved || "/placeholder.svg"}
+                                                        alt="Unapproved"
+                                                        className="absolute top-2 right-2 w-14 h-14 lg:w-24 lg:h-24"
+                                                    />
+                                                )}
 
-                                        <p className="text-black text-sm lg:text-base">สถานะ: {item.status_confirm || "ไม่ระบุ"}</p>
-                                        <p className="text-black text-sm lg:text-base">
-                                            วันที่สั่งซื้อ: {new Date(item.createdAt).toLocaleDateString()}
-                                        </p>
+                                                <div className="mt-0 pt-2">
+                                                    <p className="text-black text-xs lg:text-sm mb-2">หมายเลขคำสั่งซื้อ: {item.id}</p>
+                                                    <p className="text-black font-semibold text-lg lg:text-2xl pr-20">
+                                                        ชื่อคอร์ส: {item.course_purchase[0]?.Name}
+                                                    </p>
+                                                    <p className="text-black text-sm lg:text-base">
+                                                        จำนวนเงิน: {item.amount > 0 ? `${item.amount} บาท` : "ฟรี"}
+                                                    </p>
+                                                    <p className="text-black text-sm lg:text-base">
+                                                        สถานะ: {getThaiStatus(item.status_confirm) || "ไม่ระบุ"}
+                                                    </p>
+                                                    <p className="text-black text-sm lg:text-base">
+                                                        วันที่สั่งซื้อ: {new Date(item.createdAt).toLocaleDateString()}
+                                                    </p>
+                                                </div>
+
+                                                {item.status_confirm === "confirmed" && (
+                                                    <button
+                                                        onClick={() => navigate(`/contentstudy/${item.course_purchase[0]?.documentId}`)}
+                                                        className="absolute bottom-4 right-4 px-3 py-1 lg:px-4 lg:py-2 bg-gray-800 text-white text-sm lg:text-base rounded-lg"
+                                                    >
+                                                        ไปที่บทเรียน
+                                                    </button>
+                                                )}
+                                            </motion.div>
+                                        ))}
                                     </div>
-
-                                    {/* ปุ่มไปที่บทเรียน */}
-                                    {item.status_confirm === "confirmed" && (
-                                        <button
-                                            onClick={() => navigate(`/contentstudy/${item.course_purchase[0]?.documentId}`)}
-                                            className="absolute bottom-4 right-4 px-3 py-1 lg:px-4 lg:py-2 bg-gray-800 text-white text-sm lg:text-base rounded-lg"
-                                        >
-                                            ไปที่บทเรียน
-                                        </button>
-                                    )}
-                                </motion.div>
-                            ))
-                    ) : (
-                        <p className="text-gray-500 text-center col-span-full">ไม่มีข้อมูลการซื้อคอร์ส</p>
-                    )}
-                </div>
+                                    <button
+                                        className="absolute -right-4 top-1/2 -translate-y-1/2 z-10 bg-white rounded-full shadow-md p-2"
+                                        onClick={() => scroll("right", status)}
+                                    >
+                                        <ChevronRight className="h-6 w-6" />
+                                    </button>
+                                </div>
+                            </div>
+                        ),
+                )}
             </div>
         </div>
     )
