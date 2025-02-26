@@ -23,6 +23,7 @@ export default function CheckCourseStatus() {
     })
     const [isSidebarOpen, setIsSidebarOpen] = useState(false)
     const scrollContainerRefs = useRef({})
+    const [showPopup, setShowPopup] = useState(false);
 
     // ตั้งสถานะสี
     const statusBackgroundColor = useCallback((status) => {
@@ -46,17 +47,27 @@ export default function CheckCourseStatus() {
                     populate: "*",
                     "filters[users_purchase][id][$eq]": state.user.id,
                 },
-            })
-            console.log("Confirm Data:", response.data.data)
-            setConfirmData(response.data.data)
+            });
+            console.log("Confirm Data:", response.data.data);
+            setConfirmData(response.data.data);
+            return response.data.data;
         } catch (err) {
-            console.error("เกิดข้อผิดพลาดขณะดึงข้อมูล:", err)
+            console.error("เกิดข้อผิดพลาดขณะดึงข้อมูล:", err);
+            return [];
         }
-    }, [BASE_URL, state.user.id])
+    }, [BASE_URL, state.user.id]);
 
     useEffect(() => {
-        fetchConfirmPurchases()
-    }, [fetchConfirmPurchases])
+        fetchConfirmPurchases().then((data) => {
+            setTimeout(() => {
+                if (data.some((item) => item.status_confirm === "unapproved")) {
+                    setShowPopup(true);
+                }
+            }, 1000);
+        });
+    }, [fetchConfirmPurchases]);
+
+
 
     const handleFilterChange = (event) => {
         setFilters({ ...filters, [event.target.name]: event.target.checked })
@@ -149,6 +160,23 @@ export default function CheckCourseStatus() {
             </div>
 
             {/* Main Content */}
+            <div className="relative">
+                {/* Popup แจ้งเตือน */}
+                {showPopup && (
+                    <div className="fixed top-0 left-0 w-full bg-red-500 text-white p-4 text-center shadow-md z-50 flex justify-between items-center">
+                        <span>ตอนนี้มีคอร์สของคุณที่ไม่ได้รับการอนุมัติ กรุณาเข้าไปเช็คที่ช่องแชทของคุณเพื่อดูสาเหตุ</span>
+                        <button onClick={() => setShowPopup(false)} className="ml-4 bg-white text-red-500 px-3 py-1 rounded">
+                            ปิด
+                        </button>
+                    </div>
+                )}
+
+                {/* ส่วนเนื้อหาหลัก */}
+                <div className="p-4">
+                    <h2 className="text-xl font-bold">ข้อมูลสถานะการซื้อคอร์ส</h2>
+                    {/* เนื้อหาคอร์สของคุณ */}
+                </div>
+            </div>
             <div className="lg:w-3/4 p-4">
                 <div className="flex justify-between items-center mb-4">
                     <h2 className="text-black text-xl lg:text-2xl font-bold">ข้อมูลสถานะการซื้อคอร์ส</h2>
