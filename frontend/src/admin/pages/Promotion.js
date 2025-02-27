@@ -34,33 +34,47 @@ const PromotionAdminPage = () => {
       )
     : promotions;
 
+  const checkPromotions = async (data) => {
+    try {
+      const currentDate = new Date();
+      for (const promotion of data) {
+        const endDate = new Date(promotion.end_date);
+        if (
+          endDate < currentDate &&
+          promotion.status_promotion === "Activate"
+        ) {
+          await ax.put(`/promotions/${promotion.documentId}`, {
+            data: {
+              status_promotion: "Deactivate",
+            },
+          });
+        }
+      }
+    } catch (e) {
+      console.log("Error", e);
+    }
+  };
+
   const fetchPromotions = async () => {
     try {
       const response = await ax.get("promotions?populate=*");
-      console.log(response.data.data);
+      // console.log(response.data.data);
+      checkPromotions(response.data.data);
       setPromotions(response.data.data);
     } catch (error) {
       console.error("Error fetching promotions:", error);
     }
   };
   useEffect(() => {
-    // Fetch promotions from Strapi
-
     fetchPromotions();
   }, []);
 
   return (
-    // <div className="container mx-auto px-4 py-8 max-w-6xl mt-11 flex lg:justify-end">
-    // <div className="w-[1200px] mx-96 mt-11 p-8 ml-80 px-4 max-w-screen-2xl lg:px-12">
     <div className="container mx-auto px-4 py-8 max-w-10xl mt-11 lg:ml-72">
       <div className="mx-auto max-w-screen-sm text-center mb-8 lg:mb-16">
         <h2 className="mb-4 text-4xl tracking-tight font-extrabold text-gray-900 dark:text-white">
           โปรโมชั่นทั้งหมด
         </h2>
-        {/* <p className="font-light text-gray-500 lg:mb-16 sm:text-xl dark:text-gray-400">
-            อาจารย์ผู้สอนทั้งหมดที่มีคุณภาพของ TechSphere ทั้งหมด{" "}
-            {Lecturer.length} คน
-          </p> */}
         <div className="flex flex-col sm:flex-row justify-center items-center space-y-3 sm:space-y-0 sm:space-x-3 bg-white p-4 rounded-lg shadow-md border border-gray-200">
           <label htmlFor="search" className="text-gray-700 text-lg font-medium">
             ค้นหา :

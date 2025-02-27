@@ -21,7 +21,7 @@ import GroupAddIcon from "@mui/icons-material/GroupAdd";
 export default function NavAdmin() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const { state: ContextState, logout } = useContext(AuthContext);
+  const { state: ContextState, logout, state } = useContext(AuthContext);
   // console.log(ContextState);
   const { user } = ContextState;
   const [Count, setCount] = useState(null);
@@ -32,22 +32,29 @@ export default function NavAdmin() {
       try {
         if (user.userRole === "Admin") {
           const response = await ax.get(`counts`);
+          sessionStorage.setItem("count", JSON.stringify(response.data.counts));
           setCount(response.data.counts);
         } else if (user.userRole === "Lecturer") {
           const response = await ax.get(`count-lecturer/${user.id}`);
+          sessionStorage.setItem("count", JSON.stringify(response.data.counts));
           setCount(response.data.counts);
         }
       } catch (e) {
         console.log("Error", e);
       }
     };
-    fetchCount();
+    const storedCount = JSON.parse(sessionStorage.getItem("count"));
+    if (storedCount) {
+      setCount(storedCount);
+    } else {
+      fetchCount();
+    }
     if (user.userRole === "Admin") {
       setNavMenu(NavAdminMenu);
     } else if (user.userRole === "Lecturer") {
       setNavMenu(NavLecturerMenu);
     }
-  }, []);
+  }, [state]);
 
   const NavAdminMenu = [
     {
@@ -74,14 +81,14 @@ export default function NavAdmin() {
       name: "โปรโมชั่น",
       href: "/promotion",
       current: true,
-      key: `${Count ? `${Count["promotion"]}` : "0"}`,
+      key: `${Count ? `${Count["promotion"]}` : ""}`,
       icon: <DiscountIcon />,
     },
     {
       name: "คอร์สทั้งหมด",
       href: "/view",
       current: true,
-      key: `${Count ? `${Count?.course}` : "0"}`,
+      key: `${Count ? `${Count?.course}` : ""}`,
       icon: <StorageIcon />,
     },
     {
@@ -94,21 +101,25 @@ export default function NavAdmin() {
       name: "อาจารย์ทั้งหมด",
       href: "/lecturer",
       current: true,
-      key: `${Count ? `${Count?.users?.Lecturer}` : "0"}`,
+      key: `${Count ? `${Count?.users?.Lecturer}` : ""}`,
       icon: <Groups3Icon />,
     },
     {
       name: "นักเรียนทั้งหมด",
       href: "/student",
       current: true,
-      key: `${Count ? `${Count?.users?.User}` : "0"}`,
+      key: `${Count ? `${Count?.users?.User}` : ""}`,
       icon: <PeopleAltIcon />,
     },
     {
       name: "รีวิวทั้งหมด",
       href: "/review",
       current: true,
-      // key: `${Count ? `${Count.users.User}` : "0"}`,
+      key: `${
+        Count && Count["lecturer-review"] && Count["review"]
+          ? Count["lecturer-review"] + Count["review"]
+          : ""
+      }`,
       icon: <ReviewsIcon />,
     },
     {
@@ -157,14 +168,14 @@ export default function NavAdmin() {
       name: "คอร์สทั้งหมดของคุณ",
       href: "/course",
       current: true,
-      key: `${Count ? `${Count.course}` : "0"}`,
+      key: `${Count ? `${Count.course}` : ""}`,
       icon: <StorageIcon />,
     },
     {
       name: "รีวิวของคุณ",
       href: "/review",
       current: true,
-      key: `${Count ? `${Count["lecturer-review"] + Count["review"]}` : "0"}`,
+      key: `${Count ? `${Count["lecturer-review"] + Count["review"]}` : ""}`,
       icon: <ReviewsIcon />,
     },
     {

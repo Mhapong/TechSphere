@@ -1,7 +1,7 @@
 module.exports = {
   async getCounts(ctx) {
     try {
-      const collections = ["course"];
+      const collections = ["course", "lecturer-review", "review"];
       const counts = {};
 
       for (const collection of collections) {
