@@ -33,7 +33,7 @@ export default function Login() {
         },
       });
     }
-    if (isLoggedIn && !hasLoggedIn) {
+    if (isLoggedIn) {
       toast.success(`Welcome. Login Successfully`, {
         position: "bottom-left",
         duration: 5000,

@@ -119,21 +119,24 @@ export default function BuyProduct() {
 
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4 ">
-      <div className="max-w-md w-full space-y-8 bg-white p-6 rounded-xl shadow-lg">
+      <div className="max-w-md w-full space-y-3 bg-white p-6 rounded-xl shadow-lg">
         <div className="text-center">
           <img src={promptpay} alt="PromptPay" className="mx-auto h-44" />
-          <p className="mb-4 text-xl font-bold text-gray-900">
-            จำนวนที่ต้องชำระ: ฿{amount}
+
+          <p className="my-2 text-ทก text-black">
+            นาย ทนุธรรม ศุภผล 092-269-5522
           </p>
-          <p className="mt-1 text-sm text-gray-600">Scan the QR code to pay</p>
+          <p className="mt-1 text-sm text-gray-600">
+            สแกน QR Code เพื่อชำระเงิน
+          </p>
           <div className="mt-1 h-px bg-gray-100"></div>
         </div>
 
-        <div className="space-y-6">
+        <div className="space-y-4">
           <div className="rounded-md shadow-sm -space-y-px">
             <div className="flex flex-col items-center">
               {qrCode && (
-                <div className="bg-white p-4 rounded-lg shadow-md">
+                <div className="bg-white p-3 rounded-lg shadow-md">
                   <img
                     src={qrCode || "/placeholder.svg"}
                     alt="QR Code"
@@ -141,10 +144,13 @@ export default function BuyProduct() {
                   />
                 </div>
               )}
+              <p className="mt-3 text-xl font-bold text-gray-900">
+                จำนวนที่ต้องชำระ: ฿{amount}
+              </p>
               <a
                 href={qrCode}
                 download="promptpay_qr.png"
-                className="mt-4 text-sm font-medium text-indigo-600 hover:text-indigo-500"
+                className="my-4 text-sm font-medium text-indigo-600 hover:text-indigo-500"
               >
                 Download QR Code
               </a>

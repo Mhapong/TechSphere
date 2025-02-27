@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useCart } from "../../context/Cart.context";
@@ -34,6 +34,17 @@ const Explore = () => {
   const baseURL = process.env.REACT_APP_API_URL || conf.apiUrl;
   const category_from_home = location.state || "";
   const [promotion, setPromotions] = useState([]);
+
+  const categories = [
+    { name: "ALL", img: allpic, path: "ALL" },
+    { name: "Web Develop", img: webpic, path: "Web Develop" },
+    { name: "Data Analysis", img: datapic, path: "Data Analysis" },
+    { name: "IoT & Hardware", img: hardwarepic, path: "Hardware" },
+    { name: "Network", img: networkpic, path: "Network" },
+    { name: "Game Develop", img: gamepic, path: "Game Develop" },
+    { name: "AI", img: morepic, path: "AI" },
+  ];
+
   const fetchCourses = async () => {
     try {
       const response = await ax.get(`courses?populate=*`);
@@ -52,9 +63,6 @@ const Explore = () => {
       console.error("Error fetching promotions:", error);
     }
   };
-  useEffect(() => {
-    fetchPromotions();
-  }, []);
 
   const header = [
     { img: header1 },
@@ -73,7 +81,9 @@ const Explore = () => {
     })),
   ];
 
-  console.log(headerData);
+  useEffect(() => {
+    fetchPromotions();
+  }, []);
 
   useEffect(() => {
     fetchCourses();
@@ -82,16 +92,6 @@ const Explore = () => {
     }
   }, [category_from_home]);
 
-  const categories = [
-    { name: "ALL", img: allpic, path: "ALL" },
-    { name: "Web Develop", img: webpic, path: "Web Develop" },
-    { name: "Data Analysis", img: datapic, path: "Data Analysis" },
-    { name: "IoT & Hardware", img: hardwarepic, path: "Hardware" },
-    { name: "Network", img: networkpic, path: "Network" },
-    { name: "Game Develop", img: gamepic, path: "Game Develop" },
-    { name: "AI", img: morepic, path: "AI" },
-  ];
-
   const resetFilters = () => {
     setQuery("");
     setSelectedCategory("");
@@ -99,32 +99,43 @@ const Explore = () => {
     setSelectedRating(0);
   };
 
-  const filteredCourses = courseData.filter((course) => {
-    const matchesSearch = course.Name.toLowerCase().includes(
-      query.toLowerCase()
-    );
+  const filteredCourses = useMemo(() => {
+    return courseData.filter((course) => {
+      const matchesSearch = course.Name.toLowerCase().includes(
+        query.toLowerCase()
+      );
 
-    const matchesCategory =
-      selectedCategory === "ALL" || selectedCategory === ""
-        ? true
-        : course.categories?.some((cat) => cat.tag === selectedCategory);
+      const matchesCategory =
+        selectedCategory === "ALL" || selectedCategory === ""
+          ? true
+          : course.categories?.some((cat) => cat.tag === selectedCategory);
 
-    const matchesPrice =
-      course.Price >= priceRange[0] && course.Price <= priceRange[1];
+      const matchesPrice =
+        course.Price >= priceRange[0] && course.Price <= priceRange[1];
 
-    const totalStars = course.rating.reduce(
-      (sum, item) => sum + (item?.star || 0),
-      0
-    );
-    const avgRating = course.rating.length
-      ? totalStars / course.rating.length
-      : 0;
+      const totalStars = course.rating.reduce(
+        (sum, item) => sum + (item?.star || 0),
+        0
+      );
+      const avgRating = course.rating.length
+        ? totalStars / course.rating.length
+        : 0;
 
-    // ตรวจสอบเงื่อนไขคะแนน
-    const matchesRating = selectedRating === 0 || avgRating >= selectedRating;
+      return (
+        matchesSearch &&
+        matchesCategory &&
+        matchesPrice &&
+        (selectedRating === 0 || avgRating >= selectedRating)
+      );
+    });
+  }, [courseData, query, selectedCategory, priceRange, selectedRating]);
 
-    return matchesSearch && matchesCategory && matchesPrice && matchesRating;
-  });
+  const [currentPage, setCurrentPage] = useState(1);
+  const coursesPerPage = 10;
+  const paginatedCourses = useMemo(() => {
+    const startIndex = (currentPage - 1) * coursesPerPage;
+    return filteredCourses.slice(startIndex, startIndex + coursesPerPage);
+  }, [filteredCourses, currentPage]);
 
   return (
     <div className="bg-gray-50 min-h-screen">
@@ -417,6 +428,23 @@ const Explore = () => {
               </motion.div>
             )}
           </main>
+        </div>
+        <div className="flex justify-center mt-6">
+          {Array.from({
+            length: Math.ceil(filteredCourses.length / coursesPerPage),
+          }).map((_, index) => (
+            <button
+              key={index}
+              onClick={() => setCurrentPage(index + 1)}
+              className={`px-4 py-2 mx-1 rounded-full ${
+                currentPage === index + 1
+                  ? "bg-blue-500 text-white"
+                  : "bg-gray-200"
+              }`}
+            >
+              {index + 1}
+            </button>
+          ))}
         </div>
       </div>
     </div>

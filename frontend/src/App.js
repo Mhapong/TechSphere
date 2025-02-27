@@ -49,6 +49,7 @@ import ReviewLecturer from "./lecturer/page/viewReview.js";
 import ReviewAdmin from "./admin/pages/viewReview.js";
 import { CourseAdminView } from "./lecturer/page/course.js";
 import CreateLecturer from "./admin/pages/CreateLecturer.js";
+import NotificationPage from "./client/pages/notiPage.js";
 // import GraphAdmin from "./admin/pages/Graph.js";
 
 function App() {
@@ -86,6 +87,7 @@ function App() {
                 element={<LecturerBackGround />}
               />
               <Route path="/user" element={<Profile />} />
+              <Route path="/notifications" element={<NotificationPage />} />
               <Route path="/edit-profile/:userid" element={<EditProfile />} />
               {/* <Route path="*" element={<PageNotFound />} /> */}
             </Routes>
@@ -182,6 +184,7 @@ function App() {
               path="/lecturer-background/:name"
               element={<LecturerBackGround />}
             />
+            <Route path="/notifications" element={<NotificationPage />} />
             {/* testing in plublic role */}
             <Route path="/contentstudy" element={<ContentStudy />} />
             <Route path="/my-course" element={<Mycourse />} />

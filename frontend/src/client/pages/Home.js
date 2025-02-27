@@ -38,7 +38,11 @@ export default function Home() {
   const fetchCourses = async () => {
     try {
       const response = await ax.get("courses?populate=*");
-      setCourseData(response.data.data);
+      const topCourse = response.data.data
+        .sort((a, b) => b.user_owner.length - a.user_owner.length)
+        .slice(0, 3);
+      console.log(response.data.data);
+      setCourseData(topCourse);
     } catch (error) {
       console.error("Error fetching courses:", error);
     }
@@ -46,8 +50,6 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gray-100">
-      <Toaster position="top-center" />
-
       {/* Hero Section */}
       <section className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white">
         <div className="container mx-auto px-4 py-16 md:py-24 flex flex-col md:flex-row items-center">
@@ -109,7 +111,7 @@ export default function Home() {
                 whileTap={{ scale: 1.05 }}
                 whileHover={{ scale: 1.1 }}
                 initial={{ opacity: 0, y: 20 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
+                transition={{ duration: 0.05, delay: index * 0.1 }}
               >
                 <img
                   src={category.img || "/placeholder.svg"}
@@ -156,7 +158,7 @@ export default function Home() {
               className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
               initial={{ opacity: 0, y: -20 }}
               whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
+              transition={{ duration: 0.2 }}
             >
               {courseData.map((course) => (
                 <motion.div
