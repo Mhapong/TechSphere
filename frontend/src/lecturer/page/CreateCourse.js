@@ -1,5 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
-import { AuthContext } from "../../context/Auth.context";
+import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router";
 import ax from "../../conf/ax";
 import { Toaster, toast } from "sonner";
@@ -11,7 +10,6 @@ import networkpic from "../../client/components/network.png";
 import morepic from "../../client/components/more.png";
 import Select from "react-select";
 import conf from "../../conf/main";
-import { User } from "lucide-react";
 
 const AddCourse = () => {
   // State management for each form field
@@ -21,6 +19,7 @@ const AddCourse = () => {
   const [category, setCategory] = useState([]);
   const [allcategory, setallCategory] = useState(null);
   const [lecturer, setLecturer] = useState("");
+  const [lecturerOwner, setlecturerOwner] = useState(null);
   const [description, setDescription] = useState("");
   const [TimeUsage, setTimeUsage] = useState("");
   const [status, setStatus] = useState("");
@@ -28,9 +27,7 @@ const AddCourse = () => {
   const Navigate = useNavigate();
   const [image, setImage] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
-  const { state: ContextState } = useContext(AuthContext);
-  const { user } = ContextState;
-  const [lecturerOwner, setlecturerOwner] = useState(user?.id);
+
   const categories = [
     { label: "Web Develop", value: 2, img: webpic },
     { label: "Data Analysis", value: 6, img: datapic },
@@ -430,21 +427,15 @@ const AddCourse = () => {
                 className="block w-full h-12 rounded-md border-gray-300 shadow-sm focus:border-[#8c0327] focus:ring-[#8c0327] focus:ring-opacity-50"
                 style={{ backgroundColor: "#f6f6f6", padding: "0" }}
               >
-                {user?.userRole === "Lecturer" ? (
-                  <option key={user.id} value={user.id}>
-                    {`${user.first_name} ${user.last_name}`}
-                  </option>
-                ) : (
-                  <>
-                    <option value="">เลือกอาจารย์ผู้สอน</option>
-                    {lecturer &&
-                      lecturer?.map((person) => (
-                        <option key={person.id} value={person.id}>
-                          {`${person.first_name} ${person.last_name}`}
-                        </option>
-                      ))}
-                  </>
-                )}
+                <option value="">เลือกอาจารย์ผู้สอน</option>
+                {lecturer &&
+                  lecturer.map((person) => {
+                    return (
+                      <option key={person.id} value={person.id}>
+                        {`${person.first_name} ${person.last_name}`}
+                      </option>
+                    );
+                  })}
               </select>
             </div>
           </div>

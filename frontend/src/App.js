@@ -47,9 +47,10 @@ import LecturerBackGround from "./client/pages/LecturerBackGround.js";
 import HomeLecturer from "./lecturer/page/home-lecturer.js";
 import ReviewLecturer from "./lecturer/page/viewReview.js";
 import ReviewAdmin from "./admin/pages/viewReview.js";
-import { CourseAdminView } from "./lecturer/page/course.js";
+import { CourseLecturerView } from "./lecturer/page/course.js";
 import CreateLecturer from "./admin/pages/CreateLecturer.js";
 import NotificationPage from "./client/pages/notiPage.js";
+import CourseStudentTableLecturer from "./lecturer/page/CourseViewStudent.js";
 // import GraphAdmin from "./admin/pages/Graph.js";
 
 function App() {
@@ -107,12 +108,21 @@ function App() {
               <Route path="/user" element={<Profile />} />
               <Route path="/edit-profile/:userid" element={<EditProfile />} />
               <Route path="/review" element={<ReviewLecturer />} />
-              <Route path="/course" element={<CourseAdminView />} />
+              <Route path="/course" element={<CourseLecturerView />} />
+              <Route path="/create-course" element={<AddCourse />} />
+              <Route path="/create-topic/:topicid" element={<AddTopic />} />
               <Route
-                path="/view-product/:name/:documentId"
-                element={<ViewCourse />}
+                path="/edit-content/:contentid"
+                element={<EditContent />}
               />
-              <Route path="/view-student" element={<CourseStudentTable />} />
+              <Route
+                path="/create-summarize/:courseid"
+                element={<CourseDetails />}
+              />
+              <Route
+                path="/view-student"
+                element={<CourseStudentTableLecturer />}
+              />
               {/* <Route path="*" element={<PageNotFound />} /> */}
             </Routes>
             <button
