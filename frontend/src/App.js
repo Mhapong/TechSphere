@@ -138,7 +138,10 @@ function App() {
               />
               <Route path="/view" element={<CourseView />} />
               <Route path="/review" element={<ReviewAdmin />} />
-              <Route path="/view-student" element={<CourseStudentTable />} />
+              <Route
+                path="/view-student/:courseid"
+                element={<CourseStudentTable />}
+              />
               <Route path="/promotion" element={<PromotionAdminPage />} />
               <Route path="/lecturer" element={<LecturerAll />} />
               <Route path="/student" element={<StudentTable />} />

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 // import ax from "../../conf/ax";
 import usericon from "../components/Image/user-icon.webp";
-import { useLocation, useNavigate } from "react-router";
+import { useLocation, useNavigate, useParams } from "react-router";
 import { Delete } from "@mui/icons-material";
 import ax from "../../conf/ax";
 import {
@@ -11,6 +11,7 @@ import {
   DialogTitle,
 } from "@headlessui/react";
 import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
+import { progress } from "@material-tailwind/react";
 
 const CourseStudentTable = () => {
   const [Student, setStudent] = useState([]);
@@ -19,25 +20,28 @@ const CourseStudentTable = () => {
   const { Value } = location.state || {};
   const [open, setOpen] = useState(false);
   const [DeleteStudent, setDeleteStudent] = useState([]);
+  const { courseid } = useParams();
   console.log(Value);
   useEffect(() => {
-    if (Value) {
-      setStudent(Value.user_owner);
-    }
-  }, [Student]);
+    // if (Value) {
+    setStudent(Value.user_owner);
+    fetchCourse();
+    // }
+  }, []);
 
   const handleDelete = async (userid) => {
     try {
-      //   const response = await ax.get(`topics/${itemId}?populate=*`)
-      const totalUser = Value.user_owner
-        ? Value.user_owner.filter((item) => item.id !== userid)
+      const AllStudent = Student.map((itmes) => itmes.id);
+      const totalUser = AllStudent
+        ? AllStudent.filter((item) => item !== userid)
         : [];
-      await ax.put(`courses/${Value.documentId}`, {
+      await ax.put(`courses/${courseid}`, {
         data: {
           user_owner: totalUser,
         },
       });
       fetchCourse();
+      Navigate("/view");
     } catch (err) {
       console.log(err);
     }
@@ -45,30 +49,38 @@ const CourseStudentTable = () => {
 
   const fetchCourse = async () => {
     try {
-      const response = await ax.get(`course/${Value.documentId}?populate=*`);
-      console.log(response.data);
-      setStudent(response.data.user_owner);
-      // setStudent(response.data);
+      let User;
+      const response = await ax.get(
+        `courses/${courseid}?populate[sum_progresses][populate]=*`
+      );
+      if (!Value) {
+        User = response.data.data.sum_progresses.map((item) => ({
+          id: item.course_progress_owner.id,
+          first_name: item.course_progress_owner.first_name,
+          last_name: item.course_progress_owner.last_name,
+          username: item.course_progress_owner.username,
+          confirmed: item.course_progress_owner.confirmed,
+          email: item.course_progress_owner.email,
+        }));
+      } else {
+        User = Value?.user_owner;
+      }
+      const progresses = response.data.data.sum_progresses.map((item) => ({
+        id: item.course_progress_owner.id,
+        course_progress: item.course_progress,
+      }));
+      const updatedStudents = User.map((student) => {
+        const progressData = progresses.find((p) => p.id === student.id);
+        return {
+          ...student,
+          course_progress: progressData ? progressData.course_progress : "0",
+        };
+      });
+      setStudent(updatedStudents);
     } catch (error) {
       console.error("Error fetching team members:", error);
     }
   };
-
-  // useEffect(() => {
-  //   const fetchCourseProgresses = async () => {
-  //     try {
-  //       const response = await ax.get(
-  //         `course-progresses/${Value.sum_progresses.documentId}?populate=*`
-  //       );
-  //       console.log(response.data);
-  //       // setStudent(response.data);
-  //     } catch (error) {
-  //       console.error("Error fetching team members:", error);
-  //     }
-  //   };
-
-  //   fetchCourseProgresses();
-  // }, []);
 
   return (
     <section className="bg-gray-50 dark:bg-gray-900 h-screen py-3 sm:py-5">
@@ -123,9 +135,12 @@ const CourseStudentTable = () => {
                   <th scope="col" className="px-4 py-3 whitespace-nowrap">
                     ชื่อผู้ใช้งาน
                   </th>
-                  {/* <th scope="col" className="px-4 py-3 whitespace-nowrap">
-                    สถานะ
-                  </th> */}
+                  <th scope="col" className="px-4 py-3 whitespace-nowrap">
+                    Email
+                  </th>
+                  <th scope="col" className="px-4 py-3 whitespace-nowrap">
+                    ความคืบหน้า
+                  </th>
                   <th scope="col" className="px-4 py-3 whitespace-nowrap">
                     การยืนยันตัวตน
                   </th>
@@ -157,10 +172,15 @@ const CourseStudentTable = () => {
                         {value.username}
                       </span>
                     </td>
+                    <td className="px-4 py-2">
+                      <span className="bg-primary-100 text-primary-800 text-xs font-medium px-2 py-0.5 rounded dark:bg-primary-900 dark:text-primary-300">
+                        {value.email}
+                      </span>
+                    </td>
                     <td className="px-4 py-2 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                       <div className="flex items-center ml-3">
-                        <div className="inline-block w-4 h-4 mr-2 bg-green-700 rounded-full"></div>
-                        {value?.role?.name}
+                        {/* <div className="inline-block w-4 h-4 mr-2 bg-green-700 rounded-full"></div> */}
+                        {value?.course_progress}
                       </div>
                     </td>
                     <td className="px-4 py-2 font-medium text-gray-900 whitespace-nowrap dark:text-white">
@@ -176,22 +196,6 @@ const CourseStudentTable = () => {
                           : "ยังไม่ได้ยืนยันตัวตน"}
                       </span>
                     </td>
-                    {/* <td className="px-4 py-2 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                      <span>
-                        {value?.owned_course?.reduce(
-                          (sum, e) => sum + (e.Price || 0),
-                          0
-                        )}{" "}
-                        บาท
-                      </span>
-                    </td> */}
-                    {/* <td className="px-4 py-2 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                      <div className="flex items-center ml-1">
-                        <button className="ml-1 flex items-center justify-center w-9 h-9 rounded-full bg-blue-500 dark:bg-blue-600 text-white hover:bg-blue-600 dark:hover:bg-blue-500 transition-all duration-200">
-                          <Add className="w-5 h-5" />
-                        </button>
-                      </div>
-                    </td> */}
 
                     <td className="px-4 py-2 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                       <div className="flex items-center">

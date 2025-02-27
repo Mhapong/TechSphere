@@ -114,7 +114,10 @@ const FinanceOrder = () => {
   const fetchConfirmPurchase = async () => {
     try {
       const response = await ax.get("confirm-purchases?populate=*");
-      setPayments(response.data.data);
+      const sortPayments = response.data.data.sort(
+        (a, b) => a.createdAt - b.createdAt
+      );
+      setPayments(sortPayments);
     } catch (e) {
       console.log("error", e);
     }

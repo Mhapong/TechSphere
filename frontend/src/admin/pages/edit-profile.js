@@ -11,15 +11,8 @@ const EditProfile = () => {
   const [First_Name, setFirst_Name] = useState("");
   const [Last_Name, setLast_Name] = useState("");
   const [background, setBackground] = useState("");
-  const location = useLocation();
-  // const [userProfile, setuserProfile] = useState(
-  //   User?.profile_picture[0]?.url || ""
-  // );
   const navigate = useNavigate();
   const { userid } = useParams();
-  const [file, setFile] = useState(null);
-  const [uploading, setUploading] = useState(false);
-  const [showUpload, setShowUpload] = useState(false);
   const [image, setImage] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
 
@@ -73,20 +66,6 @@ const EditProfile = () => {
         };
         console.log("Using existing image:", imageData.url);
       }
-      // const UserData = {
-      //   username: Username,
-      //   email: Email,
-      //   first_name: First_Name,
-      //   last_name: Last_Name,
-      //   background: background,
-      // };
-
-      // if (imageData) {
-      //   UserData.profile_picture = [imageData.id];
-      // } else {
-      //   UserData.profile_picture = null;
-      // }
-      // console.log("Sending UserData:", UserData);
 
       const response = await ax.put(`users/${userid}`, {
         username: Username,
@@ -96,17 +75,6 @@ const EditProfile = () => {
         background: background,
         profile_picture: imageData ? [imageData.id] : null,
       });
-      // const response = await ax.put(`users/${userid}?populate=*`, {
-      //   UserData,
-      // });
-
-      // console.log("Response from API:", response.data);
-      // console.log(User.id);
-      // const response = await ax.put(`users/${User.id}?populate=*`, {
-      //   data: UserData,
-      // });
-
-      // console.log(response);
       setTimeout(
         () =>
           navigate("/user", {
@@ -201,74 +169,6 @@ const EditProfile = () => {
           </div>
         </div>
       </div>
-      {/* <div className="p-2 grid grid-cols-1 md:grid-cols-2 gap-6">
-        {previewUrl && !showUpload ? (
-          <div className="flex flex-col items-center">
-            <img
-              src={`${API_URL}${previewUrl}`}
-              alt="Profile"
-              className="w-32 h-32 rounded-full object-cover"
-            />
-            <button
-              onClick={() => setShowUpload(true)}
-              className="mt-2 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
-            >
-              เปลี่ยนรูปภาพ
-            </button>
-          </div>
-        ) : (
-          <label
-            htmlFor="image-upload"
-            className="block w-full h-48 border-2 border-dashed border-gray-300 rounded-md cursor-pointer flex flex-col items-center justify-center bg-[#f6f6f6] hover:bg-gray-50"
-          >
-            <div className="text-center">
-              <button
-                type="button"
-                className="bg-[#8c0327] hover:bg-[#6b0220] text-white rounded-full py-2 px-4"
-              >
-                Select from the computer
-              </button>
-              <p className="text-gray-500">or drag photo here</p>
-              <p className="text-gray-500 text-sm mt-1">PNG, JPG</p>
-            </div>
-            <input
-              id="image-upload"
-              type="file"
-              accept="image/*"
-              onChange={handleFileChange}
-              className="sr-only"
-            />
-          </label>
-        )}
-
-        {previewUrl && (
-          <div className="mt-4">
-            <img
-              src={previewUrl}
-              alt="Preview"
-              className="w-32 h-32 rounded-full object-cover"
-            />
-          </div>
-        )}
-
-        {previewUrl && showUpload && (
-          <div className="mt-4">
-            <button
-              onClick={handleImageUpload}
-              disabled={uploading}
-              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 disabled:bg-gray-400"
-            >
-              {uploading ? "กำลังอัพโหลด..." : "อัพโหลดรูปภาพ"}
-            </button>
-            <button
-              onClick={() => setShowUpload(false)}
-              className="ml-2 bg-gray-400 text-white px-4 py-2 rounded hover:bg-gray-500"
-            >
-              ยกเลิก
-            </button>
-          </div>
-        )}
-      </div> */}
 
       <form className="grid grid-cols-1 gap-6" onSubmit={handleSubmit}>
         {/* Username */}
@@ -369,12 +269,6 @@ const EditProfile = () => {
                 placeholder="background lecturer"
                 value={background}
                 onChange={(e) => setBackground(e.target.value)}
-                // onChange={(e) =>
-                //   setBackground((prev) => ({
-                //     ...prev,
-                //     history: e.target.value,
-                //   }))
-                // }
                 className="block w-full h-48 rounded-md border-gray-300 shadow-sm focus:border-[#8c0327] focus:ring-[#8c0327] focus:ring-opacity-50 p-2"
                 style={{ backgroundColor: "#f6f6f6", whiteSpace: "pre-wrap" }}
               ></textarea>
@@ -397,7 +291,7 @@ const EditProfile = () => {
             type="submit"
             className="block w-full bg-[#8c0327] hover:bg-[#6b0220] text-white font-bold py-3 px-4 rounded-full"
           >
-            สร้าง/บันทึกคอร์สใหม่
+            บันทึกการเปลี่ยนแปลงข้อมูล
           </button>
         </div>
       </form>

@@ -272,7 +272,7 @@ export function CourseView() {
                         </Button>
                         <Button
                           onClick={() => {
-                            Navigate("/view-student", {
+                            Navigate(`/view-student/${items.documentId}`, {
                               state: { Value: items },
                             });
                           }}

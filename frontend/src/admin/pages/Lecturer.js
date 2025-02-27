@@ -118,7 +118,6 @@ const LecturerAll = () => {
                     }}
                   >
                     <Delete className="w-4 h-4 sm:w-5 sm:h-5" />
-                    <span className="ml-1 sm:ml-2 text-sm">Delete</span>
                   </button>
                 </div>
 
