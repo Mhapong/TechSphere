@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import { AuthContext } from "../../context/Auth.context";
 import ax from "../../conf/ax";
-// import { SearchIcon } from "@heroicons/react";
 import Confirm from "../components/Image/confirm.png";
 import Unapproved from "../components/Image/unapproved.png";
 import Error from "../components/Image/404.png";
@@ -18,27 +17,37 @@ import conf from "../../conf/main";
 const FinanceOrder = () => {
   const { state: ContextState } = useContext(AuthContext);
   const { user } = ContextState;
-  const [searchTerm, setSearchTerm] = useState("");
   const [payments, setPayments] = useState([]);
   const [open, setOpen] = useState(false);
+  const [openNotapproved, setOpenNotapproved] = useState(false);
   const [queryPayments, setQueryPayments] = useState("");
   const [currentData, setCurrentData] = useState(null);
   const [detail, setDetail] = useState(null);
   const Navigate = useNavigate();
+  const [selectedReason, setSelectedReason] = useState("");
+
+  const handleReasonSelect = (reason) => {
+    setSelectedReason(reason);
+  };
 
   const openModal = (data, doc) => {
     setCurrentData(data);
     setDetail(doc);
-    console.log("Open modal...");
     setOpen(true);
   };
 
   const closeModal = () => {
     setCurrentData(null);
     setDetail(null);
-    console.log("Closing modal...");
     setOpen(false);
   };
+
+  const AllReason = [
+    "จำนวนเงินไม่ถูกต้อง",
+    "มีการปลอมแปลงสลิป",
+    "วันที่/ชื่อผู้โอนไม่ถูกต้อง",
+    "กรุณาทักแชทหา Admin",
+  ];
 
   const SendChat = async (value, selectedUser) => {
     try {
@@ -54,7 +63,7 @@ const FinanceOrder = () => {
     }
   };
 
-  const Approve = async (value, status) => {
+  const Approve = async (value, status, text = "") => {
     try {
       await ax.put(`confirm-purchases/${value.documentId}`, {
         data: {
@@ -83,7 +92,7 @@ const FinanceOrder = () => {
         );
       } else if (status === "unapproved") {
         SendChat(
-          `คอร์ส ${courses} ของคุณไม่ได้รับการอนุมัติ กรุณาตรวจสอบการชำระเงินอีกครั้ง`,
+          `คอร์ส ${courses} ของคุณไม่ได้รับการอนุมัติ เนื่องจาก${text} กรุณาตรวจสอบการชำระเงินอีกครั้ง`,
           value.users_purchase.id
         );
       }
@@ -93,9 +102,6 @@ const FinanceOrder = () => {
     }
   };
 
-  const handleSearch = () => {
-    setSearchTerm(queryPayments);
-  };
   const filteredPayments = queryPayments
     ? payments.filter(
         (payment) =>
@@ -244,9 +250,6 @@ const FinanceOrder = () => {
                   </p>
                 </div>
                 {payment.status_confirm === "confirmed" && (
-                  // <div className="bg-green-700 text-white text-2xl px-3 py-1 rounded-full">
-                  //   ยืนยันการชำระเงินแล้ว
-                  // </div>
                   <img
                     src={Confirm}
                     className="px-3 py-1 rounded-full"
@@ -255,9 +258,6 @@ const FinanceOrder = () => {
                   />
                 )}
                 {payment.status_confirm === "unapproved" && (
-                  // <div className="bg-green-700 text-white text-2xl px-3 py-1 rounded-full">
-                  //   ยืนยันการชำระเงินแล้ว
-                  // </div>
                   <img
                     src={Unapproved}
                     className="px-3 py-1 rounded-full"
@@ -350,10 +350,10 @@ const FinanceOrder = () => {
                 </button>
                 <button
                   type="button"
-                  onClick={() => Approve(detail, "unapproved")}
+                  onClick={() => setOpenNotapproved(true)}
                   className="mt-3 inline-flex w-full justify-center rounded-md border border-red-600 bg-red-800 px-4 py-2 text-base font-medium text-brown-50 shadow-sm hover:bg-red-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
                 >
-                  ไม่อนุมัติ
+                  ไม่อนุมัติ {selectedReason && `(${selectedReason})`}
                 </button>
                 <button
                   type="button"
@@ -367,7 +367,87 @@ const FinanceOrder = () => {
           </div>
         </div>
       </Dialog>
-      {/* </div> */}
+      <Dialog
+        open={openNotapproved}
+        onClose={() => setOpenNotapproved(false)}
+        className="relative z-50"
+      >
+        <DialogBackdrop
+          transition
+          className="fixed inset-0 bg-black/40 backdrop-blur-sm transition-opacity data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in"
+        />
+
+        <div className="fixed inset-0 z-50 w-screen overflow-y-auto">
+          <div className="flex min-h-full items-center justify-center p-4 text-center">
+            <DialogPanel
+              transition
+              className="relative w-full max-w-md transform overflow-hidden rounded-xl bg-white text-left shadow-xl transition-all data-closed:translate-y-4 data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in sm:my-8 sm:max-w-lg data-closed:sm:translate-y-0 data-closed:sm:scale-95"
+            >
+              <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                <div className="sm:flex sm:items-start">
+                  <div className="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
+                    <Edit className="h-6 w-6 text-red-600" aria-hidden="true" />
+                  </div>
+                  <div className="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
+                    <DialogTitle
+                      as="h3"
+                      className="text-lg font-medium leading-6 text-gray-900"
+                    >
+                      เลือกเหตุผลของการไม่อนุมัติ
+                    </DialogTitle>
+                    <div className="mt-4 space-y-1">
+                      {AllReason.map((reason, index) => (
+                        <button
+                          key={index}
+                          onClick={() => handleReasonSelect(reason)}
+                          className={`w-full rounded-md px-4 py-2.5 text-left text-sm transition-colors ${
+                            selectedReason === reason
+                              ? "bg-red-50 text-red-700 font-medium"
+                              : "text-gray-700 hover:bg-gray-100"
+                          }`}
+                        >
+                          {reason}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+                <button
+                  type="button"
+                  onClick={() => {
+                    Approve(detail, "unapproved", selectedReason);
+                    closeModal();
+                    setOpenNotapproved(false);
+                    setSelectedReason("");
+                  }}
+                  disabled={!selectedReason}
+                  className={`inline-flex w-full justify-center rounded-md px-4 py-2 text-sm font-medium text-white shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 sm:ml-3 sm:w-auto ${
+                    selectedReason
+                      ? "bg-red-600 hover:bg-red-700 focus:ring-red-500"
+                      : "bg-red-300 cursor-not-allowed"
+                  }`}
+                  title={!selectedReason ? "กรุณาเลือกเหตุผลก่อน" : ""}
+                >
+                  ไม่อนุมัติ {selectedReason && `(${selectedReason})`}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    closeModal();
+                    setOpenNotapproved(false);
+                    setSelectedReason("");
+                  }}
+                  className="mt-3 inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:mt-0 sm:ml-3 sm:w-auto"
+                >
+                  ยกเลิก
+                </button>
+              </div>
+            </DialogPanel>
+          </div>
+        </div>
+      </Dialog>
     </div>
   );
 };
