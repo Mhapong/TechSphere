@@ -135,7 +135,7 @@ export default function Nav() {
                         className={classNames(
                           item.current
                             ? " text-black hover:bg-gray-100 transition-all delay-[50]"
-                            : "text-gray-700 hover:bg-gray-50 hover:text-black",
+                            : "text-black hover:bg-gray-50 hover:text-black",
                           "rounded-md px-3 py-2 text-md font-medium"
                         )}
                         aria-current={item.current ? "page" : undefined}
@@ -379,7 +379,7 @@ export default function Nav() {
                   className={classNames(
                     item.current
                       ? "bg-white text-black"
-                      : "text-gray-600 hover:bg-gray-50 hover:text-gray-900",
+                      : "text-black hover:bg-gray-50 hover:text-gray-900",
                     "block rounded-md px-3 py-2 text-base font-medium"
                   )}
                   aria-current={item.current ? "page" : undefined}

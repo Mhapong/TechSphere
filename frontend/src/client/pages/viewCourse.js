@@ -43,6 +43,7 @@ export default function ViewCourse() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [openSections, setOpenSections] = useState({}); // ✅ จัดการ state ของ dropdown แต่ละหัวข้อ
+  const [isPending, setisPending] = useState(false);
 
   const baseURL = conf.apiUrl;
 
@@ -63,6 +64,16 @@ export default function ViewCourse() {
     }
   };
 
+  const fetchPending = async () => {
+    const response = await ax.get(
+      `http://localhost:1337/api/confirm-purchases?populate[0]=users_purchase&populate[1]=course_purchase&filters[status_confirm][$in][0]=waiting&filters[course_purchase][documentId][$in][1]=${documentId}`
+    );
+    console.log(response.data.data);
+    if (response?.data.data.length > 0) {
+      setisPending(true);
+    }
+  };
+
   const categories = [
     { name: "ALL", img: allpic, path: "ALL" },
     { name: "Web Develop", img: webpic, path: "Web Develop" },
@@ -75,6 +86,7 @@ export default function ViewCourse() {
 
   useEffect(() => {
     fetchCourse();
+    fetchPending();
     console.log(course);
     console.log(state.user?.id);
     if (
@@ -116,7 +128,7 @@ export default function ViewCourse() {
 
   return (
     <div className="bg-white min-h-screen">
-      <div className="bg-gradient-to-tl from-teal-800 to-black text-white py-16">
+      <div className="bg-gradient-to-tl from-teal-800 to-black text-white pt-4 pb-8 sm:py-16">
         <div className="container mx-auto w-full px-4 mb-2">
           <Breadcrumbs className="my-1 text-teal-50 bg-transparent">
             <a href="/" className="opacity-80 text-white hover:text-blue-700">
@@ -132,8 +144,8 @@ export default function ViewCourse() {
           </Breadcrumbs>
         </div>
         <div className="container mx-auto w-full px-4 flex flex-col md:flex-row overflow-visible">
-          <div className="md:w-2/3 pr-8 w-full order-2 md:order-1">
-            <h1 className="text-3xl font-bold mb-4">{course.Name}</h1>
+          <div className="md:w-2/3 pr-8 w-full order-1 md:order-1 mb-5">
+            <h1 className="text-3xl font-bold mb-4 ">{course.Name}</h1>
             <p className="text-xl mb-4">
               {course.Description === null
                 ? "ไม่มีการบรรยาย"
@@ -181,7 +193,7 @@ export default function ViewCourse() {
           </div>
 
           {/* Right Column */}
-          <div className="md:w-1/3 order-1 sm:pb-6 md:pb-6 md:order-2">
+          <div className="md:w-1/3 order-2  md:pb-6 md:order-2">
             <div className="overflow-visible sm:mt-5">
               <div className="bg-white min-h-full rounded-lg shadow-lg overflow-hidden">
                 <div className="h-48 w-full bg-gray-200 flex items-center justify-center">
@@ -201,7 +213,7 @@ export default function ViewCourse() {
                   </div>
                   <button
                     className={`w-full px-6 py-3 rounded-lg flex items-center justify-center text-white mb-4 ${
-                      isCourseInCart || isUserOwned
+                      isCourseInCart || isUserOwned || isPending
                         ? "bg-gray-500 cursor-not-allowed"
                         : "bg-teal-500 hover:bg-teal-700"
                     }`}
@@ -216,14 +228,16 @@ export default function ViewCourse() {
                             course_id: course.documentId,
                           })
                     }
-                    disabled={isCourseInCart || isUserOwned}
+                    disabled={isCourseInCart || isUserOwned || isPending}
                   >
                     <FaShoppingCart className="mr-2" />
-                    {!isUserOwned && !isCourseInCart
-                      ? "Add to Cart"
-                      : isCourseInCart && !isUserOwned
-                      ? "Already in cart"
-                      : "Already owned"}
+                    {!isUserOwned && !isCourseInCart && !isPending
+                      ? "เพิ่มลงรถเข็น"
+                      : isCourseInCart && !isUserOwned && !isPending
+                      ? "คอร์สอยู่ในรถเข็น"
+                      : !isCourseInCart && isUserOwned && !isPending
+                      ? "เป็นเจ้าของแล้ว"
+                      : "รอการอนุมัติ"}
                   </button>
                   <ul className="text-sm text-black">
                     <li className="flex items-center mb-2 text-black">
@@ -282,6 +296,13 @@ export default function ViewCourse() {
               </ul>
             </div>
 
+            <div className="container mx-auto px-4 mt-8">
+              <h2 className="text-2xl font-bold mb-4">รายละเอียด</h2>
+              <p>
+                {course.Description ? course.Description : "ไม่ระบุรายละเอียด"}
+              </p>
+            </div>
+
             <div className="container mx-auto px-4 py-8">
               <h2 className="text-2xl font-bold mb-4">เนื้อหาคอร์ส</h2>
               <div>
@@ -336,13 +357,8 @@ export default function ViewCourse() {
                 )}
               </div>
 
-              <div className="mb-8">
-                <h2 className="text-2xl font-bold mb-4">รายละเอียด</h2>
-                <p>{course.Description}</p>
-              </div>
-
               <div className="mt-6">
-                <h3 className="text-lg font-semibold mb-4">รีวิว</h3>
+                <h3 className="text-2xl font-semibold mb-4">รีวิว</h3>
                 {course.rating && course.rating.length > 0 ? (
                   course.rating.map((review, index) => (
                     <div key={index} className="mb-4 p-4 border rounded-lg">
@@ -371,11 +387,13 @@ export default function ViewCourse() {
                           </p>
                         </div>
                       </div>
-                      <p className="ml-2 text-gray-700">{review.comment}</p>
+                      <p className="ml-2  text-gray-700">{review.comment}</p>
                     </div>
                   ))
                 ) : (
-                  <p className="text-gray-500">ยังไม่มีรีวิวสำหรับคอร์สนี้</p>
+                  <p className="mb-4 p-4 bg-white rounded-lg text-gray-800 shadow-lg">
+                    ยังไม่มีรีวิวสำหรับคอร์สนี้
+                  </p>
                 )}
               </div>
 
@@ -440,7 +458,7 @@ export default function ViewCourse() {
                       </div>
                       <div className="text-center">
                         <div className="text-lg font-bold text-gray-900">
-                          200,000+
+                          มากกว่า 9000
                         </div>
                         <div className="text-sm text-gray-600">ผู้ติดตาม</div>
                       </div>
@@ -488,7 +506,7 @@ export default function ViewCourse() {
               </div>
             </div>
           </div>
-          <div className="md:w-0 relative hidden sm:hidden md:hidden lg:block lg:w-2/6">
+          <div className="md:w-0 relative hidden sm:hidden md:hidden lg:block lg:w-2/6 mb-16">
             <motion.div
               initial={{
                 opacity: 0,
@@ -502,7 +520,7 @@ export default function ViewCourse() {
                 y: 0,
               }}
               transition={{
-                duration: 0.5,
+                duration: 1,
               }}
               className="sticky top-20 overflow-visible"
             >
@@ -524,7 +542,7 @@ export default function ViewCourse() {
                   </div>
                   <button
                     className={`w-full px-6 py-3 rounded-lg flex items-center justify-center text-white mb-4 ${
-                      isCourseInCart || isUserOwned
+                      isCourseInCart || isUserOwned || isPending
                         ? "bg-gray-500 cursor-not-allowed"
                         : "bg-teal-500 hover:bg-teal-700"
                     }`}
@@ -539,14 +557,16 @@ export default function ViewCourse() {
                             course_id: course.documentId,
                           })
                     }
-                    disabled={(isCourseInCart, isUserOwned)}
+                    disabled={isCourseInCart || isUserOwned || isPending}
                   >
                     <FaShoppingCart className="mr-2" />
-                    {!isUserOwned && !isCourseInCart
-                      ? "Add to Cart"
-                      : isCourseInCart && !isUserOwned
-                      ? "Already in cart"
-                      : "Already owned"}
+                    {!isUserOwned && !isCourseInCart && !isPending
+                      ? "เพิ่มลงรถเข็น"
+                      : isCourseInCart && !isUserOwned && !isPending
+                      ? "คอร์สอยู่ในรถเข็น"
+                      : !isCourseInCart && isUserOwned && !isPending
+                      ? "เป็นเจ้าของแล้ว"
+                      : "รอการอนุมัติ"}
                   </button>
                   <ul className="text-sm text-black">
                     <li className="flex items-center mb-2 text-black">
