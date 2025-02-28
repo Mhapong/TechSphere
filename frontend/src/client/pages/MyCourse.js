@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import { AuthContext } from "../../context/Auth.context.js"
 import axios from "axios"
 
-// Review Modal Component with enhanced styling
+// ReviewModal Component ที่รองรับการแก้ไขรีวิวเพียง 1 ครั้ง
 const ReviewModal = ({
     isOpen,
     onClose,
@@ -22,6 +22,16 @@ const ReviewModal = ({
     hasReviewedCourses = {},
     refreshReviews,
 }) => {
+    console.log("selectedCourse.id:", selectedCourse?.id)
+    console.log("hasReviewedCourses:", hasReviewedCourses)
+    // State สำหรับควบคุมโหมดแก้ไขและตรวจสอบว่าทำการแก้ไขไปแล้วหรือยัง
+    const [isEditing, setIsEditing] = useState(false)
+    const [hasEdited, setHasEdited] = useState(false)
+    const [selectedReviewId, setSelectedReviewId] = useState(null)
+
+    // effectiveReadOnly: ถ้าอยู่ในโหมดอ่านอย่างเดียว (readOnly และไม่ได้อยู่ในโหมดแก้ไข)
+    const effectiveReadOnly = readOnly && !isEditing
+
     if (!isOpen) return null
 
     return (
@@ -39,7 +49,10 @@ const ReviewModal = ({
                     className="bg-white dark:bg-gray-800 rounded-xl shadow-xl p-6 max-w-md w-full relative border border-gray-200 dark:border-gray-700"
                 >
                     <button
-                        onClick={onClose}
+                        onClick={() => {
+                            setIsEditing(false)
+                            onClose()
+                        }}
                         className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
                     >
                         <svg
@@ -53,15 +66,20 @@ const ReviewModal = ({
                         </svg>
                     </button>
                     <h3 className="text-xl font-semibold mb-6 text-center text-gray-900 dark:text-white">
-                        {readOnly ? "Your Review" : "ให้คะแนน & รีวิวคอร์สเรียน"}
+                        {effectiveReadOnly
+                            ? "รีวิวที่คุณส่งไปแล้ว"
+                            : isEditing
+                                ? "แก้ไขรีวิวคอร์สเรียน"
+                                : "ให้คะแนน & รีวิวคอร์สเรียน"}
                     </h3>
                     <div className="flex justify-center mb-6 space-x-2">
                         {[1, 2, 3, 4, 5].map((num) => (
                             <button
                                 key={num}
-                                onClick={() => !readOnly && setRating(num)}
-                                className={`transform transition-transform hover:scale-110 ${num <= rating ? "text-yellow-400" : "text-gray-300"
-                                    }`}
+                                onClick={() => {
+                                    if (!effectiveReadOnly) setRating(num)
+                                }}
+                                className={`transform transition-transform hover:scale-110 ${num <= rating ? "text-yellow-400" : "text-gray-300"}`}
                             >
                                 <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" viewBox="0 0 20 20" fill="currentColor">
                                     <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-.181h3.461a1 1 0 00.951-.69l1.07-3.292z" />
@@ -72,14 +90,40 @@ const ReviewModal = ({
                     <textarea
                         placeholder="เขียนรีวิวคอร์สเรียน บอกเล่าประสบการณ์ที่ได้เรียนในคอร์ส :)"
                         value={comment}
-                        onChange={(e) => !readOnly && setComment(e.target.value)}
-                        className="w-full p-4 mb-6 border rounded-lg bg-gray-50 dark:bg-gray-700 border-gray-200 
-              dark:border-gray-600 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 
-              dark:focus:ring-blue-400 focus:border-transparent transition-all"
+                        onChange={(e) => {
+                            if (!effectiveReadOnly) setComment(e.target.value)
+                        }}
+                        className="w-full p-4 mb-6 border rounded-lg bg-gray-50 dark:bg-gray-700 border-gray-200 dark:border-gray-600 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent transition-all"
                         rows="4"
-                        readOnly={readOnly}
+                        readOnly={effectiveReadOnly}
                     />
-                    {!readOnly && (
+
+                    {/* ถ้าอยู่ในโหมดอ่านอย่างเดียวและยังไม่เคยแก้ไข ให้แสดงปุ่มแก้ไข */}
+                    {effectiveReadOnly && !hasEdited && (
+                        <motion.button
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                            onClick={() => {
+                                setIsEditing(true)
+                                if (hasReviewedCourses[String(selectedCourse.id)]) {
+                                    const reviewData = hasReviewedCourses[String(selectedCourse.id)]
+                                    setSelectedReviewId(reviewData.documentId)
+                                    console.log("Review Data:", reviewData)
+                                    console.log("Selected Review ID:", selectedReviewId)
+                                    setRating(reviewData.rating)
+                                    setComment(reviewData.comment)
+                                } else {
+                                    alert("ไม่พบข้อมูลรีวิวที่จะทำการแก้ไข")
+                                }
+                            }}
+                            className="w-full py-3 mb-4 text-white bg-yellow-500 hover:bg-yellow-600 rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-200"
+                        >
+                            แก้ไขรีวิว
+                        </motion.button>
+                    )}
+
+                    {/* แสดงปุ่มยืนยัน (สำหรับรีวิวใหม่หรือแก้ไข) */}
+                    {!effectiveReadOnly && (
                         <motion.button
                             whileHover={{ scale: 1.02 }}
                             whileTap={{ scale: 0.98 }}
@@ -89,41 +133,82 @@ const ReviewModal = ({
                                     alert("กรุณาให้คะแนนอย่างน้อย 1 ดาว")
                                     return
                                 }
-                                if (hasReviewedCourses[String(selectedCourse?.id)]) {
-                                    alert("คุณได้รีวิวคอร์สนี้ไปแล้ว")
-                                    onClose()
-                                    return
-                                }
-                                const isConfirmed = window.confirm("คุณแน่ใจหรือไม่ว่าต้องการส่งรีวิวนี้? หากยืนยันแล้วจะไม่สามารถแก้ไขได้อีก")
-                                if (!isConfirmed) return
+                                if (isEditing) {
+                                    if (!selectedReviewId) {
+                                        alert("ไม่พบ ID ของรีวิวที่ต้องการแก้ไข")
+                                        return
+                                    }
+                                    try {
+                                        console.log("PUT URL:", `/api/reviews/${selectedReviewId}`)
+                                        console.log("Selected Review ID:", selectedReviewId)
+                                        console.log("Payload:", {
+                                            data: {
+                                                star: rating,
+                                                comment,
+                                                review_id: selectedCourse?.id,
+                                                users_review: user?.id,
+                                            },
+                                        })
+                                        await ax.put(`/reviews/${selectedReviewId}`, {
+                                            data: { // ต้องมี data ครอบ!
+                                                star: rating,
+                                                comment,
+                                                review_id: selectedCourse?.id,
+                                                users_review: user?.id,
+                                            },
+                                        });
+                                        setHasReviewedCourses((prev) => ({
+                                            ...prev,
+                                            [String(selectedCourse.id)]: { ...prev[String(selectedCourse.id)], rating, comment },
+                                        }))
+                                        setHasEdited(true)
+                                        setIsEditing(false)
+                                        onClose()
+                                        setRating(0)
+                                        setComment("")
+                                        alert("รีวิวอัปเดตเรียบร้อยแล้ว!")
+                                    } catch (error) {
+                                        console.error("Error updating review:", error)
+                                        alert("เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง")
+                                    }
+                                } else {
+                                    if (hasReviewedCourses[String(selectedCourse?.id)]) {
+                                        alert("คุณได้รีวิวคอร์สนี้ไปแล้ว")
+                                        onClose()
+                                        return
+                                    }
+                                    const isConfirmed = window.confirm(
+                                        "คุณแน่ใจหรือไม่ว่าต้องการส่งรีวิวนี้? หากยืนยันแล้วจะไม่สามารถแก้ไขได้อีก"
+                                    )
+                                    if (!isConfirmed) return
 
-                                try {
-                                    const response = await ax.post("reviews?populate=*", {
-                                        data: {
-                                            star: rating,
-                                            comment,
-                                            review_id: selectedCourse?.id,
-                                            users_review: user?.id,
-                                        },
-                                    })
-                                    setHasReviewedCourses((prev) => ({
-                                        ...prev,
-                                        [String(selectedCourse.id)]: { rating, comment },
-                                    }))
-                                    onClose()
-                                    setRating(0)
-                                    setComment("")
-                                    alert("ส่งรีวิวเรียบร้อยแล้ว!")
-                                } catch (error) {
-                                    console.error("Error submitting review:", error)
-                                    alert("เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง")
+                                    try {
+                                        const response = await ax.post("reviews?populate=*", {
+                                            data: {
+                                                star: rating,
+                                                comment,
+                                                review_id: selectedCourse?.id,
+                                                users_review: user?.id,
+                                            },
+                                        })
+                                        setSelectedReviewId(response.data.data.id)
+                                        setHasReviewedCourses((prev) => ({
+                                            ...prev,
+                                            [String(selectedCourse.id)]: { id: response.data.data.id, rating, comment },
+                                        }))
+                                        onClose()
+                                        setRating(0)
+                                        setComment("")
+                                        alert("ส่งรีวิวเรียบร้อยแล้ว!")
+                                    } catch (error) {
+                                        console.error("Error submitting review:", error)
+                                        alert("เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง")
+                                    }
                                 }
                             }}
-                            className="w-full py-3 text-white bg-gradient-to-r from-blue-500 to-blue-600 
-                hover:from-blue-600 hover:to-blue-700 rounded-lg font-medium shadow-lg 
-                hover:shadow-xl transition-all duration-200"
+                            className="w-full py-3 text-white bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-200"
                         >
-                            ยืนยันการรีวิว
+                            {isEditing ? "ยืนยันการแก้ไข" : "ยืนยันการรีวิว"}
                         </motion.button>
                     )}
                 </motion.div>
@@ -147,6 +232,14 @@ const TeacherReviewModal = ({
     hasReviewedTeacher = {},
     refreshReviews,
 }) => {
+    // เพิ่ม state สำหรับควบคุมโหมดแก้ไข
+    const [isEditing, setIsEditing] = useState(false)
+    const [hasEdited, setHasEdited] = useState(false)
+    const [selectedReviewId, setSelectedReviewId] = useState(null)
+
+    // effectiveReadOnly: หากอยู่ในโหมดอ่านอย่างเดียวและไม่ได้อยู่ในโหมดแก้ไข
+    const effectiveReadOnly = readOnly && !isEditing
+
     if (!isOpen) return null
 
     return (
@@ -164,7 +257,10 @@ const TeacherReviewModal = ({
                     className="bg-white dark:bg-gray-800 rounded-xl shadow-xl p-6 max-w-md w-full relative border border-gray-200 dark:border-gray-700"
                 >
                     <button
-                        onClick={onClose}
+                        onClick={() => {
+                            setIsEditing(false)
+                            onClose()
+                        }}
                         className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
                     >
                         <svg
@@ -178,15 +274,20 @@ const TeacherReviewModal = ({
                         </svg>
                     </button>
                     <h3 className="text-xl font-semibold mb-6 text-center text-gray-900 dark:text-white">
-                        {readOnly ? "Your Review" : "ให้คะแนน & รีวิวอาจารย์ผู้สอน"}
+                        {effectiveReadOnly
+                            ? "รีวิวที่คุณส่งไปแล้ว"
+                            : isEditing
+                                ? "แก้ไขรีวิวอาจารย์ผู้สอน"
+                                : "ให้คะแนน & รีวิวอาจารย์ผู้สอน"}
                     </h3>
                     <div className="flex justify-center mb-6 space-x-2">
                         {[1, 2, 3, 4, 5].map((num) => (
                             <button
                                 key={num}
-                                onClick={() => !readOnly && setRating(num)}
-                                className={`transform transition-transform hover:scale-110 ${num <= rating ? "text-yellow-400" : "text-gray-300"
-                                    }`}
+                                onClick={() => {
+                                    if (!effectiveReadOnly) setRating(num)
+                                }}
+                                className={`transform transition-transform hover:scale-110 ${num <= rating ? "text-yellow-400" : "text-gray-300"}`}
                             >
                                 <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" viewBox="0 0 20 20" fill="currentColor">
                                     <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-.181h3.461a1 1 0 00.951-.69l1.07-3.292z" />
@@ -197,14 +298,40 @@ const TeacherReviewModal = ({
                     <textarea
                         placeholder="เขียนรีวิวอาจารย์ผู้สอน เพื่อการปรับปรุงคุณภาพการสอนที่ดีมากยิ่งขึ้น :)"
                         value={comment}
-                        onChange={(e) => !readOnly && setComment(e.target.value)}
-                        className="w-full p-4 mb-6 border rounded-lg bg-gray-50 dark:bg-gray-700 border-gray-200 
-              dark:border-gray-600 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 
-              dark:focus:ring-blue-400 focus:border-transparent transition-all"
+                        onChange={(e) => {
+                            if (!effectiveReadOnly) setComment(e.target.value)
+                        }}
+                        className="w-full p-4 mb-6 border rounded-lg bg-gray-50 dark:bg-gray-700 border-gray-200 dark:border-gray-600 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent transition-all"
                         rows="4"
-                        readOnly={readOnly}
+                        readOnly={effectiveReadOnly}
                     />
-                    {!readOnly && (
+
+                    {/* ถ้าอยู่ในโหมดอ่านอย่างเดียวและยังไม่เคยแก้ไข ให้แสดงปุ่มแก้ไข */}
+                    {effectiveReadOnly && !hasEdited && (
+                        <motion.button
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                            onClick={() => {
+                                setIsEditing(true)
+                                if (hasReviewedTeacher[String(selectedTeacher.id)]) {
+                                    const reviewData = hasReviewedTeacher[String(selectedTeacher.id)]
+                                    // คาดว่า reviewData จะต้องมีฟิลด์ id (ถ้า API ส่งมาให้)
+                                    setSelectedReviewId(reviewData.documentId)  
+                                    
+                                    setRating(reviewData.rating)
+                                    setComment(reviewData.comment)
+                                } else {
+                                    alert("ไม่พบข้อมูลรีวิวที่จะทำการแก้ไข")
+                                }
+                            }}
+                            className="w-full py-3 mb-4 text-white bg-yellow-500 hover:bg-yellow-600 rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-200"
+                        >
+                            แก้ไขรีวิว
+                        </motion.button>
+                    )}
+
+                    {/* แสดงปุ่มยืนยันสำหรับรีวิวใหม่หรือแก้ไข */}
+                    {!effectiveReadOnly && (
                         <motion.button
                             whileHover={{ scale: 1.02 }}
                             whileTap={{ scale: 0.98 }}
@@ -214,41 +341,71 @@ const TeacherReviewModal = ({
                                     alert("กรุณาให้คะแนนอย่างน้อย 1 ดาว")
                                     return
                                 }
-                                if (hasReviewedTeacher[String(selectedTeacher?.id)]) {
-                                    alert("คุณได้รีวิวอาจารย์ท่านนี้ไปแล้ว")
-                                    onClose()
-                                    return
-                                }
-                                const isConfirmed = window.confirm("คุณแน่ใจหรือไม่ว่าต้องการส่งรีวิวนี้? หากยืนยันแล้วจะไม่สามารถแก้ไขได้อีก")
-                                if (!isConfirmed) return
+                                if (isEditing) {
+                                    if (!selectedReviewId) {
+                                        alert("ไม่พบ ID ของรีวิวที่ต้องการแก้ไข")
+                                        return
+                                    }
+                                    try {
+                                        await ax.put(`/lecturer-reviews/${selectedReviewId}`, {
+                                            data: {
+                                                star: rating,
+                                                comment,
+                                                lecturer_review_id: selectedTeacher?.id,
+                                                review: user?.id,
+                                            },
+                                        })
+                                        setHasReviewedTeacher((prev) => ({
+                                            ...prev,
+                                            [String(selectedTeacher.id)]: { ...prev[String(selectedTeacher.id)], rating, comment },
+                                        }))
+                                        setHasEdited(true)
+                                        setIsEditing(false)
+                                        onClose()
+                                        setRating(0)
+                                        setComment("")
+                                        alert("รีวิวอาจารย์อัปเดตเรียบร้อยแล้ว!")
+                                    } catch (error) {
+                                        console.error("Error updating teacher review:", error)
+                                        alert("เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง")
+                                    }
+                                } else {
+                                    if (hasReviewedTeacher[String(selectedTeacher?.id)]) {
+                                        alert("คุณได้รีวิวอาจารย์ท่านนี้ไปแล้ว")
+                                        onClose()
+                                        return
+                                    }
+                                    const isConfirmed = window.confirm("คุณแน่ใจหรือไม่ว่าต้องการส่งรีวิวนี้? หากยืนยันแล้วจะไม่สามารถแก้ไขได้อีก")
+                                    if (!isConfirmed) return
 
-                                try {
-                                    const response = await ax.post("lecturer-reviews?populate=*", {
-                                        data: {
-                                            star: rating,
-                                            comment,
-                                            review: user?.id,
-                                            lecturer_review_id: selectedTeacher?.id,
-                                        },
-                                    })
-                                    setHasReviewedTeacher((prev) => ({
-                                        ...prev,
-                                        [String(selectedTeacher.id)]: { rating, comment },
-                                    }))
-                                    onClose()
-                                    setRating(0)
-                                    setComment("")
-                                    alert("ส่งรีวิวอาจารย์เรียบร้อยแล้ว!")
-                                } catch (error) {
-                                    console.error("Error submitting review:", error)
-                                    alert("เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง")
+                                    try {
+                                        const response = await ax.post("lecturer-reviews?populate=*", {
+                                            data: {
+                                                star: rating,
+                                                comment,
+                                                lecturer_review_id: selectedTeacher?.id,
+                                                review: user?.id,
+                                            },
+                                        })
+                                        // คาดว่า response.data.data จะมี id ของรีวิวที่สร้างขึ้น
+                                        setSelectedReviewId(response.data.data.id)
+                                        setHasReviewedTeacher((prev) => ({
+                                            ...prev,
+                                            [String(selectedTeacher.id)]: { id: response.data.data.id, rating, comment },
+                                        }))
+                                        onClose()
+                                        setRating(0)
+                                        setComment("")
+                                        alert("ส่งรีวิวอาจารย์เรียบร้อยแล้ว!")
+                                    } catch (error) {
+                                        console.error("Error submitting teacher review:", error)
+                                        alert("เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง")
+                                    }
                                 }
                             }}
-                            className="w-full py-3 text-white bg-gradient-to-r from-blue-500 to-blue-600 
-                hover:from-blue-600 hover:to-blue-700 rounded-lg font-medium shadow-lg 
-                hover:shadow-xl transition-all duration-200"
+                            className="w-full py-3 text-white bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-200"
                         >
-                            ยืนยันการรีวิว
+                            {isEditing ? "ยืนยันการแก้ไข" : "ยืนยันการรีวิว"}
                         </motion.button>
                     )}
                 </motion.div>
@@ -256,6 +413,9 @@ const TeacherReviewModal = ({
         </AnimatePresence>
     )
 }
+
+
+
 
 // Main Component
 export default function MyCourse() {
@@ -280,6 +440,7 @@ export default function MyCourse() {
     const { state } = useContext(AuthContext)
     const BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:1337"
     // ฟังก์ชันดึงข้อมูลรีวิวจาก Backend
+    // ใน Main Component (ส่วน fetchAllReviews)
     const fetchAllReviews = useCallback(
         async (currentUser) => {
             if (!currentUser) return
@@ -296,14 +457,15 @@ export default function MyCourse() {
                 const reviewedCourses = {}
 
                 response.data.data.forEach((review) => {
-                    // ✅ ใช้ optional chaining ป้องกัน error ถ้าข้อมูลบางตัวหาย
                     const courseId = String(review.review_id?.id)
                     const userId = String(review.users_review?.id)
 
                     if (userId === String(currentUser.id)) {
                         reviewedCourses[courseId] = {
-                            rating: review.star ?? 0, // ⭐ ใส่ default ถ้าไม่มีคะแนน
-                            comment: review.comment ?? "", // 💬 ใส่ default ถ้าไม่มีคอมเมนต์
+                            id: review.id,
+                            documentId: review.documentId,
+                            rating: review.star ?? 0,
+                            comment: review.comment ?? "",
                         }
                     }
                 })
@@ -315,38 +477,41 @@ export default function MyCourse() {
             }
         },
         [BASE_URL],
-    ) // ✅ เพิ่ม BASE_URL เป็น dependency
+    )
+
 
     // Add fetchTeacherReviews function in MyCourse component
     const fetchTeacherReviews = useCallback(
         async (currentUser) => {
             if (!currentUser) return
-
+    
             try {
                 const params = {
-                    populate: "*", // ✅ ดึงข้อมูลทุกความสัมพันธ์
-                    "filters[review][id][$eq]": currentUser.id, // ✅ ฟิลเตอร์เฉพาะรีวิวของ currentUser
+                    populate: "*", // ดึงข้อมูลทุกความสัมพันธ์
+                    "filters[review][id][$eq]": currentUser.id, // ฟิลเตอร์เฉพาะรีวิวของ currentUser
                 }
-
+    
                 const response = await axios.get(`${BASE_URL}/api/lecturer-reviews`, {
                     params,
                 })
                 console.log("Teacher Reviews API Response:", response.data)
-
+    
                 const reviewedTeachers = {}
-
+    
                 response.data.data.forEach((review) => {
                     const teacherId = String(review.lecturer_review_id?.id)
                     const userId = String(review.review?.id)
-
+    
                     if (userId === String(currentUser.id)) {
                         reviewedTeachers[teacherId] = {
+                            documentId: review.documentId,
+                            
                             rating: review.star ?? 0,
                             comment: review.comment ?? "",
                         }
                     }
                 })
-
+    
                 console.log("🎯 Reviewed Teachers Data:", reviewedTeachers)
                 setHasReviewedTeacher(reviewedTeachers)
             } catch (error) {
@@ -354,7 +519,8 @@ export default function MyCourse() {
             }
         },
         [BASE_URL],
-    ) // ✅ เพิ่ม BASE_URL เป็น dependency
+    )
+    
 
     useEffect(() => {
         const fetchData = async () => {
@@ -455,6 +621,7 @@ export default function MyCourse() {
         setHasReviewedCourses: setHasReviewedCourses,
         refreshReviews: fetchAllReviews,
         readOnly: selectedCourse ? !!hasReviewedCourses[String(selectedCourse.id)] : false,
+        hasReviewedCourses: hasReviewedCourses,
     }
 
     const teacherReviewModalProps = {
@@ -722,4 +889,3 @@ export default function MyCourse() {
         </div>
     )
 }
-
