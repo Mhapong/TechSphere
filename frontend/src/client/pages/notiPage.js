@@ -1,20 +1,20 @@
 import { useEffect, useState } from "react";
 import ax from "../../conf/ax";
-import { Copy, CheckCircle, Calendar, Tag } from "lucide-react";
+import { Copy, CheckCircle, Calendar } from "lucide-react";
+import conf from "../../conf/main";
 
 export default function NotificationPage() {
   const [promotions, setPromotions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [copiedCode, setCopiedCode] = useState(null);
-  const baseURL = "http://localhost:1337";
+  const baseURL = conf.apiUrl;
 
   const fetchNotifications = async () => {
     try {
       setLoading(true);
       const response = await ax.get("/promotions?populate=*");
       setPromotions(response.data.data);
-      console.log(response.data.data);
       setLoading(false);
     } catch (err) {
       setError("Failed to load promotions. Please try again later.");

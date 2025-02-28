@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import ax from "../../conf/ax";
-import { Toaster } from "sonner";
 
 // Import images
 import homepic from "../components/home-page.png";
@@ -14,8 +13,8 @@ import hardwarepic from "../components/hardware.png";
 import networkpic from "../components/network.png";
 import gamepic from "../components/game.png";
 import morepic from "../components/more.png";
-import no_image from "../components/No_Image_Available.jpeg";
 import { Rating } from "@mui/material";
+import conf from "../../conf/main";
 
 const categories = [
   { name: "Web Develop", img: webpic, path: "Web Develop" },
@@ -29,7 +28,7 @@ const categories = [
 export default function Home() {
   const navigate = useNavigate();
   const [courseData, setCourseData] = useState([]);
-  const baseURL = "http://localhost:1337";
+  const baseURL = conf.apiUrl;
 
   useEffect(() => {
     fetchCourses();
@@ -41,7 +40,6 @@ export default function Home() {
       const topCourse = response.data.data
         .sort((a, b) => b.user_owner.length - a.user_owner.length)
         .slice(0, 3);
-      console.log(response.data.data);
       setCourseData(topCourse);
     } catch (error) {
       console.error("Error fetching courses:", error);

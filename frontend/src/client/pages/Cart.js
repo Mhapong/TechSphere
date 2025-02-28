@@ -4,14 +4,15 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useCart } from "../../context/Cart.context";
 import ax from "../../conf/ax";
 import { toast } from "sonner";
-import { ShoppingCart, Tag, Image, TrashIcon, ClockIcon } from "lucide-react";
+import { ShoppingCart, TrashIcon } from "lucide-react";
 import { Rating } from "@mui/material";
 import { PhotoIcon } from "@heroicons/react/24/outline";
+import conf from "../../conf/main";
 
 const Cart = () => {
   const { cartItems, removeFromCart } = useCart();
   const navigate = useNavigate();
-  const baseURL = process.env.REACT_APP_API_URL || "http://localhost:1337";
+  const baseURL = conf.apiUrl;
   const [promoCode, setPromoCode] = useState("");
   const [discount, setDiscount] = useState(0);
   const [suggestedCourses, setSuggestedCourses] = useState([]);
@@ -24,7 +25,6 @@ const Cart = () => {
   useEffect(() => {
     fetchSuggestedCourses();
     fetchAllPromoCode();
-    console.log(cartItems);
   }, []);
 
   const fetchSuggestedCourses = async () => {

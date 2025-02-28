@@ -1,13 +1,12 @@
 "use client";
 
-import { Breadcrumbs, rating, Tooltip } from "@material-tailwind/react";
+import { Breadcrumbs, Tooltip } from "@material-tailwind/react";
 import { useEffect, useState, useContext } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useCart } from "../../context/Cart.context";
 import { AuthContext } from "../../context/Auth.context";
 import usericon from "../../admin/components/Image/user-icon.webp";
 import {
-  FaStar,
   FaClock,
   FaShoppingCart,
   FaPlay,
@@ -29,7 +28,6 @@ import networkpic from "../components/network.png";
 import gamepic from "../components/game.png";
 import morepic from "../components/more.png";
 import allpic from "../../admin/components/Image/All.png";
-import { fontSize, sizing } from "@mui/system";
 import { Rating } from "@mui/material";
 import YouTubeIcon from "@mui/icons-material/YouTube";
 import FacebookIcon from "@mui/icons-material/Facebook";
@@ -38,11 +36,11 @@ export default function ViewCourse() {
   const navigate = useNavigate();
   const { state } = useContext(AuthContext);
   const { addToCart, cartItems } = useCart();
-  const { name, documentId } = useParams();
+  const { documentId } = useParams();
   const [course, setCourse] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [openSections, setOpenSections] = useState({}); // ✅ จัดการ state ของ dropdown แต่ละหัวข้อ
+  const [openSections, setOpenSections] = useState({});
   const [isPending, setisPending] = useState(false);
 
   const baseURL = conf.apiUrl;
@@ -54,8 +52,6 @@ export default function ViewCourse() {
       );
       const now_course = response.data.data;
       setCourse(now_course[0]);
-
-      console.log(now_course[0]);
     } catch (err) {
       setError(err);
       console.error(err);
@@ -66,9 +62,8 @@ export default function ViewCourse() {
 
   const fetchPending = async () => {
     const response = await ax.get(
-      `http://localhost:1337/api/confirm-purchases?populate[0]=users_purchase&populate[1]=course_purchase&filters[status_confirm][$in][0]=waiting&filters[course_purchase][documentId][$in][1]=${documentId}`
+      `confirm-purchases?populate[0]=users_purchase&populate[1]=course_purchase&filters[status_confirm][$in][0]=waiting&filters[course_purchase][documentId][$in][1]=${documentId}`
     );
-    console.log(response.data.data);
     if (response?.data.data.length > 0) {
       setisPending(true);
     }
@@ -87,8 +82,6 @@ export default function ViewCourse() {
   useEffect(() => {
     fetchCourse();
     fetchPending();
-    console.log(course);
-    console.log(state.user?.id);
     if (
       course &&
       course?.user_owner?.some((owner) => owner?.id === state.user?.id)

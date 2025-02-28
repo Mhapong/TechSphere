@@ -1,5 +1,3 @@
-"use client";
-
 import { useContext, useEffect, useState } from "react";
 import QRCode from "qrcode";
 import generatePayload from "promptpay-qr";
@@ -8,7 +6,6 @@ import { AuthContext } from "../../context/Auth.context";
 import { useCart } from "../../context/Cart.context";
 import ax from "../../conf/ax";
 import promptpay from "../components/promptpay2.png";
-import logo from "../components/logo.png";
 import Tippy from "@tippyjs/react";
 import "tippy.js/dist/tippy.css";
 
@@ -27,7 +24,6 @@ export default function BuyProduct() {
 
   useEffect(() => {
     generateQRCode();
-    console.log(location.state.cartItems);
   }, []);
 
   const generateQRCode = async () => {
@@ -101,7 +97,6 @@ export default function BuyProduct() {
           picture_purchase: [{ id, url }],
         },
       });
-      console.log(courseIds);
 
       courseIds.forEach((courseId) => {
         if (courseId) {

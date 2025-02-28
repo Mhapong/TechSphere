@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useReducer } from "react";
+import conf from "../conf/main";
 
 const CartContext = createContext(null);
 
@@ -37,7 +38,7 @@ const CartProvider = ({ children }) => {
         Time_Usage: course.Time_Usage,
         image:
           course.image?.length > 0
-            ? `http://localhost:1337${course.image[0].url}`
+            ? `${conf.apiUrl}${course.image[0].url}`
             : null,
         lecturer_owner: course.lecturer_owner
           ? `${course.lecturer_owner.first_name} ${course.lecturer_owner.last_name}`

@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react";
-import { Link, Navigate, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Disclosure, Menu, Transition } from "@headlessui/react";
 import { Bars3Icon, BellIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { FaCartShopping } from "react-icons/fa6";
@@ -28,7 +28,6 @@ export default function Nav() {
   const fetchPromotion = async () => {
     const promotion = await ax.get("/promotions");
     setNotifications(promotion.data.data);
-    console.log(notifications);
   };
 
   useEffect(() => {
@@ -45,10 +44,7 @@ export default function Nav() {
     { name: "สำรวจคอร์ส", href: "/explore", current: true },
     { name: "เกี่ยวกับเรา", href: "/about", current: true },
     ...(isAuthenticated
-      ? [
-          { name: "สำรวจตัวเอง", href: "/suggest-course", current: false },
-          { name: "คอร์สของคุณ", href: "/my-course", current: false },
-        ]
+      ? [{ name: "คอร์สของคุณ", href: "/my-course", current: false }]
       : []),
   ];
 
@@ -320,6 +316,19 @@ export default function Nav() {
                               )}
                             >
                               สถานะการซื้อ
+                            </Link>
+                          )}
+                        </Menu.Item>
+                        <Menu.Item>
+                          {({ active }) => (
+                            <Link
+                              to="/suggest-course"
+                              className={classNames(
+                                active ? "bg-gray-100" : "",
+                                "block px-4 py-2 text-sm text-gray-700"
+                              )}
+                            >
+                              สำรวจตัวเอง
                             </Link>
                           )}
                         </Menu.Item>

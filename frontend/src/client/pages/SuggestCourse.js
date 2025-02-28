@@ -1,10 +1,8 @@
-"use client";
-
-import { useContext, useEffect, useState, useCallback, useRef } from "react";
-import { AuthContext } from "../../context/Auth.context";
+import { useState } from "react";
+// import { AuthContext } from "../../context/Auth.context";
 // import ax from "../../conf/ax";
-import { useParams, useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
+// import { motion } from "framer-motion";
 import {
   Dialog,
   DialogBackdrop,
@@ -14,8 +12,8 @@ import {
 // import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 
 export default function SuggestCourse() {
-  const { state } = useContext(AuthContext);
-  const { documentId } = useParams();
+  // const { state } = useContext(AuthContext);
+  // const { documentId } = useParams();
   const navigate = useNavigate();
   //   const BASE_URL = conf.apiUrl;
   const [openCourse, setOpenCourse] = useState(false);
@@ -118,7 +116,7 @@ export default function SuggestCourse() {
               </p>
               <div className="flex flex-col sm:flex-row items-center sm:items-center justify-between w-full">
                 <div className="hidden sm:flex justify-start">
-                  <span className="text-sm text-gray-500 sm:mr-2">
+                  <span className="text-sm text-black sm:mr-2">
                     ชอบน้อยที่สุด
                   </span>
                 </div>
@@ -153,7 +151,7 @@ export default function SuggestCourse() {
                 </div>
 
                 <div className="hidden sm:flex justify-end">
-                  <span className="text-sm text-gray-500 sm:ml-2">
+                  <span className="text-sm text-black sm:ml-2">
                     ชอบมากที่สุด
                   </span>
                 </div>

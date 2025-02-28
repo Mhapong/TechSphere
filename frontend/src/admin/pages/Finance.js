@@ -122,9 +122,9 @@ const FinanceOrder = () => {
   const fetchConfirmPurchase = async () => {
     try {
       const response = await ax.get("confirm-purchases?populate=*");
-      const sortPayments = response.data.data.sort(
-        (a, b) => a.createdAt - b.createdAt
-      );
+      const sortPayments = response.data.data.sort((a, b) => {
+        return new Date(b.updatedAt) - new Date(a.updatedAt);
+      });
       setPayments(sortPayments);
     } catch (e) {
       console.log("error", e);
@@ -188,7 +188,6 @@ const FinanceOrder = () => {
         {filteredPayments.length > 0 ? (
           filteredPayments.map((payment) => (
             <div
-              key={payment.id}
               className={`relative group rounded-xl p-5 shadow-lg transition-all duration-300 transform hover:scale-105 ${
                 payment.status_confirm === "confirmed"
                   ? "bg-gradient-to-r from-green-50 to-green-100 border-2 border-green-200 hover:shadow-green-200/50"

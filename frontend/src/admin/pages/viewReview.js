@@ -22,7 +22,7 @@ const ReviewAdmin = () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await ax.get(`${BASE_URL}/api/users`, {
+      const response = await ax.get(`users`, {
         params: {
           "filters[role][name][$eq]": "Lecturer",
           populate: ["rating", "profile_picture"],
@@ -71,11 +71,10 @@ const ReviewAdmin = () => {
   };
 
   const getImageUrl = (imageArray) => {
-    const BASE_URL = conf.apiUrl;
     if (Array.isArray(imageArray) && imageArray.length > 0) {
       const imageObj = imageArray[0];
       const imageUrl = imageObj.formats?.thumbnail?.url || imageObj.url;
-      return imageUrl ? `${BASE_URL}${imageUrl}` : "/placeholder.svg";
+      return imageUrl ? `${conf.apiUrl}${imageUrl}` : "/placeholder.svg";
     }
     return "/placeholder.svg";
   };

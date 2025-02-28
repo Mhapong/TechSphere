@@ -1,15 +1,12 @@
-"use client";
-
-import { useContext, useEffect, useState, useCallback, useRef } from "react";
-import { AuthContext } from "../../context/Auth.context";
+import { useEffect, useState, useCallback, useRef } from "react";
 import ax from "../../conf/ax";
 import { useParams } from "react-router-dom";
 import { motion } from "framer-motion";
+import conf from "../../conf/main";
 
 export default function LecturerProfile() {
-  const { state } = useContext(AuthContext);
   const { name } = useParams();
-  const BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:1337";
+  const BASE_URL = conf.apiUrl;
   const [lecturer, setLecturer] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -22,18 +19,14 @@ export default function LecturerProfile() {
       str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
     const [firstName, lastName] = name.split("-").map(capitalize);
 
-    console.log("Searching for:", firstName, lastName);
-
     try {
-      const response = await ax.get(`${BASE_URL}/api/users`, {
+      const response = await ax.get(`users`, {
         params: {
           "filters[first_name][$eq]": firstName,
           "filters[last_name][$eq]": lastName,
           populate: ["created_courses.image", "rating", "profile_picture"],
         },
       });
-
-      console.log("API Response:", response.data);
 
       if (response.data?.length > 0) {
         setLecturer(response.data[0]);
@@ -49,7 +42,6 @@ export default function LecturerProfile() {
 
   useEffect(() => {
     fetchLecturer();
-    console.log("useParams name:", name);
   }, [fetchLecturer, name]);
 
   useEffect(() => {

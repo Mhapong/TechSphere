@@ -1,5 +1,5 @@
 import React from "react";
-import { useState } from "react";
+// import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useSetState } from "react-use";
@@ -15,7 +15,7 @@ export default function SignUp(props) {
     password: "",
   };
   const [state, setState] = useSetState(initialState);
-  const [errMsg, setErrMsg] = useState(null);
+  // const [errMsg, setErrMsg] = useState(null);
   const navigate = useNavigate();
 
   const onSubmit = async (e) => {
@@ -23,13 +23,10 @@ export default function SignUp(props) {
     try {
       const url = `${conf.apiUrl}/api/auth/local/register`;
 
-      const data = await axios.post(url, state);
-      console.log(data);
+      await axios.post(url, state);
       navigate("/login");
     } catch (error) {
       console.log({ error });
-      setErrMsg(error.message);
-    } finally {
     }
   };
 
