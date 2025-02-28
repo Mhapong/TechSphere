@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 // import ax from "../../conf/ax";
 import usericon from "../components/Image/user-icon.webp";
-import { useLocation, useNavigate, useParams } from "react-router";
-import { Delete } from "@mui/icons-material";
+import { useNavigate, useParams } from "react-router";
+import { Add } from "@mui/icons-material";
 import ax from "../../conf/ax";
 import {
   Dialog,
@@ -13,71 +13,43 @@ import {
 import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 import { progress } from "@material-tailwind/react";
 
-const CourseStudentTable = () => {
+const CourseStudentAllTable = () => {
   const [Student, setStudent] = useState([]);
   const Navigate = useNavigate();
-  const location = useLocation();
-  const { Value } = location.state || {};
   const [open, setOpen] = useState(false);
-  const [DeleteStudent, setDeleteStudent] = useState([]);
-  const { courseid } = useParams();
-  console.log(Value);
+  const [AddStudent, setAddStudent] = useState([]);
+  const { nameCourse, courseid } = useParams();
+
   useEffect(() => {
-    if (Value) {
-      setStudent(Value.user_owner);
-    }
-    fetchCourse();
-    // }
+    fetchStudent();
   }, []);
 
-  const handleDelete = async (userid) => {
+  const handleAdd = async (userid) => {
     try {
-      const AllStudent = Student.map((itmes) => itmes.id);
-      const totalUser = AllStudent
-        ? AllStudent.filter((item) => item !== userid)
-        : [];
       await ax.put(`courses/${courseid}`, {
         data: {
-          user_owner: totalUser,
+          user_owner: {
+            connect: userid,
+          },
         },
       });
       const response = await ax.get(`courses/${courseid}?populate=*`);
-      setStudent(response.data.data.user_owner);
+      Navigate(`/view-student/${courseid}`, {
+        state: { Value: response.data.data },
+      });
     } catch (err) {
       console.log(err);
     }
   };
 
-  const fetchCourse = async () => {
+  const fetchStudent = async () => {
     try {
-      let User;
       const response = await ax.get(
-        `courses/${courseid}?populate[sum_progresses][populate]=*`
+        `users?filters[role][name][$eq]=User&populate=owned_course`
       );
-      if (!Value) {
-        User = response.data.data.sum_progresses.map((item) => ({
-          id: item.course_progress_owner.id,
-          first_name: item.course_progress_owner.first_name,
-          last_name: item.course_progress_owner.last_name,
-          username: item.course_progress_owner.username,
-          confirmed: item.course_progress_owner.confirmed,
-          email: item.course_progress_owner.email,
-        }));
-      } else {
-        User = Value?.user_owner;
-      }
-      const progresses = response.data.data.sum_progresses.map((item) => ({
-        id: item.course_progress_owner.id,
-        course_progress: item.course_progress,
-      }));
-      const updatedStudents = User.map((student) => {
-        const progressData = progresses.find((p) => p.id === student.id);
-        return {
-          ...student,
-          course_progress: progressData ? progressData.course_progress : "0",
-        };
-      });
-      setStudent(updatedStudents);
+      console.log(response.data);
+      console.log(response.data);
+      setStudent(response.data);
     } catch (error) {
       console.error("Error fetching team members:", error);
     }
@@ -88,11 +60,10 @@ const CourseStudentTable = () => {
       <div className="w-full lg:w-[1200px] mt-11 lg:ml-96 max-w-7xl p-4">
         <div className="mx-auto max-w-screen-sm text-center mb-8 lg:mb-16">
           <h2 className="mb-4 text-4xl tracking-tight font-extrabold text-gray-900 dark:text-white">
-            นักเรียนของคอร์ส {Value.Name}
+            นักเรียนทั้งหมด
           </h2>
           <p className="font-light text-gray-500 lg:mb-16 sm:text-xl dark:text-gray-400">
-            นักเรียนที่ไว้ใจและเลือกเรียนกับ TechSphere คอร์ส [{Value.Name}]{" "}
-            ทั้งหมด {Student.length} คน
+            กำลังเพิ่มนักเรียน ในคอร์ส [{nameCourse}]
           </p>
         </div>
         <div className="relative overflow-hidden bg-white shadow-md dark:bg-gray-800 sm:rounded-lg">
@@ -102,30 +73,6 @@ const CourseStudentTable = () => {
                 <span className="text-gray-900">นักเรียนทั้งหมด : </span>
                 <span className="dark:text-white">{Student.length}</span>
               </h5>
-            </div>
-            <div className="flex flex-col flex-shrink-0 space-y-3 md:flex-row md:items-center lg:justify-end md:space-y-0 md:space-x-3">
-              <button
-                onClick={() =>
-                  Navigate(`/view-studentall/${Value.Name}/${courseid}`)
-                }
-                type="button"
-                className="flex items-center justify-center px-4 py-2 text-sm font-medium text-back rounded-lg bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800"
-              >
-                <svg
-                  className="h-3.5 w-3.5 mr-2"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                  xmlns="http://www.w3.org/2000/svg"
-                  aria-hidden="true"
-                >
-                  <path
-                    clipRule="evenodd"
-                    fillRule="evenodd"
-                    d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
-                  />
-                </svg>
-                เพิ่มนักเรียนใหม่
-              </button>
             </div>
           </div>
           <div className="overflow-x-auto">
@@ -142,17 +89,10 @@ const CourseStudentTable = () => {
                     Email
                   </th>
                   <th scope="col" className="px-4 py-3 whitespace-nowrap">
-                    ความคืบหน้า
-                  </th>
-                  <th scope="col" className="px-4 py-3 whitespace-nowrap">
                     การยืนยันตัวตน
                   </th>
-                  {/* <th scope="col" className="px-4 py-3 whitespace-nowrap">
-                    เงินรวม
-                  </th> */}
-
                   <th scope="col" className="flex ml-3 px-4 py-3">
-                    ลบ
+                    เพิ่ม
                   </th>
                 </tr>
               </thead>
@@ -181,12 +121,6 @@ const CourseStudentTable = () => {
                       </span>
                     </td>
                     <td className="px-4 py-2 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                      <div className="flex items-center ml-3">
-                        {/* <div className="inline-block w-4 h-4 mr-2 bg-green-700 rounded-full"></div> */}
-                        {value?.course_progress}
-                      </div>
-                    </td>
-                    <td className="px-4 py-2 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                       <span
                         className={`inline-block pt-2 px-3 py-1 text-sm font-semibold rounded-full ${
                           value.confirmed
@@ -205,11 +139,11 @@ const CourseStudentTable = () => {
                         <button
                           onClick={() => {
                             setOpen(true);
-                            setDeleteStudent(value.id);
+                            setAddStudent(value.id);
                           }}
-                          className="ml-1 flex items-center justify-center w-9 h-9 rounded-full bg-red-500 dark:bg-red-600 text-white hover:bg-red-600 dark:hover:bg-red-500 transition-all duration-200"
+                          className="ml-1 flex items-center justify-center w-9 h-9 rounded-full bg-blue-500 dark:bg-blue-600 text-white hover:bg-blue-600 dark:hover:bg-blue-500 transition-all duration-200"
                         >
-                          <Delete className="w-5 h-5" />
+                          <Add className="w-5 h-5" />
                         </button>
                       </div>
                     </td>
@@ -249,10 +183,10 @@ const CourseStudentTable = () => {
             >
               <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                 <div className="sm:flex sm:items-start">
-                  <div className="mx-auto flex size-12 shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:size-10">
+                  <div className="mx-auto flex size-12 shrink-0 items-center justify-center rounded-full bg-green-100 sm:mx-0 sm:size-10">
                     <ExclamationTriangleIcon
                       aria-hidden="true"
-                      className="size-6 text-red-600"
+                      className="size-6 text-green-600"
                     />
                   </div>
                   <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
@@ -260,13 +194,12 @@ const CourseStudentTable = () => {
                       as="h3"
                       className="text-base font-semibold text-gray-900"
                     >
-                      แจ้งเตือนการลบนักเรียนออกจากคอร์ส
+                      แจ้งเตือนการเพิ่มนักเรียนเข้าคอร์ส
                     </DialogTitle>
                     <div className="mt-2">
                       <p className="text-sm text-gray-500">
-                        คุณแน่ใจแล้วหรือไม่ ว่าจะลบนักเรียนออกจากคอร์สนี้?
-                        ข้อมูลที่ลบไปจะไม่สามารถกู้คืนได้อีก
-                        กรุณาตรวจสอบให้แน่ใจก่อนลบนักเรียนออกจากคอร์สนี้
+                        คุณแน่ใจแล้วหรือไม่ ว่าจะเพิ่มนักเรียนเข้าคอร์สนี้?
+                        โดยไม่ผ่านการอนุมัติทางเงิน
                       </p>
                     </div>
                   </div>
@@ -276,13 +209,13 @@ const CourseStudentTable = () => {
                 <button
                   type="button"
                   onClick={() => {
-                    handleDelete(DeleteStudent);
-                    setDeleteStudent(null);
+                    handleAdd(AddStudent);
+                    setAddStudent(null);
                     setOpen(false);
                   }}
-                  className="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-red-500 sm:ml-3 sm:w-auto"
+                  className="inline-flex w-full justify-center rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-green-500 sm:ml-3 sm:w-auto"
                 >
-                  ยืนยันการลบ
+                  ยืนยันการเพิ่ม
                 </button>
                 <button
                   type="button"
@@ -301,4 +234,4 @@ const CourseStudentTable = () => {
   );
 };
 
-export default CourseStudentTable;
+export default CourseStudentAllTable;

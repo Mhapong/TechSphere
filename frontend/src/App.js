@@ -52,6 +52,7 @@ import CreateLecturer from "./admin/pages/CreateLecturer.js";
 import NotificationPage from "./client/pages/notiPage.js";
 import CourseStudentTableLecturer from "./lecturer/page/CourseViewStudent.js";
 import SuggestCourse from "./client/pages/SuggestCourse.js";
+import CourseStudentAllTable from "./admin/pages/CourseViewStudentAll.js";
 // import GraphAdmin from "./admin/pages/Graph.js";
 
 function App() {
@@ -155,6 +156,10 @@ function App() {
               <Route
                 path="/view-student/:courseid"
                 element={<CourseStudentTable />}
+              />
+              <Route
+                path="/view-studentall/:nameCourse/:courseid"
+                element={<CourseStudentAllTable />}
               />
               <Route path="/promotion" element={<PromotionAdminPage />} />
               <Route path="/lecturer" element={<LecturerAll />} />
