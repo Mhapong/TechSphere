@@ -48,7 +48,10 @@ const HomeLecturer = () => {
   useEffect(() => {
     const fetchPurchase = async () => {
       try {
-        const response = await ax.get(`confirm-purchases?populate=*`);
+        const response = await ax.get(
+          `confirm-purchases?populate=*&filters[course_purchase][lecturer_owner][id][$eq]=${user.id}`
+        );
+        console.log(response.data.data);
         const confirmedData = response.data.data
           .filter((item) => item.status_confirm === "confirmed")
           .map((item) => ({
@@ -250,16 +253,16 @@ const HomeLecturer = () => {
           </div>
         </div>
 
-        {/* <div className="bg-green-100 border border-green-200 rounded-xl p-4 md:p-6 animate-fade-in mt-5">
+        <div className="bg-green-100 border border-green-200 rounded-xl p-4 md:p-6 animate-fade-in mt-5">
           <div
             className="bg-white rounded-xl shadow-lg p-4 md:p-6 h-auto transition-all duration-300 hover:-translate-y-1 hover:shadow-xl animate-slide-up"
             style={{ animationDelay: "0.1s" }}
           >
             <div className="dataCard revenueCard">
-              <ChartComponent data={data} options={options} />
+              <Line data={data} options={options} />
             </div>
           </div>
-        </div> */}
+        </div>
       </main>
     </div>
   );
