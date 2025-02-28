@@ -11,7 +11,7 @@ export default function SuggestCourse() {
     const { documentId } = useParams();
     const navigate = useNavigate();
     const BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:1337";
-
+   
     const [selectedOptions, setSelectedOptions] = useState(Array(12).fill(4)); // ค่าเริ่มต้นตรงกลาง (0)
     const [scores, setScores] = useState({
         "Web Develop": 0,
@@ -26,6 +26,21 @@ export default function SuggestCourse() {
         "Web Develop", "Data Analysis", "IoT & Hardware", "Network", "Game Develop", "AI",
         "Web Develop", "Data Analysis", "IoT & Hardware", "Network", "Game Develop", "AI"
     ];
+    const questions = [
+        "คุณรู้สึกชอบการพัฒนาเว็บไซต์มากแค่ไหน?",
+        "คุณชอบการวิเคราะห์ข้อมูลหรือไม่?",
+        "คุณสนใจ IoT & Hardware มากแค่ไหน?",
+        "คุณคิดว่า Network สำคัญต่อการทำงานของคุณหรือไม่?",
+        "คุณอยากพัฒนาเกมหรือไม่?",
+        "คุณสนใจด้าน AI และ Machine Learning แค่ไหน?",
+        "คุณชอบการเขียนเว็บแอปพลิเคชันหรือไม่?",
+        "การทำงานกับ Big Data น่าสนใจสำหรับคุณหรือเปล่า?",
+        "คุณต้องการเรียนรู้เกี่ยวกับการพัฒนาอุปกรณ์ IoT หรือไม่?",
+        "คุณสนใจการดูแลและปรับปรุงระบบเครือข่ายหรือไม่?",
+        "การพัฒนาเกมเป็นสิ่งที่คุณอยากลองทำใช่ไหม?",
+        "คุณอยากเข้าใจเกี่ยวกับ AI ในชีวิตประจำวันมากขึ้นหรือไม่?"
+    ];
+    
 
     const handleOptionChange = (index, value) => {
         const newSelectedOptions = [...selectedOptions];
@@ -45,7 +60,7 @@ export default function SuggestCourse() {
         <div className="container mx-auto py-10 px-4">
             {Array(12).fill(null).map((_, qIndex) => (
                 <div key={qIndex} className="bg-white border border-gray-200 text-gray-700 px-4 py-3 rounded-lg mb-4">
-                    <p className="text-lg font-semibold mb-4 text-center">คำถามที่ {qIndex + 1}</p>
+                    <p className="text-lg font-semibold mb-4 text-center">{questions[qIndex]}</p>
                     <div className="flex items-center justify-center space-x-2">
                         <span className="text-sm mr-2">ชอบน้อยที่สุด</span>
                         {[...Array(9)].map((_, index) => {
