@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-// import ax from "../../conf/ax";
 import usericon from "../components/Image/user-icon.webp";
 import { useNavigate, useParams } from "react-router";
 import { Add } from "@mui/icons-material";
@@ -11,7 +10,6 @@ import {
   DialogTitle,
 } from "@headlessui/react";
 import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
-import { progress } from "@material-tailwind/react";
 
 const CourseStudentAllTable = () => {
   const [Student, setStudent] = useState([]);
@@ -47,8 +45,6 @@ const CourseStudentAllTable = () => {
       const response = await ax.get(
         `users?filters[role][name][$eq]=User&populate=owned_course`
       );
-      console.log(response.data);
-      console.log(response.data);
       setStudent(response.data);
     } catch (error) {
       console.error("Error fetching team members:", error);

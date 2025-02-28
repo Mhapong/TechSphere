@@ -7,7 +7,6 @@ import {
   Dialog,
   DialogBackdrop,
   DialogPanel,
-  DialogTitle,
   TransitionChild,
 } from "@headlessui/react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
@@ -49,19 +48,13 @@ const Chat = ({ open, close }) => {
       openchat(selectedUser);
       chatLoaded.current = true;
     }
-  }, [messages]); // ทำงานเมื่อ messages เปลี่ยน
+  }, [messages]);
   const fetchUserALL = async () => {
     try {
-      // if (user.userRole === "User"){
       const response = await ax.get(
         `users?filters[id][$ne]=${user.id}&populate=*`
       );
       setUsersAll(response.data);
-      // }else {
-      //   const response = await ax.get(`user?`)
-      //   console.log(response.data.data)
-      //   setUsersAll(response.data.data)
-      // }
     } catch (e) {
       console.log("Error", e);
     }
@@ -72,7 +65,6 @@ const Chat = ({ open, close }) => {
         `chats?filters[$or][0][sender][id][$eq]=${user.id}&filters[$or][1][request][id][$eq]=${user.id}&populate=*`
       );
       setData(response.data.data);
-      // console.log(response.data.data);
       const senders = response.data.data.reduce((acc, item) => {
         const existingSender = acc.find(
           (sender) =>
@@ -109,7 +101,6 @@ const Chat = ({ open, close }) => {
 
         return acc;
       }, []);
-      // console.log(senders);
       setUsers(senders);
     } catch (error) {
       console.error("Error fetching users:", error);
@@ -373,19 +364,6 @@ const Chat = ({ open, close }) => {
                             alt="User Icon"
                             className="w-10 h-10 rounded-full object-cover border-2 border-gray-300"
                           />
-                          {/* {user.userProfile ? (
-                      <img
-                        className="w-8 h-8 rounded-full"
-                        src={`${conf.apiUrl}${user.userProfile.url}`}
-                        alt={`${user.username} Avatar`}
-                      />
-                    ) : (
-                      <img
-                        className="w-8 h-8 rounded-full"
-                        src={usericon}
-                        alt={`${user.username} Avatar`}
-                      />
-                    )} */}
 
                           <div className="ml-4 flex-1 flex justify-between items-center">
                             {/* Name */}

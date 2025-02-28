@@ -1,23 +1,18 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router";
 import ax from "../../conf/ax";
-import { Toaster, toast } from "sonner";
+import { toast } from "sonner";
 import conf from "../../conf/main";
 
 const EditFinance = () => {
-  // State management for each form field
   const location = useLocation();
   const { Value } = location.state || {};
   const [Name, setName] = useState("");
   const [Email, setEmail] = useState("");
-  // const [image, setImage] = useState(null);
   const [Amount, setAmount] = useState("");
   const [status, setStatus] = useState("");
   const Navigate = useNavigate();
-  const [endDate, setEndDate] = useState("");
-  const [image, setImage] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
-  console.log(Value);
 
   useEffect(() => {
     if (Value) {

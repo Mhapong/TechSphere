@@ -58,7 +58,6 @@ const PromotionAdminPage = () => {
   const fetchPromotions = async () => {
     try {
       const response = await ax.get("promotions?populate=*");
-      // console.log(response.data.data);
       checkPromotions(response.data.data);
       setPromotions(response.data.data);
     } catch (error) {

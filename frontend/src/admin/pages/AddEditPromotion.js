@@ -1,16 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router";
 import ax from "../../conf/ax";
-import { Toaster, toast } from "sonner";
+import { toast } from "sonner";
 import conf from "../../conf/main";
 
 const AddEditPromotion = () => {
-  // State management for each form field
   const location = useLocation();
   const { Value } = location.state || {};
   const [Code, setCode] = useState("");
   const [Detail, setDetail] = useState("");
-  // const [image, setImage] = useState(null);
   const [Discount, setDiscount] = useState("");
   const [status, setStatus] = useState("");
   const Navigate = useNavigate();
@@ -45,7 +43,6 @@ const AddEditPromotion = () => {
     try {
       let imageData = null;
 
-      // ถ้ามีรูปภาพใหม่ที่อัปโหลด
       if (image) {
         const formData = new FormData();
         formData.append("files", image);
@@ -59,13 +56,11 @@ const AddEditPromotion = () => {
         } = imageUploadResponse;
 
         imageData = { id, url };
-        console.log("New image uploaded successfully:", url);
       } else if (Value?.picture_promotion) {
         imageData = {
           id: Value.picture_promotion.id,
           url: Value.picture_promotion.url,
         };
-        console.log("Using existing image:", imageData.url);
       }
 
       const promotionData = {
@@ -93,9 +88,7 @@ const AddEditPromotion = () => {
       }
 
       setTimeout(() => Navigate(`${path}`), 500);
-      console.log("Data successfully uploaded to Strapi!");
       toast.success("บันทึกข้อมูลโปรโมชั่นสำเร็จ!", {
-        // position: "top-center",
         duration: 5000,
         style: {
           fontSize: "1.5rem",
@@ -105,10 +98,6 @@ const AddEditPromotion = () => {
           borderRadius: "10px",
         },
       });
-
-      // alert(`สร้างคอร์สสำเร็จ กำลังพาคุณไปยัง ${path}!`);
-      // Navigate(`${path}/${response.data.data.id}`);
-      // Navigate(`${path}/d3cekbvx03qmt7fuprb2ymty`);
     } catch (error) {
       if (error.response) {
         console.error("Error response:", error.response.data);

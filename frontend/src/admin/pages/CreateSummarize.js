@@ -33,7 +33,6 @@ export default function CourseDetails() {
     try {
       const response = await ax.get(`courses/${courseid}?populate=*`);
       setCourse(response.data.data);
-      console.log(response.data.data);
       if (response.data.data.image[0]) {
         const imageUrl = `${conf.apiUrl}${response.data.data.image[0].url}`;
         setImage(imageUrl);
@@ -42,13 +41,6 @@ export default function CourseDetails() {
       console.log("Error", e);
     }
   };
-  // const handleAddTopic = () => {
-  // Navigate(`/create-topic/${Course.Id}/${Course.documentId}/${Course.Name}`);
-
-  //   Navigate("/view-student", {
-  //     state: { Value: items },
-  //   });
-  // };
 
   useEffect(() => {
     fetchCourse();

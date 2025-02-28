@@ -1,11 +1,9 @@
-import { useState, useEffect, useContext, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { AuthContext } from "../../context/Auth.context";
 import ax from "../../conf/ax";
+import conf from "../../conf/main";
 
 const ReviewAdmin = () => {
-  const { state: ContextState } = useContext(AuthContext);
-  const { user } = ContextState;
   const [reviewData, setReviewData] = useState([]);
   const [reviewCourseData, setReviewCourseData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -18,7 +16,7 @@ const ReviewAdmin = () => {
   const [lecturerShowFilterOptions, setLecturerShowFilterOptions] =
     useState(false);
 
-  const BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:1337";
+  const BASE_URL = conf.apiUrl;
 
   const fetchReview = useCallback(async () => {
     setLoading(true);
@@ -30,8 +28,6 @@ const ReviewAdmin = () => {
           populate: ["rating", "profile_picture"],
         },
       });
-
-      console.log("Lecturer Data Response:", response.data);
 
       if (response.data && Array.isArray(response.data)) {
         setReviewData(response.data);
@@ -56,8 +52,6 @@ const ReviewAdmin = () => {
         },
       });
 
-      console.log("Course Data Response:", response.data.data);
-
       if (response.data?.data && Array.isArray(response.data.data)) {
         setReviewCourseData(response.data.data);
       } else {
@@ -77,7 +71,7 @@ const ReviewAdmin = () => {
   };
 
   const getImageUrl = (imageArray) => {
-    const BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:1337";
+    const BASE_URL = conf.apiUrl;
     if (Array.isArray(imageArray) && imageArray.length > 0) {
       const imageObj = imageArray[0];
       const imageUrl = imageObj.formats?.thumbnail?.url || imageObj.url;
@@ -90,11 +84,6 @@ const ReviewAdmin = () => {
     fetchReview();
     fetchCourseReview();
   }, [fetchReview, fetchCourseReview]);
-
-  useEffect(() => {
-    console.log("Lecturer Reviews:", reviewData);
-    console.log("Course Reviews:", reviewCourseData);
-  }, [reviewData, reviewCourseData]);
 
   const ReviewSection = ({
     title,

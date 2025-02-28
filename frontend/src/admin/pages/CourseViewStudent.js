@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-// import ax from "../../conf/ax";
 import usericon from "../components/Image/user-icon.webp";
 import { useLocation, useNavigate, useParams } from "react-router";
 import { Delete } from "@mui/icons-material";
@@ -11,7 +10,6 @@ import {
   DialogTitle,
 } from "@headlessui/react";
 import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
-import { progress } from "@material-tailwind/react";
 
 const CourseStudentTable = () => {
   const [Student, setStudent] = useState([]);
@@ -21,13 +19,12 @@ const CourseStudentTable = () => {
   const [open, setOpen] = useState(false);
   const [DeleteStudent, setDeleteStudent] = useState([]);
   const { courseid } = useParams();
-  console.log(Value);
+
   useEffect(() => {
     if (Value) {
       setStudent(Value.user_owner);
     }
     fetchCourse();
-    // }
   }, []);
 
   const handleDelete = async (userid) => {

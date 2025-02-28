@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { useLocation, useNavigate, useParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import ax from "../../conf/ax.js";
-import { Toaster, toast } from "sonner";
+import { toast } from "sonner";
 import conf from "../../conf/main.js";
 
 const EditProfile = () => {
@@ -20,7 +20,6 @@ const EditProfile = () => {
     try {
       const response = await ax.get(`users/${userid}?populate=*`);
       setUser(response.data);
-      console.log(response.data);
       if (response.data.profile_picture) {
         const imageUrl = `${conf.apiUrl}${response.data?.profile_picture[0]?.url}`;
         setPreviewUrl(imageUrl);
@@ -57,14 +56,11 @@ const EditProfile = () => {
         } = imageUploadResponse;
 
         imageData = { id, url };
-        console.log("New image uploaded successfully:", url);
-        console.log(User?.profile_picture);
       } else if (User?.profile_picture[0]) {
         imageData = {
           id: User.profile_picture[0].id,
           url: User.profile_picture[0].url,
         };
-        console.log("Using existing image:", imageData.url);
       }
 
       const response = await ax.put(`users/${userid}`, {

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router";
 import ax from "../../conf/ax";
-import { Toaster, toast } from "sonner";
+import { toast } from "sonner";
 import conf from "../../conf/main";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 
@@ -14,7 +14,6 @@ const EditContent = () => {
   const [video, setVideo] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
   const [error, setError] = useState("");
-  console.log(Value);
 
   useEffect(() => {
     if (Value) {
@@ -30,7 +29,6 @@ const EditContent = () => {
       const response = await ax.get(
         `contents/${Value.documentId}?populate=video`
       );
-      console.log(response.data.data.video);
       const Data = response.data.data;
       if (Data?.video) {
         const videoUrl = `${conf.apiUrl}${Data?.video?.url}`;
@@ -77,13 +75,11 @@ const EditContent = () => {
         } = videoUploadResponse;
 
         videoData = { id, url };
-        console.log("New video uploaded successfully:", url);
       } else if (Value?.video) {
         videoData = {
           id: Value.video[0].id,
           url: Value.video[0].url,
         };
-        console.log("Using existing image:", videoData.url);
       }
 
       const ContentData = {

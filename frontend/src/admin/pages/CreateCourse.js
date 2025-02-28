@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from "react";
 import { AuthContext } from "../../context/Auth.context";
 import { useLocation, useNavigate } from "react-router";
 import ax from "../../conf/ax";
-import { Toaster, toast } from "sonner";
+import { toast } from "sonner";
 import datapic from "../../client/components/data.png";
 import webpic from "../../client/components/web-100.png";
 import gamepic from "../../client/components/game.png";
@@ -11,15 +11,13 @@ import networkpic from "../../client/components/network.png";
 import morepic from "../../client/components/more.png";
 import Select from "react-select";
 import conf from "../../conf/main";
-import { User } from "lucide-react";
 
 const AddCourse = () => {
-  // State management for each form field
   const location = useLocation();
   const { Value } = location.state || {};
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState([]);
-  const [allcategory, setallCategory] = useState(null);
+  // const [allcategory, setallCategory] = useState(null);
   const [lecturer, setLecturer] = useState("");
   const [description, setDescription] = useState("");
   const [TimeUsage, setTimeUsage] = useState("");
@@ -60,12 +58,6 @@ const AddCourse = () => {
       }
     }
   }, [Value]);
-
-  const formatDateForInput = (dateString) => {
-    if (!dateString) return "";
-    const date = new Date(dateString);
-    return date.toISOString().slice(0, 16);
-  };
 
   const handleSelectChange = (selectedOptions) => {
     const selectedArray = Array.isArray(selectedOptions)
@@ -112,13 +104,11 @@ const AddCourse = () => {
         } = imageUploadResponse;
 
         imageData = { id, url };
-        console.log("New image uploaded successfully:", url);
       } else if (Value?.image) {
         imageData = {
           id: Value.image[0].id,
           url: Value.image[0].url,
         };
-        console.log("Using existing image:", imageData.url);
       }
 
       const categoryid = category.map((item) => item.id);
@@ -170,10 +160,6 @@ const AddCourse = () => {
           borderRadius: "10px",
         },
       });
-
-      // alert(`สร้างคอร์สสำเร็จ กำลังพาคุณไปยัง ${path}!`);
-      // Navigate(`${path}/${response.data.data.id}`);
-      // Navigate(`${path}/d3cekbvx03qmt7fuprb2ymty`);
     } catch (error) {
       if (error.response) {
         console.error("Error response:", error.response.data);
@@ -191,14 +177,14 @@ const AddCourse = () => {
     }
   };
 
-  const fetchCategory = async () => {
-    try {
-      const response = await ax.get(`categories`);
-      setallCategory(response.data.data);
-    } catch (e) {
-      console.log("Error", e);
-    }
-  };
+  // const fetchCategory = async () => {
+  //   try {
+  //     const response = await ax.get(`categories`);
+  //     setallCategory(response.data.data);
+  //   } catch (e) {
+  //     console.log("Error", e);
+  //   }
+  // };
 
   const fetchLecturer = async () => {
     try {
@@ -213,7 +199,7 @@ const AddCourse = () => {
 
   useEffect(() => {
     fetchLecturer();
-    fetchCategory();
+    // fetchCategory();
     // fetchStatus();
   }, []);
 

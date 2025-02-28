@@ -1,18 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router";
 import ax from "../../conf/ax";
-import { Toaster, toast } from "sonner";
+import { toast } from "sonner";
 import { Edit, Delete } from "@mui/icons-material";
-// import {
-//   Dialog,
-//   DialogBackdrop,
-//   DialogPanel,
-//   DialogTitle,
-// } from "@headlessui/react";
-// import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 
 const AddTopic = () => {
-  // State management for each form field
   const [Topic, setTopic] = useState(null);
   const { topicid } = useParams();
   const location = useLocation();
@@ -21,8 +13,6 @@ const AddTopic = () => {
   const [title, setTitle] = useState(Topic?.topic_title || "");
   const [titleContent, setTitleContent] = useState("");
   const [TimeUsage, setTimeUsage] = useState(Topic?.time || "");
-  const [open, setOpen] = useState(false);
-  const [DeleteContent, setDeleteContent] = useState([]);
 
   const handleRowDeleted = async (itemId) => {
     try {
@@ -46,8 +36,6 @@ const AddTopic = () => {
       }
     }
   }, [topicid, Value]);
-
-  const [image, setImage] = useState(null);
   const [TimeUsageContent, setTimeUsageContent] = useState("");
   const [detail, setDetail] = useState("");
   const Navigate = useNavigate();
@@ -55,7 +43,6 @@ const AddTopic = () => {
   const [openAddContent, setopenAddContent] = useState(false);
 
   const handleAddContent = () => {
-    console.log("ADDCONTENT");
     setopenAddContent(true);
   };
 
@@ -72,7 +59,6 @@ const AddTopic = () => {
     e.preventDefault();
     try {
       if (Topic) {
-        console.log("Update");
         const response = await ax.put(`topics/${Topic.documentId}?populate=*`, {
           data: {
             topic_title: title,
@@ -82,7 +68,6 @@ const AddTopic = () => {
         });
         setTopic(response.data.data);
       } else {
-        console.log("Create");
         const response = await ax.post(`topics?populate=*`, {
           data: {
             topic_title: title,
@@ -119,7 +104,7 @@ const AddTopic = () => {
   const handleSubmitContent = async (e, data) => {
     e.preventDefault();
     try {
-      const response = await ax.post(`contents?populate=*`, {
+      await ax.post(`contents?populate=*`, {
         data: {
           content_title: titleContent,
           time: TimeUsageContent,

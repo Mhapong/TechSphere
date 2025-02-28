@@ -1,7 +1,6 @@
 import React, { useState, useContext, useEffect } from "react";
 import { AuthContext } from "../../context/Auth.context";
 import logo from "./Image/TECHSPHERE.png";
-import usericon from "./Image/user-icon.webp";
 import HomeIcon from "@mui/icons-material/Home";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import StorageIcon from "@mui/icons-material/Storage";
@@ -14,15 +13,12 @@ import DiscountIcon from "@mui/icons-material/Discount";
 import ReviewsIcon from "@mui/icons-material/Reviews";
 import ax from "../../conf/ax";
 import conf from "../../conf/main";
-// import HighlightOffIcon from "@mui/icons-material/HighlightOff";
 import GroupAddIcon from "@mui/icons-material/GroupAdd";
-// import AutoGraphIcon from "@mui/icons-material/AutoGraph";
 
 export default function NavAdmin() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const { state: ContextState, logout, state } = useContext(AuthContext);
-  // console.log(ContextState);
   const { user } = ContextState;
   const [Count, setCount] = useState(null);
   const [NavMenu, setNavMenu] = useState([]);

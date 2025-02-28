@@ -16,9 +16,7 @@ import hardwarepic from "../../client/components/hardware.png";
 import networkpic from "../../client/components/network.png";
 import morepic from "../../client/components/more.png";
 import allpic from "../components/Image/All.png";
-// import ReactMarkdown from "react-markdown";
 import { useNavigate } from "react-router";
-// import remarkGfm from "remark-gfm";
 import CourseEx from "../components/Image/htmlcssJS.webp";
 import Select from "react-select";
 import {
@@ -28,11 +26,9 @@ import {
   DialogTitle,
 } from "@headlessui/react";
 import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
-import { Delete, Add } from "@mui/icons-material";
+import { Delete } from "@mui/icons-material";
 import { motion } from "framer-motion";
 import conf from "../../conf/main";
-import Error from "../components/Image/404.png";
-import { Rating } from "@material-tailwind/react";
 
 export function CourseView() {
   const [Course, setCourse] = useState([]);
@@ -80,10 +76,8 @@ export function CourseView() {
     queryCourse || selectedCategory
       ? Course.filter((value) => {
           if (selectedCategory === "ALL") {
-            return true; // คืนค่าทุกคอร์ส
+            return value.Name.toLowerCase().includes(queryCourse.toLowerCase());
           }
-
-          // ถ้าไม่มีค่า queryCourse ให้แสดงเฉพาะหมวดหมู่ที่เลือก
           if (!queryCourse) {
             return value.categories.some((cat) => cat.tag === selectedCategory);
           }
@@ -98,20 +92,12 @@ export function CourseView() {
   const fetchCourse = async () => {
     try {
       const response = await ax.get("courses?populate=*");
-      // console.log(response.data.data);
       setCourse(response.data.data);
-      // console.log(
-      //   "Type of Description:",
-      //   typeof response.data.data[0].Description
-      // );
-      // console.log("Description:", response.data.data[0].Description);
     } catch (error) {
       console.error("Error fetching team members:", error);
     }
   };
   useEffect(() => {
-    // Fetch team values from Strapi
-
     fetchCourse();
   }, []);
   return (

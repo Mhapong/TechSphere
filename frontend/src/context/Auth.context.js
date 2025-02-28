@@ -79,7 +79,6 @@ export const ContextProvider = (props) => {
 const fetchRole = async (jwt) => {
   try {
     const response = await ax.get(`/users/me?populate=role`);
-    // console.log(response);
     if (response.data) {
       return response.data.role?.name || "No role";
     }
@@ -123,7 +122,6 @@ const loadPersistedJwt = async (callback) => {
     if (persistedJwt) {
       axData.jwt = persistedJwt;
       const response = await ax.get(conf.jwtUserEndpoint);
-      console.log(response.data);
       if (response.data.id > 0) {
         callback(null, { user: response.data });
       } else {

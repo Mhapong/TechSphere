@@ -4,12 +4,10 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useSetState } from "react-use";
 import conf from "../../conf/main";
-import background from "../../admin/components/Image/background.png";
 import PreUser from "../components/Image/usertest.png";
-import LecturerAll from "./Lecturer";
 import ax from "../../conf/ax";
 
-export default function CreateLecturer(props) {
+export default function CreateLecturer() {
   const initialState = {
     first_name: "",
     last_name: "",
@@ -18,7 +16,6 @@ export default function CreateLecturer(props) {
     password: "",
   };
   const [state, setState] = useSetState(initialState);
-  const [errMsg, setErrMsg] = useState(null);
   const navigate = useNavigate();
   const [description, setDescription] = useState("");
   const [image, setImage] = useState(null);
@@ -66,8 +63,6 @@ export default function CreateLecturer(props) {
       navigate("/lecturer");
     } catch (error) {
       console.log({ error });
-      setErrMsg(error.message);
-    } finally {
     }
   };
 

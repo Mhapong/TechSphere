@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from "react";
-// import ax from "../../conf/ax";
 import usericon from "../../admin/components/Image/user-icon.webp";
 import { useLocation, useNavigate, useParams } from "react-router";
-import { Delete } from "@mui/icons-material";
 import ax from "../../conf/ax";
 import {
   Dialog,
@@ -11,7 +9,6 @@ import {
   DialogTitle,
 } from "@headlessui/react";
 import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
-import { progress } from "@material-tailwind/react";
 
 const CourseStudentTableLecturer = () => {
   const [Student, setStudent] = useState([]);
@@ -21,7 +18,6 @@ const CourseStudentTableLecturer = () => {
   const [open, setOpen] = useState(false);
   const [DeleteStudent, setDeleteStudent] = useState([]);
   const { courseid } = useParams();
-  console.log(Value);
   useEffect(() => {
     // if (Value) {
     setStudent(Value.user_owner);

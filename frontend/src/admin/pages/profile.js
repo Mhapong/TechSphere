@@ -8,7 +8,6 @@ import {
   GitHub,
   Instagram,
   YouTube,
-  Edit,
 } from "@mui/icons-material";
 import { motion } from "framer-motion";
 import BorderColorIcon from "@mui/icons-material/BorderColor";
@@ -24,16 +23,12 @@ export default function Profile() {
   const [Image, setImage] = useState(null);
   const location = useLocation();
   const { Value } = location.state || {};
-  console.log(Value);
-  console.log(user);
   useEffect(() => {
     if (Value) {
-      console.log(1);
       setUserData(Value);
       setRole(Value.role.name);
       setImage(user.userProfile);
     } else {
-      console.log(2);
       setUserData(user);
       setRole(user.userRole);
       setImage(user.userProfile);

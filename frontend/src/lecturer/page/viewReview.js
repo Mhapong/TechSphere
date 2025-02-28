@@ -19,8 +19,6 @@ const ReviewLecturer = () => {
   const [lecturerShowFilterOptions, setLecturerShowFilterOptions] =
     useState(false);
 
-  const BASE_URL = process.env.REACT_APP_API_URL || conf.apiUrl;
-
   const fetchReview = useCallback(async () => {
     setLoading(true);
     setError(null);
@@ -31,8 +29,6 @@ const ReviewLecturer = () => {
           populate: ["rating", "profile_picture"],
         },
       });
-
-      console.log("Lecturer Data Response:", response.data);
 
       if (response.data && Array.isArray(response.data)) {
         setReviewData(response.data);
@@ -45,7 +41,7 @@ const ReviewLecturer = () => {
     } finally {
       setLoading(false);
     }
-  }, [BASE_URL]);
+  }, []);
 
   const fetchCourseReview = useCallback(async () => {
     setLoading(true);
@@ -58,8 +54,6 @@ const ReviewLecturer = () => {
         },
       });
 
-      console.log("Course Data Response:", response.data.data);
-
       if (response.data?.data && Array.isArray(response.data.data)) {
         setReviewCourseData(response.data.data);
       } else {
@@ -71,7 +65,7 @@ const ReviewLecturer = () => {
     } finally {
       setLoading(false);
     }
-  }, [BASE_URL]);
+  }, []);
 
   const filterReviews = (rating, reviews) => {
     if (rating === null) return reviews;
@@ -79,7 +73,7 @@ const ReviewLecturer = () => {
   };
 
   const getImageUrl = (imageArray) => {
-    const BASE_URL = process.env.REACT_APP_API_URL || conf.apiUrl;
+    const BASE_URL = conf.apiUrl;
     if (Array.isArray(imageArray) && imageArray.length > 0) {
       const imageObj = imageArray[0];
       const imageUrl = imageObj.formats?.thumbnail?.url || imageObj.url;
@@ -92,11 +86,6 @@ const ReviewLecturer = () => {
     fetchReview();
     fetchCourseReview();
   }, [fetchReview, fetchCourseReview]);
-
-  useEffect(() => {
-    console.log("Lecturer Reviews:", reviewData);
-    console.log("Course Reviews:", reviewCourseData);
-  }, [reviewData, reviewCourseData]);
 
   const ReviewSection = ({
     title,

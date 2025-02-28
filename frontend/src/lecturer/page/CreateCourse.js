@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router";
 import ax from "../../conf/ax";
-import { Toaster, toast } from "sonner";
+import { toast } from "sonner";
 import datapic from "../../client/components/data.png";
 import webpic from "../../client/components/web-100.png";
 import gamepic from "../../client/components/game.png";
@@ -17,7 +17,7 @@ const AddCourse = () => {
   const { Value } = location.state || {};
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState([]);
-  const [allcategory, setallCategory] = useState(null);
+  // const [allcategory, setallCategory] = useState(null);
   const [lecturer, setLecturer] = useState("");
   const [lecturerOwner, setlecturerOwner] = useState(null);
   const [description, setDescription] = useState("");
@@ -109,13 +109,11 @@ const AddCourse = () => {
         } = imageUploadResponse;
 
         imageData = { id, url };
-        console.log("New image uploaded successfully:", url);
       } else if (Value?.image) {
         imageData = {
           id: Value.image[0].id,
           url: Value.image[0].url,
         };
-        console.log("Using existing image:", imageData.url);
       }
 
       const categoryid = category.map((item) => item.id);
@@ -188,14 +186,14 @@ const AddCourse = () => {
     }
   };
 
-  const fetchCategory = async () => {
-    try {
-      const response = await ax.get(`categories`);
-      setallCategory(response.data.data);
-    } catch (e) {
-      console.log("Error", e);
-    }
-  };
+  // const fetchCategory = async () => {
+  //   try {
+  //     const response = await ax.get(`categories`);
+  //     setallCategory(response.data.data);
+  //   } catch (e) {
+  //     console.log("Error", e);
+  //   }
+  // };
 
   const fetchLecturer = async () => {
     try {
@@ -210,7 +208,7 @@ const AddCourse = () => {
 
   useEffect(() => {
     fetchLecturer();
-    fetchCategory();
+    // fetchCategory();
     // fetchStatus();
   }, []);
 

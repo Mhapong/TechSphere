@@ -3,7 +3,7 @@ import ax from "../../conf/ax";
 import usericon from "../components/Image/usertest.png";
 import { Rating } from "@material-tailwind/react";
 import { useNavigate } from "react-router";
-import { Edit, Delete, ConstructionOutlined } from "@mui/icons-material";
+import { Edit, Delete } from "@mui/icons-material";
 import { motion } from "framer-motion";
 import {
   Dialog,
@@ -23,7 +23,8 @@ const LecturerAll = () => {
 
   const handleRowDeleted = async (itemId) => {
     try {
-      await ax.delete(`Lecturers/${itemId}`);
+      console.log("Delete");
+      await ax.delete(`users/${itemId}`);
       fetchLecturer();
     } catch (err) {
       console.log(err);
@@ -114,7 +115,7 @@ const LecturerAll = () => {
                     className="bg-red-800 hover:bg-red-900 text-white font-bold py-1 px-3 rounded text-sm sm:text-base"
                     onClick={() => {
                       setOpen(true);
-                      setDeleteLecturer(value.documentId);
+                      setDeleteLecturer(value.id);
                     }}
                   >
                     <Delete className="w-4 h-4 sm:w-5 sm:h-5" />

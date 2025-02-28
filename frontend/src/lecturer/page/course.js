@@ -16,41 +16,19 @@ import hardwarepic from "../../client/components/hardware.png";
 import networkpic from "../../client/components/network.png";
 import morepic from "../../client/components/more.png";
 import allpic from "../../admin/components/Image/All.png";
-// import ReactMarkdown from "react-markdown";
 import { useNavigate } from "react-router";
-// import remarkGfm from "remark-gfm";
 import CourseEx from "../../admin/components/Image/htmlcssJS.webp";
 import Select from "react-select";
-import {
-  Dialog,
-  DialogBackdrop,
-  DialogPanel,
-  DialogTitle,
-} from "@headlessui/react";
-import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
-import { Delete, Add } from "@mui/icons-material";
 import { motion } from "framer-motion";
 import conf from "../../conf/main";
-import Error from "../../admin/components/Image/404.png";
 import { AuthContext } from "../../context/Auth.context";
 
 export function CourseLecturerView() {
   const [Course, setCourse] = useState([]);
   const Navigate = useNavigate();
   const [queryCourse, setQueryCourse] = useState("");
-  const [open, setOpen] = useState(false);
-  const [DeleteCourse, setDeleteCourse] = useState([]);
   const { state: ContextState } = useContext(AuthContext);
   const { user } = ContextState;
-
-  const handleRowDeleted = async (itemId) => {
-    try {
-      await ax.delete(`Courses/${itemId}`);
-      fetchCourse();
-    } catch (err) {
-      console.log(err);
-    }
-  };
 
   const categories = [
     { name: "ALL", img: allpic, path: "ALL" },
@@ -82,7 +60,7 @@ export function CourseLecturerView() {
     queryCourse || selectedCategory
       ? Course.filter((value) => {
           if (selectedCategory === "ALL") {
-            return true;
+            return value.Name.toLowerCase().includes(queryCourse.toLowerCase());
           }
           if (!queryCourse) {
             return value.categories.some((cat) => cat.tag === selectedCategory);
@@ -106,7 +84,6 @@ export function CourseLecturerView() {
     }
   };
   useEffect(() => {
-    // Fetch team values from Strapi
     fetchCourse();
   }, []);
   return (
@@ -159,17 +136,6 @@ export function CourseLecturerView() {
               >
                 <div key={items.id} className="h-full relative group">
                   <Card className="w-auto max-w-[26rem] h-full shadow-lg flex flex-col">
-                    <button
-                      className="absolute top-2 right-2 z-10 bg-red-800 hover:bg-red-900 focus:ring-4 focus:ring-red-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md transform transition-all focus:outline-none opacity-0 group-hover:opacity-100"
-                      onClick={() => {
-                        setOpen(true);
-                        setDeleteCourse(items.documentId);
-                      }}
-                    >
-                      <Delete className="w-5 h-5" />
-                      <span className="ml-2 text-sm">Delete</span>
-                    </button>
-
                     <CardHeader floated={false} color="blue-gray">
                       {items.image ? (
                         <img
@@ -289,68 +255,6 @@ export function CourseLecturerView() {
           </div>
         )}
       </div>
-      <Dialog open={open} onClose={setOpen} className="relative z-10">
-        <DialogBackdrop
-          transition
-          className="fixed inset-0 bg-gray-500/75 transition-opacity data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in"
-        />
-
-        <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
-          <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
-            <DialogPanel
-              transition
-              className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all data-closed:translate-y-4 data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in sm:my-8 sm:w-full sm:max-w-lg data-closed:sm:translate-y-0 data-closed:sm:scale-95"
-            >
-              <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                <div className="sm:flex sm:items-start">
-                  <div className="mx-auto flex size-12 shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:size-10">
-                    <ExclamationTriangleIcon
-                      aria-hidden="true"
-                      className="size-6 text-red-600"
-                    />
-                  </div>
-                  <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
-                    <DialogTitle
-                      as="h3"
-                      className="text-base font-semibold text-gray-900"
-                    >
-                      แจ้งเตือนการลบคอร์ส
-                    </DialogTitle>
-                    <div className="mt-2">
-                      <p className="text-sm text-gray-500">
-                        คุณแน่ใจแล้วหรือไม่ ว่าจะลบคอร์สนี้?
-                        ข้อมูลที่ลบไปจะไม่สามารถกู้คืนได้อีก
-                        กรุณาตรวจสอบให้แน่ใจก่อนลบคอร์สนี้
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
-                <button
-                  type="button"
-                  onClick={() => {
-                    handleRowDeleted(DeleteCourse);
-                    setDeleteCourse(null);
-                    setOpen(false);
-                  }}
-                  className="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-red-500 sm:ml-3 sm:w-auto"
-                >
-                  ยืนยันการลบ
-                </button>
-                <button
-                  type="button"
-                  data-autofocus
-                  onClick={() => setOpen(false)}
-                  className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 shadow-xs ring-gray-300 ring-inset hover:bg-gray-50 sm:mt-0 sm:w-auto"
-                >
-                  ยกเลิก
-                </button>
-              </div>
-            </DialogPanel>
-          </div>
-        </div>
-      </Dialog>
     </div>
   );
 }
