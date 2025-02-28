@@ -51,6 +51,7 @@ import { CourseLecturerView } from "./lecturer/page/course.js";
 import CreateLecturer from "./admin/pages/CreateLecturer.js";
 import NotificationPage from "./client/pages/notiPage.js";
 import CourseStudentTableLecturer from "./lecturer/page/CourseViewStudent.js";
+import SuggestCourse from "./client/pages/SuggestCourse.js";
 // import GraphAdmin from "./admin/pages/Graph.js";
 
 function App() {
@@ -90,6 +91,7 @@ function App() {
               <Route path="/user" element={<Profile />} />
               <Route path="/notifications" element={<NotificationPage />} />
               <Route path="/edit-profile/:userid" element={<EditProfile />} />
+              <Route path="/suggest-course" element={<SuggestCourse />} />
               {/* <Route path="*" element={<PageNotFound />} /> */}
             </Routes>
             <Footer />
