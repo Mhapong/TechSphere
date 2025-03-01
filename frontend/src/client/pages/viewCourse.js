@@ -340,9 +340,9 @@ export default function ViewCourse() {
               </p>
             </div>
 
-            <div className="container mx-auto px-4 py-8">
+            <div className="container mx-auto px-4 py-8 ">
               <h2 className="text-2xl font-bold mb-4">เนื้อหาคอร์ส</h2>
-              <div>
+              <div className="max-h-[800px] overflow-y-auto pr-2">
                 {course.topic && course.topic.length > 0 ? (
                   course.topic.map((topic, index) => (
                     <div
@@ -367,12 +367,12 @@ export default function ViewCourse() {
                       {/*ส่วนเนื้อหาภายใน */}
                       {openSections[index] && (
                         <div className="p-4 bg-white">
-                          {topic.content ? (
-                            <ul className="list-none">
+                          {topic?.content.length > 0 ? (
+                            <ul className="list-none ">
                               {topic.content.map((content, contentIndex) => (
                                 <li
                                   key={contentIndex}
-                                  className="flex items-center py-2 border-b last:border-none"
+                                  className="flex items-center py-2  border-b last:border-none"
                                 >
                                   <FaPlay className="text-green-500 mr-2" />
                                   <span>
@@ -383,7 +383,11 @@ export default function ViewCourse() {
                               ))}
                             </ul>
                           ) : (
-                            <p className="text-gray-500">ไม่มีเนื้อหา</p>
+                            <ul className="list-none ">
+                              <li className="flex items-center py-2 border-b last:border-none">
+                                <span className="text-black">ไม่มีเนื้อหา</span>
+                              </li>
+                            </ul>
                           )}
                         </div>
                       )}
