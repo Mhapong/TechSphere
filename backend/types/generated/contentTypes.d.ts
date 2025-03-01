@@ -756,6 +756,10 @@ export interface ApiPromotionPromotion extends Struct.CollectionTypeSchema {
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    users_owner: Schema.Attribute.Relation<
+      'manyToMany',
+      'plugin::users-permissions.user'
+    >;
   };
 }
 
@@ -1337,6 +1341,10 @@ export interface PluginUsersPermissionsUser
     progress_owned: Schema.Attribute.Relation<
       'oneToMany',
       'api::progress.progress'
+    >;
+    promotions_owner: Schema.Attribute.Relation<
+      'manyToMany',
+      'api::promotion.promotion'
     >;
     provider: Schema.Attribute.String;
     publishedAt: Schema.Attribute.DateTime;

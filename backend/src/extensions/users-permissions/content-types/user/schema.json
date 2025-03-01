@@ -149,6 +149,12 @@
     },
     "position": {
       "type": "text"
+    },
+    "promotions_owner": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::promotion.promotion",
+      "inversedBy": "users_owner"
     }
   }
 }

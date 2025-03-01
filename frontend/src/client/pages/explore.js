@@ -47,7 +47,20 @@ const Explore = () => {
 
   const fetchCourses = async () => {
     try {
-      const response = await ax.get(`courses?populate=*`);
+      const response = await ax.get(`courses`, {
+        params: {
+          populate: {
+            rating: true,
+            user_owner: true,
+            categories: true,
+            lecturer_owner: true,
+            image: {
+              fields: ["formats"],
+            },
+          },
+        },
+      });
+
       setCourseData(response.data.data);
     } catch (err) {
       console.error(err);
@@ -335,15 +348,17 @@ const Explore = () => {
                   </p>
                 </div>
               ) : (
-                <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <motion.div
+                  className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+                  initial={{ opacity: 0, y: -20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5 }}
+                >
                   {filteredCourses.map((course) => (
                     <motion.div
                       key={course.documentId}
                       whileHover={{ scale: 1.03 }}
                       whileTap={{ scale: 0.98 }}
-                      initial={{ opacity: 0, y: -20 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.5 }}
                     >
                       <div
                         className="border rounded-lg shadow-lg cursor-pointer"
@@ -356,10 +371,9 @@ const Explore = () => {
                         <div className="relative h-48 w-full bg-gray-200 flex items-center justify-center">
                           {course.image ? (
                             <img
-                              src={`${baseURL}${course.image[0].url}`}
+                              src={`${baseURL}${course.image[0].formats.small.url}`}
                               alt={course.Name}
                               className="object-cover w-full h-full rounded-t-lg"
-                              loading="lazy"
                             />
                           ) : (
                             <span className="text-gray-400">No Image</span>
@@ -426,7 +440,7 @@ const Explore = () => {
                       </div>
                     </motion.div>
                   ))}
-                </div>
+                </motion.div>
               )}
             </main>
           </div>

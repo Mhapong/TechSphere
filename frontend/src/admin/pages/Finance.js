@@ -26,6 +26,7 @@ const FinanceOrder = () => {
   const Navigate = useNavigate();
   const [selectedReason, setSelectedReason] = useState("");
   const [Amount, setAmount] = useState("");
+  const [CodePromotion, setCodePromotion] = useState("");
 
   const handleReasonSelect = (reason) => {
     setSelectedReason(reason);
@@ -83,6 +84,9 @@ const FinanceOrder = () => {
           await ax.put(`users/${value.users_purchase.id}`, {
             owned_course: {
               connect: courseId,
+            },
+            promotions_owner: {
+              connect: CodePromotion,
             },
           });
         } catch (e) {
@@ -249,6 +253,10 @@ const FinanceOrder = () => {
                       )
                       .join(", ")}
                   </p>
+                  <p className="text-sm text-gray-600">
+                    Code Promotion id :{" "}
+                    {payment?.promocode ? payment?.promocode : "ไม่ได้ใช้ code"}
+                  </p>
                 </div>
                 {payment.status_confirm === "confirmed" && (
                   <img
@@ -276,6 +284,10 @@ const FinanceOrder = () => {
                     onClick={() => {
                       openModal(payment.picture_purchase, payment);
                       setAmount(payment.amount);
+                      {
+                        payment?.promocode &&
+                          setCodePromotion(payment?.promocode);
+                      }
                     }}
                     className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   >

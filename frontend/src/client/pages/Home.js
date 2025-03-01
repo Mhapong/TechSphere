@@ -36,7 +36,20 @@ export default function Home() {
 
   const fetchCourses = async () => {
     try {
-      const response = await ax.get("courses?populate=*");
+      const response = await ax.get("courses", {
+        params: {
+          populate: {
+            rating: true,
+            user_owner: true,
+            categories: true,
+            lecturer_owner: true,
+            image: {
+              fields: ["formats"],
+            },
+          },
+        },
+      });
+      console.log(response.data);
       const topCourse = response.data.data
         .sort((a, b) => b.user_owner.length - a.user_owner.length)
         .slice(0, 3);
@@ -175,7 +188,7 @@ export default function Home() {
                     <div className="relative h-48 w-full bg-gray-200 flex items-center justify-center">
                       {course.image ? (
                         <img
-                          src={`${baseURL}${course.image[0].url}`}
+                          src={`${baseURL}${course.image[0].formats.small.url}`}
                           alt={course.Name}
                           className="object-cover w-full h-full rounded-t-lg"
                         />

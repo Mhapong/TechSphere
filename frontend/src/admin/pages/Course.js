@@ -36,6 +36,10 @@ export function CourseView() {
   const [queryCourse, setQueryCourse] = useState("");
   const [open, setOpen] = useState(false);
   const [DeleteCourse, setDeleteCourse] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [totalPages, setTotalPages] = useState(1);
+  const itemsPerPage = 6;
+  const [currentPage, setCurrentPage] = useState(1);
 
   const handleRowDeleted = async (itemId) => {
     try {
@@ -89,17 +93,40 @@ export function CourseView() {
         })
       : Course;
 
-  const fetchCourse = async () => {
+  const fetchCourse = async (page = 1) => {
     try {
-      const response = await ax.get("courses?populate=*");
+      const response = await ax.get(`courses`, {
+        params: {
+          pagination: {
+            page: page,
+            pageSize: itemsPerPage,
+          },
+          populate: {
+            rating: true,
+            user_owner: true,
+            categories: true,
+            lecturer_owner: true,
+            image: {
+              fields: ["formats"],
+            },
+          },
+        },
+      });
       setCourse(response.data.data);
+      setTotalPages(
+        Math.ceil(response.data.meta.pagination.total / itemsPerPage)
+      );
     } catch (error) {
       console.error("Error fetching team members:", error);
+    } finally {
+      setLoading(false);
     }
   };
+
   useEffect(() => {
-    fetchCourse();
-  }, []);
+    fetchCourse(currentPage);
+  }, [currentPage]);
+
   return (
     // <div className="w-[1200px] mx-96 mt-11 p-8 px-4 max-w-screen-2xl lg:px-12">
     <div className="w-full lg:w-[1200px] mt-11 lg:ml-96 max-w-7xl p-4">
@@ -138,7 +165,14 @@ export function CourseView() {
         </div>
       </div>
       <div>
-        {filteredCourse.length > 0 ? (
+        {loading ? (
+          <div className="flex items-center justify-center min-h-[400px]">
+            <div className="relative w-20 h-20">
+              <div className="absolute top-0 left-0 w-full h-full border-4 border-blue-200 rounded-full animate-ping" />
+              <div className="absolute top-0 left-0 w-full h-full border-4 border-blue-500 rounded-full animate-pulse" />
+            </div>
+          </div>
+        ) : filteredCourse.length > 0 ? (
           <div className="h-full w-full my-7 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 lg:gap-10 items-stretch scrollbar-hide">
             {filteredCourse.map((items) => (
               <motion.div
@@ -166,8 +200,9 @@ export function CourseView() {
                       {items.image ? (
                         <img
                           className="w-full h-36"
-                          src={`${conf.apiUrl}${items.image[0].url}`}
+                          src={`${conf.apiUrl}${items.image[0].formats.small.url}`}
                           alt="ui/ux review check"
+                          loading="lazy"
                         />
                       ) : (
                         <img
@@ -193,36 +228,24 @@ export function CourseView() {
                           color="blue-gray"
                           className="flex flex-col sm:flex-row items-start sm:items-center gap-2 font-normal"
                         >
-                          {/* Rating Section */}
                           <div className="flex items-center gap-2">
-                            {/* <Rating
-                              value={
-                                items.rating && items.rating.length > 0
-                                  ? items.rating.reduce(
-                                      (sum, item) => sum + (item?.star || 0),
-                                      0
-                                    ) / items.rating?.length
-                                  : 0
-                              }
-                              readOnly
-                            /> */}
                             <span className="text-sm mt-2 text-amber-700 whitespace-nowrap">
-                              {items.rating && items.rating.length === 0
+                              {items.rating && items?.rating?.length === 0
                                 ? "ยังไม่มีรีวิว"
-                                : `(${items.rating.length} reviews)`}
+                                : `(${items?.rating?.length} reviews)`}
                             </span>
                           </div>
                         </Typography>
                       </div>
                       <Typography color="gray">
                         {" "}
-                        {items.Description && items.Description.length > 70
+                        {items.Description && items?.Description?.length > 70
                           ? `${items.Description.slice(0, 70)}...`
                           : items.Description}
                       </Typography>
                       <div className="group mt-8 inline-flex flex-wrap items-center gap-3">
                         {items &&
-                          items.categories.map((value) => (
+                          items?.categories?.map((value) => (
                             <div
                               key={value.id}
                               className="inline-flex bg-gray-200 rounded-full px-3 py-0 text-sm font-semibold text-gray-700 mr-2 mb-2 mt-0 items-center"
@@ -286,6 +309,35 @@ export function CourseView() {
             </div>
           </div>
         )}
+        <div className="flex items-center justify-center space-x-4">
+          <button
+            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+            disabled={currentPage === 1}
+            className={`px-4 py-2 text-sm font-medium text-white bg-blue-500 rounded-md ${
+              currentPage === 1
+                ? "opacity-50 cursor-not-allowed"
+                : "hover:bg-blue-600"
+            }`}
+          >
+            Previous
+          </button>
+          <span className="text-sm font-medium text-gray-700">
+            Page {currentPage} of {totalPages}
+          </span>
+          <button
+            onClick={() =>
+              setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+            }
+            disabled={currentPage === totalPages}
+            className={`px-4 py-2 text-sm font-medium text-white bg-blue-500 rounded-md ${
+              currentPage === totalPages
+                ? "opacity-50 cursor-not-allowed"
+                : "hover:bg-blue-600"
+            }`}
+          >
+            Next
+          </button>
+        </div>
       </div>
       <Dialog open={open} onClose={setOpen} className="relative z-10">
         <DialogBackdrop

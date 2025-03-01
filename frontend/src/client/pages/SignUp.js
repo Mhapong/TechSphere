@@ -5,6 +5,7 @@ import axios from "axios";
 import { useSetState } from "react-use";
 import conf from "../../conf/main";
 import background from "../../admin/components/Image/background.png";
+import people from "../components/people-icon.webp";
 
 export default function SignUp(props) {
   const initialState = {
@@ -15,7 +16,6 @@ export default function SignUp(props) {
     password: "",
   };
   const [state, setState] = useSetState(initialState);
-  // const [errMsg, setErrMsg] = useState(null);
   const navigate = useNavigate();
 
   const onSubmit = async (e) => {
@@ -38,8 +38,6 @@ export default function SignUp(props) {
           justify-around items-center"
           style={{
             backgroundImage: `url(${background})`,
-            // backgroundSize: "cover",
-            // backgroundPosition: "center",
           }}
         >
           <div class="w-full mx-auto  px-20 flex-col items-center space-y-6">
@@ -59,6 +57,12 @@ export default function SignUp(props) {
         </div>
         <div class="flex w-full lg:w-1/2 justify-center items-center bg-white space-y-8">
           <div class="w-full px-8 md:px-32 lg:px-24">
+            <div
+              className="block lg:hidden rounded-full shadow-xl mx-auto mb-3 -mt-16 h-48 w-48 bg-cover bg-center"
+              style={{
+                backgroundImage: `url(${people})`,
+              }}
+            ></div>
             <form
               class="bg-white rounded-md shadow-2xl p-5 "
               onSubmit={onSubmit}
@@ -69,7 +73,7 @@ export default function SignUp(props) {
               <p class="text-sm font-normal text-gray-600 mb-8">
                 Welcome to our community
               </p>
-              <div class="flex flex-row items-center border-2 mb-5 py-2 px-3 rounded-2xl">
+              {/* <div class="flex flex-row items-center border-2 mb-5 py-2 px-3 rounded-2xl">
                 <input
                   id="first_name"
                   onChange={(e) => setState({ first_name: e.target.value })}
@@ -94,7 +98,34 @@ export default function SignUp(props) {
                   placeholder="Last Name"
                   required
                 />
+              </div> */}
+              <div className="flex flex-col md:flex-row gap-2 md:gap-4 mb-5">
+                <div className="flex items-center border-2 py-2 px-3 rounded-2xl w-full md:w-1/2 min-h-[48px]">
+                  <input
+                    id="first_name"
+                    onChange={(e) => setState({ first_name: e.target.value })}
+                    value={state.first_name}
+                    className="flex-1 pl-2 outline-none border-none bg-transparent"
+                    type="text"
+                    name="first_name"
+                    placeholder="First Name"
+                    required
+                  />
+                </div>
+                <div className="flex items-center border-2 py-2 px-3 rounded-2xl w-full md:w-1/2 min-h-[48px]">
+                  <input
+                    id="last_name"
+                    onChange={(e) => setState({ last_name: e.target.value })}
+                    value={state.last_name}
+                    className="flex-1 pl-2 outline-none border-none bg-transparent"
+                    type="text"
+                    name="last_name"
+                    placeholder="Last Name"
+                    required
+                  />
+                </div>
               </div>
+
               <div class="flex items-center border-2 mb-5 py-2 px-3 rounded-2xl">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
