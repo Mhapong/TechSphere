@@ -14,6 +14,7 @@ import {
   FaChevronDown,
   FaChevronUp,
 } from "react-icons/fa";
+import { toast } from "sonner";
 import { motion } from "framer-motion";
 import ax from "../../conf/ax";
 import conf from "../../conf/main";
@@ -217,13 +218,27 @@ export default function ViewCourse() {
                     onClick={() =>
                       !state.isLoggedIn
                         ? setShowModal(true)
-                        : addToCart({
-                            ...course,
-                            rating: course.rating,
-                            lecturer_owner: course.lecturer_owner,
-                            Time_Usage: course.Time_Usage,
-                            course_id: course.documentId,
-                          })
+                        : addToCart(
+                            {
+                              ...course,
+                              rating: course.rating,
+                              lecturer_owner: course.lecturer_owner,
+                              Time_Usage: course.Time_Usage,
+                              course_id: course.documentId,
+                            },
+                            toast.success("เพิ่มคอร์สลงในรถเข็นแล้ว!", {
+                              position: "bottom-left",
+                              duration: 2000,
+                              style: {
+                                fontSize: "1.2rem",
+                                padding: "20px",
+                                fontWeight: "bold",
+                                textAlign: "center",
+                                borderRadius: "10px",
+                                color: "green",
+                              },
+                            })
+                          )
                     }
                     disabled={isCourseInCart || isUserOwned || isPending}
                   >

@@ -274,7 +274,7 @@ const Cart = () => {
         {/* Suggested Courses */}
         <div className="mt-16">
           <h2 className="text-2xl font-semibold mb-6 text-gray-800">
-            You might be interested in
+            คอร์สที่คุณอาจสนใจ
           </h2>
           <motion.div
             className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
@@ -299,7 +299,7 @@ const Cart = () => {
                   <div className="relative h-48 w-full bg-gray-200 flex items-center justify-center">
                     {course.image ? (
                       <img
-                        src={`${baseURL}${course.image[0].url}`}
+                        src={`${baseURL}${course.image[0].formats.small.url}`}
                         alt={course.Name}
                         className="object-cover w-full h-full rounded-t-lg"
                       />
