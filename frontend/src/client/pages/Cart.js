@@ -160,7 +160,7 @@ const Cart = () => {
                       </p>
 
                       <div className="flex items-center gap-2 mb-2">
-                        <span className="text-teal-600 font-bold">ขายดี</span>
+                        {/* <span className="text-teal-600 font-bold">ขายดี</span> */}
                         <Rating
                           value={item?.rating}
                           precision={0.5}
