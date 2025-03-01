@@ -29,6 +29,7 @@ export function CourseLecturerView() {
   const [queryCourse, setQueryCourse] = useState("");
   const { state: ContextState } = useContext(AuthContext);
   const { user } = ContextState;
+  const [loading, setLoading] = useState(true);
 
   const categories = [
     { name: "ALL", img: allpic, path: "ALL" },
@@ -75,12 +76,34 @@ export function CourseLecturerView() {
 
   const fetchCourse = async () => {
     try {
-      const response = await ax.get(
-        `courses?filters[lecturer_owner][id][$eq]=${user.id}&&populate=*`
-      );
+      // const response = await ax.get(
+      //   `courses?filters[lecturer_owner][id][$eq]=${user.id}&populate[0]=rating&populate[1]=user_owner&populate[2]=categories&populate[image][fields][3]=formats`
+      // );
+      const response = await ax.get(`courses`, {
+        params: {
+          filters: {
+            lecturer_owner: {
+              id: {
+                $eq: user.id,
+              },
+            },
+          },
+          populate: {
+            rating: true,
+            user_owner: true,
+            categories: true,
+            lecturer_owner: true,
+            image: {
+              fields: ["formats"],
+            },
+          },
+        },
+      });
       setCourse(response.data.data);
     } catch (error) {
       console.error("Error fetching team members:", error);
+    } finally {
+      setLoading(false);
     }
   };
   useEffect(() => {
@@ -123,7 +146,14 @@ export function CourseLecturerView() {
         </div>
       </div>
       <div>
-        {filteredCourse.length > 0 ? (
+        {loading ? (
+          <div className="flex items-center justify-center min-h-[400px]">
+            <div className="relative w-20 h-20">
+              <div className="absolute top-0 left-0 w-full h-full border-4 border-blue-200 rounded-full animate-ping" />
+              <div className="absolute top-0 left-0 w-full h-full border-4 border-blue-500 rounded-full animate-pulse" />
+            </div>
+          </div>
+        ) : filteredCourse.length > 0 ? (
           <div className="h-full w-full my-7 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 lg:gap-10 items-stretch scrollbar-hide">
             {filteredCourse.map((items) => (
               <motion.div
@@ -140,8 +170,9 @@ export function CourseLecturerView() {
                       {items.image ? (
                         <img
                           className="w-full h-36"
-                          src={`${conf.apiUrl}${items.image[0].url}`}
+                          src={`${conf.apiUrl}${items.image[0].formats.small.url}`}
                           alt="ui/ux review check"
+                          loading="lazy"
                         />
                       ) : (
                         <img
@@ -190,7 +221,7 @@ export function CourseLecturerView() {
                       </Typography>
                       <div className="group mt-8 inline-flex flex-wrap items-center gap-3">
                         {items &&
-                          items.categories.map((value) => (
+                          items?.categories?.map((value) => (
                             <div
                               key={value.id}
                               className="inline-flex bg-gray-200 rounded-full px-3 py-0 text-sm font-semibold text-gray-700 mr-2 mb-2 mt-0 items-center"

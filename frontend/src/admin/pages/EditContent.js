@@ -272,7 +272,6 @@ const EditContent = () => {
           </label>
 
           <div className="flex items-center gap-4 border-2 border-dashed border-gray-300 rounded-md p-4 bg-[#f6f6f6]">
-            {/* พรีวิววิดีโอ */}
             {previewUrl ? (
               <video
                 src={previewUrl}
@@ -281,7 +280,7 @@ const EditContent = () => {
               />
             ) : (
               <div className="w-5/6 h-40 flex items-center justify-center text-gray-500">
-                No video selected
+                ไม่มีวิดีโอ
               </div>
             )}
 
@@ -292,9 +291,9 @@ const EditContent = () => {
                 onClick={() => document.getElementById("video-upload").click()}
                 className="bg-[#8c0327] hover:bg-[#6b0220] text-white rounded-full py-2 px-4"
               >
-                Select Video
+                เลือกวิดีโอ
               </button>
-              <p className="text-gray-500 text-sm mt-1">MP4, MOV</p>
+              <p className="text-gray-500 text-sm mt-1">รองรับเฉพาะ MP4, MOV</p>
             </div>
           </div>
           {error && <p className="text-red-500 text-sm mt-2">{error}</p>}

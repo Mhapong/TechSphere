@@ -78,32 +78,30 @@ export default function Login() {
         <div className="flex flex-col md:flex-row items-center">
           <div className="w-full md:w-1/2 lg:w-3/5 mb-6 md:mb-0 md:mr-8">
             <h1 className="text-4xl font-bold text-gray-800 text-center mb-6">
-              Welcome Back!
+              ยินดีต้อนรับสู่ TECHSPHERE
             </h1>
-            <p className="text-gray-500 text-center mb-8">
-              Login to your account
-            </p>
+            <p className="text-gray-500 text-center mb-8">ล็อคอินเข้าสู่ระบบ</p>
             <form onSubmit={onSubmit}>
               <div className="mb-4">
                 <label className="block text-gray-700 text-sm font-bold mb-2">
-                  Username
+                  ชื่อของผู้ใช้งาน
                 </label>
                 <input
                   type="text"
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="Enter your username"
+                  placeholder="กรุณาใส่ชื่อผู้ใช้งาน"
                   value={state.username}
                   onChange={(e) => setState({ username: e.target.value })}
                 />
               </div>
               <div className="mb-6">
                 <label className="block text-gray-700 text-sm font-bold mb-2">
-                  Password
+                  รหัสผ่าน
                 </label>
                 <input
                   type="password"
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="Enter your password"
+                  placeholder="กรุณาใส่รหัสผ่าน"
                   value={state.password}
                   onChange={(e) => setState({ password: e.target.value })}
                 />
@@ -112,33 +110,28 @@ export default function Login() {
                 type="submit"
                 className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-lg transition duration-300"
               >
-                Login
+                เข้าสู่ระบบ
               </button>
             </form>
             {isLoginPending && (
-              <p className="text-blue-500 mt-4 text-center">Please wait...</p>
+              <p className="text-blue-500 mt-4 text-center">
+                กำลังรอการล็อกอิน...
+              </p>
             )}
             {isLoggedIn && (
-              <p className="text-green-500 mt-4 text-center">
-                Login successful!
-              </p>
+              <p className="text-green-500 mt-4 text-center">ล็อกอินสำเร็จ!</p>
             )}
             {loginError && (
               <p className="text-red-500 mt-4 text-center">
                 {loginError.message}
               </p>
             )}
-            <div className="text-center mt-6">
-              <a href="#" className="text-sm text-blue-500 hover:underline">
-                Forgot Password?
-              </a>
-            </div>
-            <div className="text-center mt-2">
+            <div className="text-center mt-5">
               <a
                 href="/sign-up"
-                className="text-sm text-blue-500 hover:underline"
+                className="text-base text-blue-500 hover:underline"
               >
-                Don't have an account? Sign up
+                ไม่มีบัญชีผู้ใช้? สมัครสมาชิก
               </a>
             </div>
           </div>

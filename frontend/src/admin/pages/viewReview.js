@@ -202,7 +202,7 @@ const ReviewAdmin = () => {
                       </div>
 
                       <h4 className="text-lg font-semibold text-gray-800 mb-2">
-                        Reviews ({filteredReviews.length}):
+                        รีวิว ({filteredReviews.length}):
                       </h4>
                       {filteredReviews.length > 0 ? (
                         <ul className="space-y-4">
@@ -234,7 +234,7 @@ const ReviewAdmin = () => {
                           ))}
                         </ul>
                       ) : (
-                        <p className="text-gray-500">No reviews yet.</p>
+                        <p className="text-gray-500">ยังไม่มีรีวิว</p>
                       )}
                     </motion.div>
                   ) : (

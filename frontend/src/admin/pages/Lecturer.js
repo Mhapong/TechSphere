@@ -97,7 +97,7 @@ const LecturerAll = () => {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               exit={{ opacity: 0 }}
-              className="inline-block w-full sm:w-auto mx-2 sm:mx-6 my-4 sm:my-0" // Adjusted margins and width for responsiveness
+              className="inline-block w-full sm:w-auto mx-2 sm:mx-6 my-4 sm:my-0"
             >
               <div
                 className="flex flex-col sm:flex-row items-center bg-gray-50 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 
@@ -109,7 +109,7 @@ const LecturerAll = () => {
                     className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-3 rounded text-sm sm:text-base"
                     onClick={() => Navigate(`/edit-profile/${value.id}`)}
                   >
-                    <Edit /> Edit
+                    <Edit /> แก้ไข
                   </button>
                   <button
                     className="bg-red-800 hover:bg-red-900 text-white font-bold py-1 px-3 rounded text-sm sm:text-base"
@@ -150,7 +150,7 @@ const LecturerAll = () => {
                     </a>
                   </h3>
                   <span className="text-gray-500 dark:text-gray-400">
-                    {value.role?.name || "No Role"}
+                    อาจารย์ผู้สอน
                   </span>
                   <p className="mb-2 sm:mb-4 font-light text-gray-500 dark:text-gray-400">
                     จำนวนคอร์สที่มี : {value.created_courses?.length || 0}
@@ -192,7 +192,7 @@ const LecturerAll = () => {
                     <span className="inline-flex items-center text-amber-700 w-full whitespace-nowrap">
                       {value.rating && value.rating === 0
                         ? "ยังไม่มีรีวิว"
-                        : `(${value.rating?.length} reviews)`}
+                        : `(${value.rating?.length} รีวิว)`}
                     </span>
                   </div>
                 </div>

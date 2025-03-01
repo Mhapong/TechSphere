@@ -11,7 +11,7 @@ import {
 } from "@mui/icons-material";
 import { motion } from "framer-motion";
 import BorderColorIcon from "@mui/icons-material/BorderColor";
-import { useLocation } from "react-router";
+import { Navigate, useLocation } from "react-router";
 import conf from "../../conf/main";
 
 export default function Profile() {
@@ -79,10 +79,10 @@ export default function Profile() {
             <div className="mx-auto lg:mx-0 w-4/5 pt-3 border-b-2 border-green-500 opacity-25"></div>
             <p className="text-3xl pt-4 font-bold flex items-center justify-center lg:justify-start">
               {" "}
-              Name : {UserData?.first_name} {UserData?.last_name}
+              ชื่อ : {UserData?.first_name} {UserData?.last_name}
             </p>
             <p className="pt-4 text-2xl font-bold flex items-center justify-center lg:justify-start">
-              Role : {Role}
+              ประเภทผู้ใช้งาน : {Role}
             </p>
             <p className="pt-2 lg:text-1xl flex items-center justify-center lg:justify-start">
               Email : {UserData?.email}

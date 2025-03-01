@@ -259,11 +259,11 @@ const CourseStudentTable = () => {
             aria-label="Table navigation"
           >
             <span className="text-sm font-normal text-gray-500 dark:text-gray-400">
-              Showing
+              กำลังโชว์
               <span className="font-semibold text-gray-900 dark:text-white">
                 1-{Student.length}
               </span>
-              of
+              จาก
               <span className="font-semibold text-gray-900 dark:text-white">
                 {Student.length}
               </span>

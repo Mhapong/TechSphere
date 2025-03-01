@@ -43,14 +43,15 @@ export default function SignUp(props) {
           <div class="w-full mx-auto  px-20 flex-col items-center space-y-6">
             <h1 class="text-white font-bold text-4xl font-sans">TechSphere</h1>
             <p class="text-white mt-1">
-              Online learning for those who want to improve programming skill
+              ศูนย์กลางด้านเทคโนโลยี และความรู้ที่ทันสมัย
+              เพื่อปรับตัวเข้ากับปัจจุบัน
             </p>
             <div class="flex justify-center lg:justify-start mt-6">
               <a
                 href="/"
                 class="hover:bg-indigo-700 hover:text-white hover:-translate-y-1 transition-all duration-500 bg-white text-indigo-800 mt-4 px-4 py-2 rounded-2xl font-bold mb-2"
               >
-                Get Started
+                เริ่มต้นเรียน
               </a>
             </div>
           </div>
@@ -68,37 +69,11 @@ export default function SignUp(props) {
               onSubmit={onSubmit}
             >
               <h1 class="text-gray-800 font-bold text-2xl mb-1">
-                Hello new user let's create your account
+                สร้างบัญชีผู้ใช้งานใหม่
               </h1>
               <p class="text-sm font-normal text-gray-600 mb-8">
-                Welcome to our community
+                ยินดีต้อนรับสู่ TechSphere
               </p>
-              {/* <div class="flex flex-row items-center border-2 mb-5 py-2 px-3 rounded-2xl">
-                <input
-                  id="first_name"
-                  onChange={(e) => setState({ first_name: e.target.value })}
-                  value={state.first_name}
-                  class="flex-1 pl-2 w-f outline-none border-none"
-                  type="first_name"
-                  name="first_name"
-                  placeholder="First Name"
-                  required
-                />
-                <text font-size="200" className="mx-0.5 text-gray-300">
-                  |
-                </text>
-
-                <input
-                  id="last_name"
-                  onChange={(e) => setState({ last_name: e.target.value })}
-                  value={state.last_name}
-                  class="flex-1 pl-2 w-f outline-none border-none"
-                  type="last_name"
-                  name="last_name"
-                  placeholder="Last Name"
-                  required
-                />
-              </div> */}
               <div className="flex flex-col md:flex-row gap-2 md:gap-4 mb-5">
                 <div className="flex items-center border-2 py-2 px-3 rounded-2xl w-full md:w-1/2 min-h-[48px]">
                   <input
@@ -108,7 +83,7 @@ export default function SignUp(props) {
                     className="flex-1 pl-2 outline-none border-none bg-transparent"
                     type="text"
                     name="first_name"
-                    placeholder="First Name"
+                    placeholder="ชื่อจริง"
                     required
                   />
                 </div>
@@ -120,7 +95,7 @@ export default function SignUp(props) {
                     className="flex-1 pl-2 outline-none border-none bg-transparent"
                     type="text"
                     name="last_name"
-                    placeholder="Last Name"
+                    placeholder="นามสกุล"
                     required
                   />
                 </div>
@@ -148,7 +123,7 @@ export default function SignUp(props) {
                   class="  pl-2 w-[98%] outline-none border-none"
                   type="email"
                   name="email"
-                  placeholder="Email Address"
+                  placeholder="Email"
                   required
                 />
               </div>
@@ -176,7 +151,7 @@ export default function SignUp(props) {
                   class="w-[98%] pl-2 w-f outline-none border-none"
                   type="username"
                   name="username"
-                  placeholder="Username"
+                  placeholder="ชื่อผู้ใช้งาน"
                   required
                 />
               </div>
@@ -200,7 +175,7 @@ export default function SignUp(props) {
                   type="password"
                   name="password"
                   id="password"
-                  placeholder="Password"
+                  placeholder="รหัสผ่าน"
                   required
                 />
               </div>
@@ -209,7 +184,7 @@ export default function SignUp(props) {
                 class="block w-full bg-indigo-600 mt-5 py-2 rounded-2xl hover:bg-indigo-700 hover:-translate-y-1 transition-all duration-500 text-white font-semibold mb-2"
                 value="Sign-up"
               >
-                Sign up
+                ลงทะเบียน
               </button>
               <div class="flex justify-between mt-4">
                 <span class="text-sm ml-2 hover:text-blue-500 cursor-pointer hover:-translate-y-1 duration-500 transition-all">
@@ -220,7 +195,7 @@ export default function SignUp(props) {
                   href="/login"
                   class="text-sm ml-2 hover:text-blue-500 cursor-pointer hover:-translate-y-1 duration-500 transition-all"
                 >
-                  Already have an account?
+                  มีบัญชีอยู่แล้ว?
                 </a>
               </div>
             </form>

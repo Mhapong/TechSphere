@@ -146,11 +146,15 @@ const EditProfile = () => {
                       }
                       className="bg-[#8c0327] hover:bg-[#6b0220] text-white rounded-full py-1 px-3 text-sm" // ปรับขนาดปุ่มและตัวอักษร
                     >
-                      Select from the computer
+                      เลือกจากคอมพิวเตอร์ของคุณ
                     </button>
                   </div>
-                  <p className="text-gray-500 text-xs">or drag photo here</p>{" "}
-                  <p className="text-gray-500 text-xs mt-1">PNG, JPG, SVG</p>{" "}
+                  <p className="text-gray-500 text-xs">
+                    หรือวางรูปภาพของคุณตรงนี้
+                  </p>{" "}
+                  <p className="text-gray-500 text-xs mt-1">
+                    รองรับเฉพาะ PNG, JPG, SVG
+                  </p>{" "}
                 </div>
               )}
             </label>
@@ -221,7 +225,7 @@ const EditProfile = () => {
               type="text"
               id="first_name"
               name="first_name"
-              placeholder="First Name"
+              placeholder="ชื่อจริง"
               value={First_Name}
               onChange={(e) => setFirst_Name(e.target.value)}
               className="block w-full rounded-md border-gray-300 shadow-sm focus:border-[#8c0327] focus:ring-[#8c0327] focus:ring-opacity-50 p-2"
@@ -241,7 +245,7 @@ const EditProfile = () => {
               type="text"
               id="last_name"
               name="last_name"
-              placeholder="Last Name"
+              placeholder="นามสกุล"
               value={Last_Name}
               onChange={(e) => setLast_Name(e.target.value)}
               className="block w-full rounded-md border-gray-300 shadow-sm focus:border-[#8c0327] focus:ring-[#8c0327] focus:ring-opacity-50 p-2"

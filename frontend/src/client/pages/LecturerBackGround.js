@@ -57,11 +57,7 @@ export default function LecturerProfile() {
       </div>
     );
   if (!lecturer)
-    return (
-      <p className="text-center text-red-500 p-4 text-xl">
-        Lecturer not found.
-      </p>
-    );
+    return <p className="text-center text-red-500 p-4 text-xl">ไม่พบอาจารย์</p>;
 
   return (
     <motion.div
@@ -96,13 +92,14 @@ export default function LecturerProfile() {
 
           {/* ข้อมูลพื้นฐาน */}
           <div className="text-center text-gray-600 mt-2 text-sm sm:text-base whitespace-pre-line">
-            {lecturer?.background || "No background information."}
+            {lecturer?.background || "ไม่มีข้อมูลประวัติของอาจารย์"}
           </div>
 
           {/* รายการคอร์สที่เปิดสอน */}
           <div className="mt-8">
             <h3 className="text-lg sm:text-xl font-semibold mb-4 text-gray-800">
-              Created Courses:
+              คอร์สที่สร้างโดย {lecturer?.first_name} {lecturer?.last_name}{" "}
+              ทั้งหมด :
             </h3>
             {lecturer?.created_courses?.length > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -165,7 +162,7 @@ export default function LecturerProfile() {
               </div>
             ) : (
               <p className="text-gray-500 text-sm sm:text-base">
-                No courses created.
+                ไม่มีคอร์สที่สร้าง
               </p>
             )}
           </div>
@@ -173,7 +170,7 @@ export default function LecturerProfile() {
           {/* รีวิว */}
           <div className="mt-8">
             <h3 className="text-lg sm:text-xl font-semibold mb-4 text-gray-800">
-              Reviews ({lecturer?.rating?.length || 0}):
+              รีวิว ({lecturer?.rating?.length || 0}):
             </h3>
             {lecturer?.rating?.length > 0 ? (
               <div>
@@ -227,9 +224,7 @@ export default function LecturerProfile() {
                 </ul>
               </div>
             ) : (
-              <p className="text-gray-500 text-sm sm:text-base">
-                No reviews yet.
-              </p>
+              <p className="text-gray-500 text-sm sm:text-base">ไม่มีรีวิว</p>
             )}
           </div>
         </div>
