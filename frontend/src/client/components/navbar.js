@@ -9,10 +9,11 @@ import { useCart } from "../../context/Cart.context";
 import conf from "../../conf/main";
 
 import usericon from "../../admin/components/Image/user-icon.webp";
-import logopic from "./TechSphere_logopic.png";
-import textpic from "./logo.png";
+import logopic from "./static/TechSphere_logopic.png";
+import textpic from "./static/logo.png";
 import ax from "../../conf/ax";
 import { Calendar, Tag } from "lucide-react";
+import { toast } from "sonner";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -49,14 +50,12 @@ export default function Nav() {
   ];
 
   const markAsRead = async (notificationId) => {
-    // อัพเดตใน Local State
     setNotifications((prev) =>
       prev.map((notif) =>
         notif.id === notificationId ? { ...notif, read: true } : notif
       )
     );
 
-    // (Optional) อัพเดตใน Backend ถ้ามี API รองรับ
     try {
       await ax.put(`/promotions/${notificationId}`, { read: true });
     } catch (error) {
@@ -64,7 +63,6 @@ export default function Nav() {
     }
   };
 
-  // Mark all as read
   const markAllAsRead = async () => {
     setNotifications((prev) => prev.map((notif) => ({ ...notif, read: true })));
 
@@ -72,13 +70,35 @@ export default function Nav() {
       await ax.put("/promotions/mark-all-read");
     } catch (error) {
       console.error("Failed to mark all as read:", error);
+    } finally {
+      toast.success("อ่านทั้งหมดแล้ว!", {
+        position: "bottom-center",
+        duration: 1000,
+        style: {
+          fontSize: "1.1rem",
+          padding: "20px",
+          fontWeight: "bold",
+          textAlign: "center",
+          borderRadius: "10px",
+        },
+      });
     }
   };
 
-  // ฟังก์ชันคัดลอกรหัส
   const copyToClipboard = (code) => {
     navigator.clipboard.writeText(code);
-    // สามารถเพิ่ม Toast แจ้งเตือนการคัดลอกได้
+    toast.success("คัดลอกคูปองสำเร็จ!", {
+      position: "bottom-left",
+      duration: 2000,
+      style: {
+        fontSize: "1.5rem",
+        padding: "20px",
+        fontWeight: "bold",
+        textAlign: "center",
+        borderRadius: "10px",
+        color: "green",
+      },
+    });
   };
 
   const formatThaiDate = (dateString) => {
@@ -184,7 +204,7 @@ export default function Nav() {
                       <div className="py-1">
                         <div className="px-4 py-2 flex items-center justify-between border-b">
                           <h3 className="text-sm font-semibold text-gray-900">
-                            การแจ้งเตือน
+                            โปรโมชั่น
                           </h3>
                           <button
                             onClick={() => markAllAsRead()}
@@ -198,7 +218,7 @@ export default function Nav() {
                           <div className="p-4 text-center">
                             <BellIcon className="mx-auto h-8 w-8 text-gray-400" />
                             <p className="mt-2 text-sm text-gray-500">
-                              ไม่มีการแจ้งเตือนใหม่
+                              ไม่มีโปรโมชั่น
                             </p>
                           </div>
                         ) : (
@@ -271,7 +291,7 @@ export default function Nav() {
                                   active ? "bg-gray-50" : ""
                                 } text-center text-blue-600 hover:text-blue-800`}
                               >
-                                ดูประวัติการแจ้งเตือนทั้งหมด →
+                                ดูโปรโมชั่นทั้งหมด →
                               </Link>
                             )}
                           </Menu.Item>

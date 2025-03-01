@@ -5,7 +5,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/Auth.context";
 import { useCart } from "../../context/Cart.context";
 import ax from "../../conf/ax";
-import promptpay from "../components/promptpay2.png";
+import promptpay from "../components/static/promptpay2.png";
 import Tippy from "@tippyjs/react";
 import "tippy.js/dist/tippy.css";
 

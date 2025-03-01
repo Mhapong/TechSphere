@@ -9,12 +9,12 @@ import {
 } from "@material-tailwind/react";
 import React, { useEffect, useState } from "react";
 import ax from "../../conf/ax";
-import datapic from "../../client/components/data.png";
-import webpic from "../../client/components/web-100.png";
-import gamepic from "../../client/components/game.png";
-import hardwarepic from "../../client/components/hardware.png";
-import networkpic from "../../client/components/network.png";
-import morepic from "../../client/components/more.png";
+import datapic from "../../client/components/static/data.png";
+import webpic from "../../client/components/static/web-100.png";
+import gamepic from "../../client/components/static/game.png";
+import hardwarepic from "../../client/components/static/hardware.png";
+import networkpic from "../../client/components/static/network.png";
+import morepic from "../../client/components/static/more.png";
 import allpic from "../components/Image/All.png";
 import { useNavigate } from "react-router";
 import CourseEx from "../components/Image/htmlcssJS.webp";

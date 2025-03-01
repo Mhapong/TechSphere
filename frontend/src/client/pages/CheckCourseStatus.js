@@ -3,8 +3,8 @@ import { AuthContext } from "../../context/Auth.context";
 import ax from "../../conf/ax";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import Confirm from "../components/confirm.png";
-import Unapproved from "../components/unapproved.png";
+import Confirm from "../components/static/confirm.png";
+import Unapproved from "../components/static/unapproved.png";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import conf from "../../conf/main";
 

@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useContext } from "react";
-import techspherepic from "../components/logo.png";
+import techspherepic from "../components/static/logo.png";
 import { useNavigate } from "react-router-dom";
 // import axios from "axios";
 import ax from "../../conf/ax";

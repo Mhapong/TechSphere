@@ -21,12 +21,12 @@ import ax from "../../conf/ax";
 import conf from "../../conf/main";
 
 // Import images
-import webpic from "../components/web-100.png";
-import datapic from "../components/data.png";
-import hardwarepic from "../components/hardware.png";
-import networkpic from "../components/network.png";
-import gamepic from "../components/game.png";
-import morepic from "../components/more.png";
+import webpic from "../components/static/web-100.png";
+import datapic from "../components/static/data.png";
+import hardwarepic from "../components/static/hardware.png";
+import networkpic from "../components/static/network.png";
+import gamepic from "../components/static/game.png";
+import morepic from "../components/static/more.png";
 import allpic from "../../admin/components/Image/All.png";
 import { Rating } from "@mui/material";
 import YouTubeIcon from "@mui/icons-material/YouTube";
@@ -117,6 +117,7 @@ export default function ViewCourse() {
       ...prev,
       [index]: !prev[index], // ✅ Toggle เปิด/ปิด
     }));
+    console.log(openSections);
   };
 
   return (
@@ -352,42 +353,46 @@ export default function ViewCourse() {
 
               <div className="mt-6">
                 <h3 className="text-2xl font-semibold mb-4">รีวิว</h3>
-                {course.rating && course.rating.length > 0 ? (
-                  course.rating.map((review, index) => (
-                    <div key={index} className="mb-4 p-4 border rounded-lg">
-                      <div className="flex items-center mb-2">
-                        <img
-                          className="size-12 rounded-full"
-                          src={
-                            review.users_review.userProfile
-                              ? `${conf.apiUrl}${review.users_review.userProfile.url}`
-                              : usericon
-                          }
-                          alt={`${review.users_review.username} Avatar`}
-                        />
-                        <div className="gird-row-2 grid">
-                          <p className="ml-2 font-medium">
-                            {review.users_review.first_name}{" "}
-                            {review.users_review.last_name}
-                          </p>
-                          <p className="ml-1.5 text-sm">
-                            <Rating
-                              value={review.star}
-                              readonly
-                              size="small"
-                              readOnly
-                            />
-                          </p>
+                <div className="max-h-[300px] overflow-y-auto pr-2">
+                  {course.rating && course.rating.length > 0 ? (
+                    course.rating.map((review, index) => (
+                      <div
+                        key={index}
+                        className="mb-4 p-4 border rounded-lg bg-white shadow"
+                      >
+                        <div className="flex items-center mb-2">
+                          <img
+                            className="size-12 rounded-full"
+                            src={
+                              review.users_review.userProfile
+                                ? `${conf.apiUrl}${review.users_review.userProfile.url}`
+                                : usericon
+                            }
+                            alt={`${review.users_review.username} Avatar`}
+                          />
+                          <div className="grid grid-rows-2 ml-2">
+                            <p className="font-medium">
+                              {review.users_review.first_name}{" "}
+                              {review.users_review.last_name}
+                            </p>
+                            <p className="text-sm">
+                              <Rating
+                                value={review.star}
+                                readonly
+                                size="small"
+                              />
+                            </p>
+                          </div>
                         </div>
+                        <p className="ml-2 text-gray-700">{review.comment}</p>
                       </div>
-                      <p className="ml-2  text-gray-700">{review.comment}</p>
-                    </div>
-                  ))
-                ) : (
-                  <p className="mb-4 p-4 bg-white rounded-lg text-gray-800 shadow-lg">
-                    ยังไม่มีรีวิวสำหรับคอร์สนี้
-                  </p>
-                )}
+                    ))
+                  ) : (
+                    <p className="mb-4 p-4 bg-white rounded-lg text-gray-800 shadow-lg">
+                      ยังไม่มีรีวิวสำหรับคอร์สนี้
+                    </p>
+                  )}
+                </div>
               </div>
 
               {/* ส่วนข้อมูลวิทยากร */}

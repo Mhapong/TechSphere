@@ -30,7 +30,10 @@ const Cart = () => {
   const fetchSuggestedCourses = async () => {
     try {
       const response = await ax.get("courses?limit=4&populate=*");
-      setSuggestedCourses(response.data.data);
+      const topCourse = response.data.data
+        .sort((a, b) => b.user_owner.length - a.user_owner.length)
+        .slice(0, 3);
+      setSuggestedCourses(topCourse);
     } catch (err) {
       console.error("Error fetching suggested courses:", err);
     }
@@ -114,7 +117,7 @@ const Cart = () => {
                 >
                   <ShoppingCart className="w-20 h-20 text-gray-400 mb-6" />
                   <h3 className="text-2xl font-bold text-gray-700 mb-2">
-                    ตะกร้าว่างอยู่
+                    รถเข็นว่างอยู่
                   </h3>
                   <p className="text-gray-500 mb-6">
                     กรุณาเพิ่มคอร์สเรียนเพื่อเริ่มต้น
@@ -231,18 +234,18 @@ const Cart = () => {
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   โปรโมชั่น
                 </label>
-                <div className="flex gap-2">
+                <div className="flex flex-wrap md:flex-nowrap gap-2">
                   <input
                     type="text"
                     placeholder="ใส่โค้ดส่วนลด"
-                    className="flex-1 p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="flex-1 w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     value={promoCode}
                     onChange={(e) => setPromoCode(e.target.value)}
                     disabled={discount > 0}
                   />
                   <button
                     onClick={applyPromoCode}
-                    className={`px-4 py-2 rounded-lg transition-colors ${
+                    className={`px-4 py-2 rounded-lg transition-colors flex-shrink-0 min-w-[100px] md:min-w-[120px] ${
                       discount > 0
                         ? "bg-gray-200 text-gray-400 cursor-not-allowed"
                         : "bg-blue-600 text-white hover:bg-blue-700"

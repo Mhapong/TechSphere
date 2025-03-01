@@ -6,13 +6,13 @@ import { motion } from "framer-motion";
 import ax from "../../conf/ax";
 
 // Import images
-import homepic from "../components/home-page.png";
-import webpic from "../components/web-100.png";
-import datapic from "../components/data.png";
-import hardwarepic from "../components/hardware.png";
-import networkpic from "../components/network.png";
-import gamepic from "../components/game.png";
-import morepic from "../components/more.png";
+import homepic from "../components/static/home-page.png";
+import webpic from "../components/static/web-100.png";
+import datapic from "../components/static/data.png";
+import hardwarepic from "../components/static/hardware.png";
+import networkpic from "../components/static/network.png";
+import gamepic from "../components/static/game.png";
+import morepic from "../components/static/more.png";
 import { Rating } from "@mui/material";
 import conf from "../../conf/main";
 
