@@ -21,8 +21,6 @@ const ReviewModal = ({
   hasReviewedCourses = {},
   refreshReviews,
 }) => {
-  console.log("selectedCourse.id:", selectedCourse?.id);
-  console.log("hasReviewedCourses:", hasReviewedCourses);
   // State สำหรับควบคุมโหมดแก้ไขและตรวจสอบว่าทำการแก้ไขไปแล้วหรือยัง
   const [isEditing, setIsEditing] = useState(false);
   const [hasEdited, setHasEdited] = useState(false);
@@ -120,8 +118,6 @@ const ReviewModal = ({
                   const reviewData =
                     hasReviewedCourses[String(selectedCourse.id)];
                   setSelectedReviewId(reviewData.documentId);
-                  console.log("Review Data:", reviewData);
-                  console.log("Selected Review ID:", selectedReviewId);
                   setRating(reviewData.rating);
                   setComment(reviewData.comment);
                 } else {
@@ -151,16 +147,6 @@ const ReviewModal = ({
                     return;
                   }
                   try {
-                    console.log("PUT URL:", `/api/reviews/${selectedReviewId}`);
-                    console.log("Selected Review ID:", selectedReviewId);
-                    console.log("Payload:", {
-                      data: {
-                        star: rating,
-                        comment,
-                        review_id: selectedCourse?.id,
-                        users_review: user?.id,
-                      },
-                    });
                     await ax.put(`/reviews/${selectedReviewId}`, {
                       data: {
                         // ต้องมี data ครอบ!
@@ -496,7 +482,6 @@ export default function MyCourse() {
         };
 
         const response = await ax.get(`reviews`, { params });
-        console.log("API Response:", response.data);
 
         const reviewedCourses = {};
 
@@ -514,7 +499,6 @@ export default function MyCourse() {
           }
         });
 
-        console.log("🎯 Reviewed Courses Data:", reviewedCourses);
         setHasReviewedCourses(reviewedCourses);
       } catch (error) {
         console.error(
@@ -540,7 +524,6 @@ export default function MyCourse() {
         const response = await ax.get(`lecturer-reviews`, {
           params,
         });
-        console.log("Teacher Reviews API Response:", response.data);
 
         const reviewedTeachers = {};
 
@@ -558,7 +541,6 @@ export default function MyCourse() {
           }
         });
 
-        console.log("🎯 Reviewed Teachers Data:", reviewedTeachers);
         setHasReviewedTeacher(reviewedTeachers);
       } catch (error) {
         console.error(
@@ -577,13 +559,14 @@ export default function MyCourse() {
         const userResponse = await ax.get(
           `users/me?populate=owned_course.image`
         );
-        console.log("✅ User Data:", userResponse.data);
         const currentUser = userResponse.data;
         setUser(currentUser);
         setOwnedCourses(currentUser.owned_course || []);
 
         // ดึงข้อมูลคอร์สทั้งหมด
-        const coursesResponse = await ax.get(`courses?populate=image`);
+        const coursesResponse = await ax.get(
+          `courses?populate[image][fields][0]=formats`
+        );
         setCourseData(coursesResponse.data.data);
 
         // ดึงข้อมูลรีวิวโดยใช้ currentUser ที่ได้มา
@@ -773,7 +756,7 @@ export default function MyCourse() {
                         <img
                           src={
                             item.image && item.image.length > 0
-                              ? `${BASE_URL}${item.image[0].url}`
+                              ? `${BASE_URL}${item.image[0].formats.small.url}`
                               : "/placeholder.svg"
                           }
                           alt="Course Image"
@@ -918,7 +901,7 @@ export default function MyCourse() {
                             <div className="relative h-48 w-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center overflow-hidden">
                               {course.image ? (
                                 <img
-                                  src={`${BASE_URL}${course.image[0].url}`}
+                                  src={`${BASE_URL}${course.image[0].formats.small.url}`}
                                   alt={course.Name}
                                   className="object-cover w-full h-full rounded-t-lg transform hover:scale-105 transition-transform duration-300"
                                 />

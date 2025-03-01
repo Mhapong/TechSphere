@@ -8,13 +8,13 @@ import CartProvider from "./context/Cart.context.js";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
-  <React.StrictMode>
-    <ContextProvider>
-      <CartProvider>
-        <App />
-      </CartProvider>
-    </ContextProvider>
-  </React.StrictMode>
+  // <React.StrictMode>
+  <ContextProvider>
+    <CartProvider>
+      <App />
+    </CartProvider>
+  </ContextProvider>
+  // </React.StrictMode>
 );
 
 // If you want to start measuring performance in your app, pass a function

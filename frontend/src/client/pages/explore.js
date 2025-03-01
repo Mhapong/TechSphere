@@ -12,16 +12,16 @@ import conf from "../../conf/main";
 import { Option, Select } from "@material-tailwind/react";
 
 // Import images
-import webpic from "../components/web-100.png";
-import datapic from "../components/data.png";
-import hardwarepic from "../components/hardware.png";
-import networkpic from "../components/network.png";
-import gamepic from "../components/game.png";
-import morepic from "../components/more.png";
+import webpic from "../components/static/web-100.png";
+import datapic from "../components/static/data.png";
+import hardwarepic from "../components/static/hardware.png";
+import networkpic from "../components/static/network.png";
+import gamepic from "../components/static/game.png";
+import morepic from "../components/static/more.png";
 import allpic from "../../admin/components/Image/All.png";
 import { Rating } from "@mui/material";
-import header1 from "../components/header1.png";
-import header2 from "../components/header2.png";
+import header1 from "../components/static/header1.png";
+import header2 from "../components/static/header2.png";
 
 const Explore = () => {
   const [courseData, setCourseData] = useState([]);
@@ -47,7 +47,20 @@ const Explore = () => {
 
   const fetchCourses = async () => {
     try {
-      const response = await ax.get(`courses?populate=*`);
+      const response = await ax.get(`courses`, {
+        params: {
+          populate: {
+            rating: true,
+            user_owner: true,
+            categories: true,
+            lecturer_owner: true,
+            image: {
+              fields: ["formats"],
+            },
+          },
+        },
+      });
+
       setCourseData(response.data.data);
     } catch (err) {
       console.error(err);
@@ -357,7 +370,7 @@ const Explore = () => {
                       <div className="relative h-48 w-full bg-gray-200 flex items-center justify-center">
                         {course.image ? (
                           <img
-                            src={`${baseURL}${course.image[0].url}`}
+                            src={`${baseURL}${course.image[0].formats.small.url}`}
                             alt={course.Name}
                             className="object-cover w-full h-full rounded-t-lg"
                           />

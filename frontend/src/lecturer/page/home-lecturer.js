@@ -51,7 +51,6 @@ const HomeLecturer = () => {
         const response = await ax.get(
           `confirm-purchases?populate=*&filters[course_purchase][lecturer_owner][id][$eq]=${user.id}`
         );
-        console.log(response.data.data);
         const confirmedData = response.data.data
           .filter((item) => item.status_confirm === "confirmed")
           .map((item) => ({

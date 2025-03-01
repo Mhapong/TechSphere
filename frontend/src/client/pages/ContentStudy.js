@@ -76,8 +76,6 @@ export default function ContentStudy() {
         return acc;
       }, {});
 
-      console.log("Current progress data:", progressData);
-
       const topicResponse = await ax.get(`${BASE_URL}/api/topics`, {
         params: {
           populate: "*",
@@ -90,8 +88,6 @@ export default function ContentStudy() {
       );
 
       const missingContents = contentIds.filter((id) => !progressData[id]);
-
-      console.log("Missing content progress:", missingContents);
 
       const newProgressEntries = await Promise.all(
         missingContents.map(async (contentId) => {
@@ -119,11 +115,6 @@ export default function ContentStudy() {
       newProgressEntries.forEach((entry) => {
         progressData = { ...progressData, ...entry };
       });
-
-      console.log(
-        "Final progress data after adding missing entries:",
-        progressData
-      );
 
       setProgress(progressData);
       calculateOverallProgress(progressData, documentId);
@@ -166,27 +157,20 @@ export default function ContentStudy() {
         {}
       );
 
-      console.log("Current course progress data:", courseProgressData);
-
       const courseResponse = await ax.get(`${BASE_URL}/api/courses`, {
         params: {
           populate: "*",
           "filters[documentId][$eq]": documentId,
         },
       });
-      console.log("Fetched course data:", courseResponse.data);
       const courseDocumentIds = courseResponse.data.data.map(
         (course) => course.documentId
       );
-      console.log("Extracted course document IDs:", courseDocumentIds);
       const missingCourses = courseDocumentIds.filter(
         (docId) => !courseProgressData[docId]
       );
-      console.log("Missing course progress:", missingCourses);
       const newCourseProgressEntries = await Promise.all(
         missingCourses.map(async (docId) => {
-          console.log(`Creating new course progress for documentId: ${docId}`);
-
           try {
             const response = await ax.post(
               `${BASE_URL}/api/course-progresses`,
@@ -198,7 +182,6 @@ export default function ContentStudy() {
                 },
               }
             );
-            console.log("New course progress response:", response.data);
             const newDocumentId = response.data.data.documentId;
             return {
               [docId]: {
@@ -221,11 +204,6 @@ export default function ContentStudy() {
         courseProgressData = { ...courseProgressData, ...entry };
       });
 
-      console.log(
-        "Final course progress data after adding missing entries:",
-        courseProgressData
-      );
-
       setCourseProgress(courseProgressData);
     } catch (err) {
       console.error("Error fetching course progress data:", err);
@@ -237,20 +215,10 @@ export default function ContentStudy() {
     try {
       const existingProgress = progress[contentId];
 
-      console.log("🔍 Checking progress update condition:", {
-        contentId,
-        newProgress,
-        existingProgress,
-      });
-
       if (
         existingProgress?.documentId &&
         Math.abs(existingProgress.progress - newProgress) >= 1
       ) {
-        console.log(
-          `⏳ Updating progress for content ${contentId} - New progress: ${newProgress}%`
-        );
-
         const response = await ax.put(
           `${BASE_URL}/api/progresses/${existingProgress.documentId}`,
           {
@@ -258,14 +226,11 @@ export default function ContentStudy() {
           }
         );
 
-        console.log("✅ PUT request success:", response.data);
-
         setProgress((prev) => {
           const updatedProgress = {
             ...prev,
             [contentId]: { ...prev[contentId], progress: newProgress },
           };
-          console.log("📌 Updated progress state:", updatedProgress);
 
           calculateOverallProgress(updatedProgress, courseId);
           return updatedProgress;
@@ -297,10 +262,6 @@ export default function ContentStudy() {
     );
     const averageProgress = Math.round(totalProgress / totalContents);
 
-    console.log(
-      `📊 Calculated overall progress for course ${courseId}: ${averageProgress}%`
-    );
-
     if (Math.abs(overallProgress - averageProgress) >= 1) {
       setOverallProgress(averageProgress);
       updateCourseProgress(courseId, averageProgress);
@@ -315,18 +276,12 @@ export default function ContentStudy() {
         const previousProgress = existingCourseProgress.course_progress || 0;
 
         if (Math.abs(previousProgress - newOverallProgress) >= 1) {
-          console.log(
-            `⏳ Updating course progress for course ${courseId} - New progress: ${newOverallProgress}%`
-          );
-
           const response = await ax.put(
             `${BASE_URL}/api/course-progresses/${existingCourseProgress.documentId}`,
             {
               data: { course_progress: newOverallProgress },
             }
           );
-
-          console.log("✅ Course progress updated:", response.data);
 
           setCourseProgress((prev) => ({
             ...prev,
@@ -361,10 +316,6 @@ export default function ContentStudy() {
     const duration = event.target.duration;
     const newProgress = Math.round((currentTime / duration) * 100);
 
-    console.log(
-      `[handleTimeUpdate] contentId: ${contentId}, currentTime: ${currentTime}, newProgress: ${newProgress}%`
-    );
-
     if (newProgress !== progress[contentId]?.progress) {
       setProgress((prev) => ({
         ...prev,
@@ -377,9 +328,7 @@ export default function ContentStudy() {
       newProgress !== lastUpdatedProgress.current[contentId]
     ) {
       lastUpdatedProgress.current[contentId] = newProgress;
-      console.log(
-        `🔄 Updating progress for content ${contentId}: ${newProgress}%`
-      );
+
       updateProgress(contentId, newProgress, documentId);
     }
 
@@ -452,9 +401,6 @@ export default function ContentStudy() {
 
       setTimeout(() => {
         if (Math.abs(videoElement.currentTime - startTime) > 1) {
-          console.log(
-            `🔄 ตั้งค่าเวลาเริ่มต้นสำหรับวิดีโอ ${contentId}: ${startTime}s`
-          );
           videoElement.currentTime = startTime;
         }
       }, 100);
@@ -474,9 +420,6 @@ export default function ContentStudy() {
           let startTime =
             (progress[selectedContent.id].progress / 100) * duration;
 
-          console.log(
-            `Setting video start time for ${selectedContent.id}: ${startTime}s`
-          );
           videoElement.currentTime = startTime;
         }
       };

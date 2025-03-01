@@ -6,13 +6,13 @@ import { motion } from "framer-motion";
 import ax from "../../conf/ax";
 
 // Import images
-import homepic from "../components/home-page.png";
-import webpic from "../components/web-100.png";
-import datapic from "../components/data.png";
-import hardwarepic from "../components/hardware.png";
-import networkpic from "../components/network.png";
-import gamepic from "../components/game.png";
-import morepic from "../components/more.png";
+import homepic from "../components/static/home-page.png";
+import webpic from "../components/static/web-100.png";
+import datapic from "../components/static/data.png";
+import hardwarepic from "../components/static/hardware.png";
+import networkpic from "../components/static/network.png";
+import gamepic from "../components/static/game.png";
+import morepic from "../components/static/more.png";
 import { Rating } from "@mui/material";
 import conf from "../../conf/main";
 
@@ -36,7 +36,20 @@ export default function Home() {
 
   const fetchCourses = async () => {
     try {
-      const response = await ax.get("courses?populate=*");
+      const response = await ax.get("courses", {
+        params: {
+          populate: {
+            rating: true,
+            user_owner: true,
+            categories: true,
+            lecturer_owner: true,
+            image: {
+              fields: ["formats"],
+            },
+          },
+        },
+      });
+      console.log(response.data);
       const topCourse = response.data.data
         .sort((a, b) => b.user_owner.length - a.user_owner.length)
         .slice(0, 3);
@@ -175,7 +188,7 @@ export default function Home() {
                     <div className="relative h-48 w-full bg-gray-200 flex items-center justify-center">
                       {course.image ? (
                         <img
-                          src={`${baseURL}${course.image[0].url}`}
+                          src={`${baseURL}${course.image[0].formats.small.url}`}
                           alt={course.Name}
                           className="object-cover w-full h-full rounded-t-lg"
                         />
