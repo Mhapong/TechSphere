@@ -1,5 +1,3 @@
-"use client";
-
 import { Breadcrumbs, Tooltip } from "@material-tailwind/react";
 import { useEffect, useState, useContext } from "react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -42,6 +40,7 @@ export default function ViewCourse() {
   const [error, setError] = useState(null);
   const [openSections, setOpenSections] = useState({});
   const [isPending, setisPending] = useState(false);
+  const [showModal, setShowModal] = useState(false);
 
   const baseURL = conf.apiUrl;
 
@@ -64,11 +63,15 @@ export default function ViewCourse() {
     const response = await ax.get(
       `confirm-purchases?populate[0]=users_purchase&populate[1]=course_purchase&filters[status_confirm][$in][0]=waiting&filters[course_purchase][documentId][$in][1]=${documentId}`
     );
-    if (response?.data.data.length > 0) {
+    console.log(response.data.data);
+    if (
+      response?.data?.data?.some(
+        (item) => item.users_purchase?.username === state.user?.username
+      )
+    ) {
       setisPending(true);
     }
   };
-
   const categories = [
     { name: "ALL", img: allpic, path: "ALL" },
     { name: "Web Develop", img: webpic, path: "Web Develop" },
@@ -122,7 +125,7 @@ export default function ViewCourse() {
 
   return (
     <div className="bg-white min-h-screen">
-      <div className="bg-gradient-to-tl from-teal-800 to-black text-white pt-4 pb-8 sm:py-16">
+      <div className="bg-gradient-to-br from-black to-cyan-900 text-white pt-4 pb-8 sm:py-16">
         <div className="container mx-auto w-full px-4 mb-2">
           <Breadcrumbs className="my-1 text-teal-50 bg-transparent">
             <a href="/" className="opacity-80 text-white hover:text-blue-700">
@@ -209,11 +212,11 @@ export default function ViewCourse() {
                     className={`w-full px-6 py-3 rounded-lg flex items-center justify-center text-white mb-4 ${
                       isCourseInCart || isUserOwned || isPending
                         ? "bg-gray-500 cursor-not-allowed"
-                        : "bg-teal-500 hover:bg-teal-700"
+                        : "bg-gradient-to-r from-blue-700 to-purple-600 hover:bg-gradient-to-t hover:from-light-blue-900 hover:to-blue-900 transition-colors duration-300"
                     }`}
                     onClick={() =>
                       !state.isLoggedIn
-                        ? navigate("/login")
+                        ? setShowModal(true)
                         : addToCart({
                             ...course,
                             rating: course.rating,
@@ -252,6 +255,31 @@ export default function ViewCourse() {
           </div>
         </div>
       </div>
+
+      {showModal && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-80 text-center">
+            <h2 className="text-3xl font-bold mb-4">กรุณาเข้าสู่ระบบ</h2>
+            <p className="text-gray-900 mb-4">
+              คุณต้องเข้าสู่ระบบก่อนที่จะซื้อคอร์สเรียน
+            </p>
+            <div className="flex justify-center space-x-4">
+              <button
+                className="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg"
+                onClick={() => setShowModal(false)}
+              >
+                ปิด
+              </button>
+              <button
+                className="px-4 py-2 bg-gradient-to-r from-blue-700 to-purple-600 hover:bg-gradient-to-t hover:from-light-blue-900 hover:to-blue-900 transition-colors duration-300 text-white rounded-lg"
+                onClick={() => navigate("/login")}
+              >
+                เข้าสู่ระบบ
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Main Content */}
       <div className="container mx-auto px-4 py-12">
@@ -398,7 +426,7 @@ export default function ViewCourse() {
               {/* ส่วนข้อมูลวิทยากร */}
               <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
                 <h2 className="text-2xl font-bold mb-6 text-gray-800">
-                  วิทยากร
+                  ผู้สอน
                 </h2>
 
                 <div className="grid grid-cols-1 md:grid-cols-[auto_1fr] gap-6">
@@ -542,11 +570,11 @@ export default function ViewCourse() {
                     className={`w-full px-6 py-3 rounded-lg flex items-center justify-center text-white mb-4 ${
                       isCourseInCart || isUserOwned || isPending
                         ? "bg-gray-500 cursor-not-allowed"
-                        : "bg-teal-500 hover:bg-teal-700"
+                        : "bg-gradient-to-r from-blue-700 to-purple-600 hover:bg-gradient-to-t hover:from-light-blue-900 hover:to-blue-900 transition-colors duration-300"
                     }`}
                     onClick={() =>
                       !state.isLoggedIn
-                        ? navigate("/login")
+                        ? setShowModal(true)
                         : addToCart({
                             ...course,
                             rating: course.rating,

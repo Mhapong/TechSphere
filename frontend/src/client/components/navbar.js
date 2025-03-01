@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Disclosure, Menu, Transition } from "@headlessui/react";
-import { Bars3Icon, BellIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import { FaCartShopping } from "react-icons/fa6";
 import { motion } from "framer-motion";
 import { AuthContext } from "../../context/Auth.context";
@@ -12,7 +12,7 @@ import usericon from "../../admin/components/Image/user-icon.webp";
 import logopic from "./static/TechSphere_logopic.png";
 import textpic from "./static/logo.png";
 import ax from "../../conf/ax";
-import { Calendar, Tag } from "lucide-react";
+import { Calendar, Tag, TicketPercent } from "lucide-react";
 import { toast } from "sonner";
 
 function classNames(...classes) {
@@ -185,9 +185,12 @@ export default function Nav() {
                   <div>
                     <Menu.Button className="rounded-full bg-white p-1 text-gray-700 hover:text-gray-900 relative">
                       <span className="sr-only">View notifications</span>
-                      <BellIcon className="size-6" aria-hidden="true" />
+                      <TicketPercent
+                        className="size-7 mx-2"
+                        aria-hidden="true"
+                      />
                       {notifications.some((n) => !n.read) && (
-                        <span className="absolute top-0 right-0 block h-2 w-2 rounded-full bg-red-600" />
+                        <span className="absolute top-0 right-1 block h-2.5 w-2.5 rounded-full bg-red-600" />
                       )}
                     </Menu.Button>
                   </div>
@@ -216,7 +219,7 @@ export default function Nav() {
 
                         {notifications.length === 0 ? (
                           <div className="p-4 text-center">
-                            <BellIcon className="mx-auto h-8 w-8 text-gray-400" />
+                            <TicketPercent className="mx-auto h-8 w-8 text-gray-400" />
                             <p className="mt-2 text-sm text-gray-500">
                               ไม่มีโปรโมชั่น
                             </p>

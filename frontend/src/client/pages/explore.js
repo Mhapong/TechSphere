@@ -211,7 +211,7 @@ const Explore = () => {
                   value={selectedCategory}
                   onChange={(value) => setSelectedCategory(value)}
                   label="เลือกประเภท"
-                  className="text-gray-700 flex-auto w-full z-20"
+                  className="text-gray-700 flex-auto mb-2 w-full z-20"
                 >
                   {categories.map((category) => (
                     <Option key={category.name} value={category.name}>
@@ -230,7 +230,7 @@ const Explore = () => {
                   ))}
                 </Select>
               </div>
-              <div>
+              <div className="mt-2">
                 <h3 className="text-lg font-semibold pb-2">ช่วงราคา</h3>
                 <Range
                   step={100}
@@ -269,7 +269,7 @@ const Explore = () => {
                   <span>{priceRange[1]} THB</span>
                 </div>
               </div>
-              <div>
+              <div className="mt-2">
                 <h3 className="text-lg font-semibold mb-2">คะแนน</h3>
                 {[5, 4, 3, 2, 1].map((rating) => (
                   <div key={rating} className="flex items-center mb-2">
@@ -301,7 +301,7 @@ const Explore = () => {
               </div>
               <button
                 onClick={resetFilters}
-                className="w-full p-2 bg-blue-700 text-white rounded-md hover:bg-blue-900 transition duration-300"
+                className="w-full p-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 transition duration-300"
               >
                 รีเซ็ตค่าที่ใช้
               </button>

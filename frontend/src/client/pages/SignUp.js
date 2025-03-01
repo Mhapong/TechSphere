@@ -5,7 +5,7 @@ import axios from "axios";
 import { useSetState } from "react-use";
 import conf from "../../conf/main";
 import background from "../../admin/components/Image/background.png";
-import people from "../components/people-icon.webp";
+import people from "../components/static/people-icon.webp";
 
 export default function SignUp(props) {
   const initialState = {
