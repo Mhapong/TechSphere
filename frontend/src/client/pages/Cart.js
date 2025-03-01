@@ -196,8 +196,8 @@ const Cart = () => {
           </div>
 
           {/* Order Summary Section */}
-          <div className="lg:w-1/3 space-y-6">
-            <div className="bg-white p-6 rounded-xl shadow-lg sticky top-6">
+          <div className="lg:w-1/3">
+            <div className="bg-white p-6 rounded-xl shadow-lg sticky top-20 z-20">
               <h2 className="text-xl font-bold mb-4 text-gray-800">
                 สรุปคำสั่งซื้อ
               </h2>
@@ -228,7 +228,6 @@ const Cart = () => {
                   </span>
                 </div>
               </div>
-
               {/* Promo Code Section */}
               <div className="mb-6">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -256,7 +255,6 @@ const Cart = () => {
                   </button>
                 </div>
               </div>
-
               <button
                 className="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-lg transition-all flex items-center justify-center gap-2"
                 onClick={() =>
