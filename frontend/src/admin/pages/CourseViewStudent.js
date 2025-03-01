@@ -19,6 +19,15 @@ const CourseStudentTable = () => {
   const [open, setOpen] = useState(false);
   const [DeleteStudent, setDeleteStudent] = useState([]);
   const { courseid } = useParams();
+  const [queryStudent, setQueryStudent] = useState("");
+
+  const filteredStudent = queryStudent
+    ? Student.filter(
+        (value) =>
+          value.first_name.toLowerCase().includes(queryStudent.toLowerCase()) ||
+          value.last_name.toLowerCase().includes(queryStudent.toLowerCase())
+      )
+    : Student;
 
   useEffect(() => {
     if (Value) {
@@ -100,6 +109,23 @@ const CourseStudentTable = () => {
                 <span className="dark:text-white">{Student.length}</span>
               </h5>
             </div>
+            <div className="flex justify-center items-center space-x-3 bg-white p-4 rounded-lg shadow-md border border-gray-200">
+              <label
+                htmlFor="search"
+                className="text-gray-700 text-lg font-medium"
+              >
+                ค้นหา :
+              </label>
+              <input
+                id="search"
+                title="ค้นหา"
+                type="text"
+                placeholder="ค้นหาโดยชื่อนักเรียน"
+                className="flex-1 bg-gray-100 focus:bg-white h-10 w-72 border border-gray-300 rounded-lg px-4 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                value={queryStudent}
+                onChange={(e) => setQueryStudent(e.target.value)}
+              />
+            </div>
             <div className="flex flex-col flex-shrink-0 space-y-3 md:flex-row md:items-center lg:justify-end md:space-y-0 md:space-x-3">
               <button
                 onClick={() =>
@@ -154,64 +180,77 @@ const CourseStudentTable = () => {
                 </tr>
               </thead>
               <tbody>
-                {Student.map((value) => (
-                  <tr className="border-b dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700">
-                    <th
-                      scope="row"
-                      className="flex items-center px-4 py-2 font-medium text-gray-900 whitespace-nowrap dark:text-white"
-                    >
-                      <img
-                        src={usericon}
-                        alt="Image"
-                        className="w-auto h-8 mr-3"
-                      />
-                      {value.first_name} {value.last_name}
-                    </th>
-                    <td className="px-4 py-2">
-                      <span className="bg-primary-100 text-primary-800 text-xs font-medium px-2 py-0.5 rounded dark:bg-primary-900 dark:text-primary-300">
-                        {value.username}
-                      </span>
-                    </td>
-                    <td className="px-4 py-2">
-                      <span className="bg-primary-100 text-primary-800 text-xs font-medium px-2 py-0.5 rounded dark:bg-primary-900 dark:text-primary-300">
-                        {value.email}
-                      </span>
-                    </td>
-                    <td className="px-4 py-2 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                      <div className="flex items-center ml-3">
-                        {/* <div className="inline-block w-4 h-4 mr-2 bg-green-700 rounded-full"></div> */}
-                        {value?.course_progress}
-                      </div>
-                    </td>
-                    <td className="px-4 py-2 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                      <span
-                        className={`inline-block pt-2 px-3 py-1 text-sm font-semibold rounded-full ${
-                          value.confirmed
-                            ? "bg-green-500 text-white"
-                            : "bg-red-500 text-white"
-                        }`}
+                {filteredStudent.length > 0 ? (
+                  filteredStudent.map((value) => (
+                    <tr className="border-b dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700">
+                      <th
+                        scope="row"
+                        className="flex items-center px-4 py-2 font-medium text-gray-900 whitespace-nowrap dark:text-white"
                       >
-                        {value.confirmed
-                          ? "ยืนยันตัวตนแล้ว"
-                          : "ยังไม่ได้ยืนยันตัวตน"}
-                      </span>
-                    </td>
-
-                    <td className="px-4 py-2 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                      <div className="flex items-center">
-                        <button
-                          onClick={() => {
-                            setOpen(true);
-                            setDeleteStudent(value.id);
-                          }}
-                          className="ml-1 flex items-center justify-center w-9 h-9 rounded-full bg-red-500 dark:bg-red-600 text-white hover:bg-red-600 dark:hover:bg-red-500 transition-all duration-200"
+                        <img
+                          src={usericon}
+                          alt="Image"
+                          className="w-auto h-8 mr-3"
+                        />
+                        {value.first_name} {value.last_name}
+                      </th>
+                      <td className="px-4 py-2">
+                        <span className="bg-primary-100 text-primary-800 text-xs font-medium px-2 py-0.5 rounded dark:bg-primary-900 dark:text-primary-300">
+                          {value.username}
+                        </span>
+                      </td>
+                      <td className="px-4 py-2">
+                        <span className="bg-primary-100 text-primary-800 text-xs font-medium px-2 py-0.5 rounded dark:bg-primary-900 dark:text-primary-300">
+                          {value.email}
+                        </span>
+                      </td>
+                      <td className="px-4 py-2 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                        <div className="flex items-center ml-3">
+                          {/* <div className="inline-block w-4 h-4 mr-2 bg-green-700 rounded-full"></div> */}
+                          {value?.course_progress}
+                        </div>
+                      </td>
+                      <td className="px-4 py-2 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                        <span
+                          className={`inline-block pt-2 px-3 py-1 text-sm font-semibold rounded-full ${
+                            value.confirmed
+                              ? "bg-green-500 text-white"
+                              : "bg-red-500 text-white"
+                          }`}
                         >
-                          <Delete className="w-5 h-5" />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
+                          {value.confirmed
+                            ? "ยืนยันตัวตนแล้ว"
+                            : "ยังไม่ได้ยืนยันตัวตน"}
+                        </span>
+                      </td>
+
+                      <td className="px-4 py-2 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                        <div className="flex items-center">
+                          <button
+                            onClick={() => {
+                              setOpen(true);
+                              setDeleteStudent(value.id);
+                            }}
+                            className="ml-1 flex items-center justify-center w-9 h-9 rounded-full bg-red-500 dark:bg-red-600 text-white hover:bg-red-600 dark:hover:bg-red-500 transition-all duration-200"
+                          >
+                            <Delete className="w-5 h-5" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <div className="mx-auto my-7 flex items-center justify-center">
+                    <div className="bg-white shadow-lg border border-gray-200 rounded-xl px-6 py-8 text-center">
+                      <p className="text-gray-700 text-2xl font-semibold">
+                        ไม่พบข้อมูลนักเรียนที่ค้นหา
+                      </p>
+                      <p className="text-gray-500 text-lg mt-2">
+                        กรุณาตรวจสอบคำค้นหาหรือเพิ่มนักเรียนเข้าสู่ระบบ
+                      </p>
+                    </div>
+                  </div>
+                )}
               </tbody>
             </table>
           </div>
