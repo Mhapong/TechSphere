@@ -62,7 +62,7 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-gray-100">
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white">
+      <section className="bg-gradient-to-r from-blue-600 to-purple-900 text-white">
         <div className="container mx-auto px-4 py-16 md:py-24 flex flex-col md:flex-row items-center">
           <div className="md:w-1/2 mb-8 md:mb-0">
             <motion.h1
@@ -71,7 +71,8 @@ export default function Home() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
             >
-              คอร์สเรียนออนไลน์เพิ่มทักษะยุคดิจิทัล
+              <p>เรียนรู้อย่างไร้ขีดจำกัด</p>
+              <p classname="pt-1">พัฒนาทักษะสู่อนาคตที่ต้องการ</p>
             </motion.h1>
             <motion.p
               className="text-xl mb-6"
@@ -79,7 +80,9 @@ export default function Home() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
             >
-              พร้อมเวิร์กชอปและ Bootcamp ที่จะช่วยอัปสกิล ให้คุณทำงานเก่งขึ้น!
+              เรามีคอร์สคุณภาพที่ถูกออกแบบโดยผู้เชี่ยวชาญในแต่ละสาขา
+              เพื่อให้คุณได้รับประสบการณ์การเรียนที่สนุก เข้าใจง่าย
+              และนำไปใช้ได้จริง
             </motion.p>
             <motion.button
               className="bg-white text-blue-600 font-bold py-2 px-6 rounded-full hover:bg-blue-100 transition duration-300"
@@ -259,7 +262,7 @@ export default function Home() {
           )}
           <div className="text-center mt-12">
             <button
-              className="bg-blue-600 text-white font-bold py-3 px-8 rounded-full hover:bg-blue-700 transition duration-300"
+              className="bg-gradient-to-r from-blue-700 to-purple-600 text-white font-bold py-3 px-8 rounded-full hover:bg-gradient-to-t hover:from-light-blue-900 hover:to-blue-900 transition-colors duration-300"
               onClick={() => navigate("/explore")}
             >
               ดูคอร์สทั้งหมด

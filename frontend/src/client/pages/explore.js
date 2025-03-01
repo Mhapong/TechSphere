@@ -90,7 +90,7 @@ const Explore = () => {
   const headerData = [
     ...header,
     ...promotion.map((promo) => ({
-      title: `Promotion: ${promo.Code}`,
+      title: `โปรโมชั่น: ${promo.Code}`,
       detail: promo.detail,
       discount: promo.discount,
       img: `${conf.apiUrl}${promo?.picture_promotion?.url}`,
@@ -162,18 +162,16 @@ const Explore = () => {
                 loading="lazy"
               />{" "}
               {slide?.title && (
-                <h2 className="text-4xl font-bold absolute top-10 left-1/2 transform -translate-x-1/2 bg-black bg-opacity-50 text-white px-6 py-3 rounded-lg">
+                <h2 className="text-4xl font-bold absolute top-10 left-1/2 transform -translate-x-1/2 bg-white text-black px-6 py-3 rounded-lg">
                   {slide?.title}
                 </h2>
               )}
-              {/* {slide?.detail && (
-                <p className="text-xl font-semibold absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-black bg-opacity-50 text-white px-6 py-3 rounded-lg">
-                  {slide?.detail}
-                </p>
-              )} */}
               {slide?.discount && (
-                <div className="text-3xl font-bold absolute bottom-10 left-1/2 transform -translate-x-1/2 bg-black bg-opacity-50 text-white px-6 py-3 rounded-lg">
-                  Discount: {slide?.discount}%
+                <div className="text-5xl font-bold absolute bottom-10 left-1/2 transform -translate-x-1/2 bg-white text-black px-6 py-3 rounded-lg">
+                  ลดราคา:{" "}
+                  <span className="text-7xl font-extrabold bg-clip-text text-transparent bg-gradient-to-t from-teal-600 to-blue-800 ">
+                    {slide?.discount}%
+                  </span>
                 </div>
               )}
             </div>
