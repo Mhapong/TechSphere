@@ -131,7 +131,7 @@ const AddEditPromotion = () => {
               type="text"
               id="Code"
               name="Code"
-              placeholder="Code Promotion"
+              placeholder="Code ส่วนลด"
               value={Code}
               onChange={(e) => setCode(e.target.value)}
               className="block w-full rounded-md border-gray-300 shadow-sm focus:border-[#8c0327] focus:ring-[#8c0327] focus:ring-opacity-50 p-2 h-12"
@@ -270,11 +270,13 @@ const AddEditPromotion = () => {
                         }
                         className="bg-[#8c0327] hover:bg-[#6b0220] text-white rounded-full py-2 px-4"
                       >
-                        Select from the computer
+                        เลือกจากคอมพิวเตอร์ของคุณ
                       </button>
                     </div>
-                    <p className="text-gray-500">or drag photo here</p>
-                    <p className="text-gray-500 text-sm mt-1">PNG, JPG, SVG</p>
+                    <p className="text-gray-500">หรือวางรูปภาพของคุณตรงนี้</p>
+                    <p className="text-gray-500 text-sm mt-1">
+                      รองรับเฉพาะ PNG, JPG, SVG
+                    </p>
                   </div>
                 )}
               </label>

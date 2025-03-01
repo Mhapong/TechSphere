@@ -193,7 +193,7 @@ export function CourseView() {
                       }}
                     >
                       <Delete className="w-5 h-5" />
-                      <span className="ml-2 text-sm">Delete</span>
+                      <span className="ml-2 text-sm">ลบคอร์ส</span>
                     </button>
 
                     <CardHeader floated={false} color="blue-gray">
@@ -232,7 +232,7 @@ export function CourseView() {
                             <span className="text-sm mt-2 text-amber-700 whitespace-nowrap">
                               {items.rating && items?.rating?.length === 0
                                 ? "ยังไม่มีรีวิว"
-                                : `(${items?.rating?.length} reviews)`}
+                                : `(${items?.rating?.length} รีวิว)`}
                             </span>
                           </div>
                         </Typography>

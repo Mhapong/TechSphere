@@ -93,7 +93,7 @@ const PromotionAdminPage = () => {
               className="flex items-center gap-2 bg-black text-white px-4 py-2 rounded-lg shadow-md hover:bg-gray-800 transition-all duration-200"
             >
               <Add className="w-5 h-5" />
-              Add
+              เพิ่มโปรโมชั่นใหม่
             </button>
           </div>
         </div>
@@ -120,7 +120,7 @@ const PromotionAdminPage = () => {
                     setDeletePromotion(promotion.documentId);
                   }}
                 >
-                  <Delete /> Delete
+                  <Delete /> ลดโปรโมชั่น
                 </button>
                 <div className="flex-1 bg-white dark:bg-gray-800 px-6 py-8 lg:p-12">
                   <h3 className="text-2xl font-extrabold text-gray-900 dark:text-white sm:text-3xl">
@@ -154,7 +154,9 @@ const PromotionAdminPage = () => {
                           />
                         </div>
                         <p className="ml-3 text-sm text-gray-700 dark:text-gray-300">
-                          {promotion.status_promotion}
+                          {promotion.status_promotion === "Activate"
+                            ? "กำลังใช้งาน"
+                            : "หยุดใช้งาน"}
                         </p>
                       </li>
 

@@ -313,7 +313,7 @@ const AddCourse = () => {
               type="text"
               id="title"
               name="title"
-              placeholder="Title Course"
+              placeholder="ชื่อคอร์ส"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               className="block w-full h-12 rounded-md border-gray-300 shadow-sm focus:border-[#8c0327] focus:ring-[#8c0327] focus:ring-opacity-50 p-2"
@@ -357,7 +357,7 @@ const AddCourse = () => {
               id="description"
               name="description"
               rows="3"
-              placeholder="Description Course"
+              placeholder="กรุณาใส่คำอธิบายคอร์ส"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               className="block w-full h-48 rounded-md border-gray-300 shadow-sm focus:border-[#8c0327] focus:ring-[#8c0327] focus:ring-opacity-50 p-2"
@@ -509,11 +509,13 @@ const AddCourse = () => {
                         }
                         className="bg-[#8c0327] hover:bg-[#6b0220] text-white rounded-full py-2 px-4"
                       >
-                        Select from the computer
+                        เลือกจากคอมพิวเตอร์ของคุณ
                       </button>
                     </div>
-                    <p className="text-gray-500">or drag photo here</p>
-                    <p className="text-gray-500 text-sm mt-1">PNG, JPG, SVG</p>
+                    <p className="text-gray-500">หรือวางรูปภาพของคุณตรงนี้</p>
+                    <p className="text-gray-500 text-sm mt-1">
+                      รองรับเฉพาะ PNG, JPG, SVG
+                    </p>
                   </div>
                 )}
               </label>

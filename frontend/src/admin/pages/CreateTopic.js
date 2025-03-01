@@ -379,12 +379,12 @@ const AddTopic = () => {
                             type="button"
                             className="bg-[#8c0327] hover:bg-[#6b0220] text-white rounded-full py-2 px-4"
                           >
-                            Select from the computer
+                            เลือกจากคอมพิวเตอร์ของคุณ
                           </button>
                         </div>
-                        <p className="text-gray-500">or drag photo here</p>
+                        <p className="text-gray-500">หรือวางรูปภาพของคุณตรงนี้</p>
                         <p className="text-gray-500 text-sm mt-1">
-                          PNG, JPG, SVG
+                          รองรับเฉพาะ PNG, JPG, SVG
                         </p>
                       </div>
                     </label>

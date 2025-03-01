@@ -212,7 +212,7 @@ const FinanceOrder = () => {
                     })
                   }
                 >
-                  <Edit className="mr-1" /> Edit
+                  <Edit className="mr-1" /> แก้ไข
                 </button>
               )}
               <div className="flex justify-between items-start">
@@ -254,7 +254,7 @@ const FinanceOrder = () => {
                       .join(", ")}
                   </p>
                   <p className="text-sm text-gray-600">
-                    Code Promotion id :{" "}
+                    โปรโมชั่นที่ใช้งาน :{" "}
                     {payment?.promocode ? payment?.promocode : "ไม่ได้ใช้ code"}
                   </p>
                 </div>

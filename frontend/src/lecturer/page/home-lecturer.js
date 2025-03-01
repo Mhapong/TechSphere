@@ -83,7 +83,7 @@ const HomeLecturer = () => {
     labels: PurchaseDay,
     datasets: [
       {
-        label: "Income",
+        label: "รายได้",
         data: PurchaseAmount,
         backgroundColor: (context) => {
           const chart = context.chart;
@@ -120,7 +120,7 @@ const HomeLecturer = () => {
     plugins: {
       title: {
         display: true,
-        text: "Daily Income and Expenses",
+        text: "กราฟแสดงรายได้รวมในแต่ละวัน",
         font: { size: 18, weight: "bold" },
         color: "#333",
         padding: 20,

@@ -133,14 +133,14 @@ export default function CreateLecturer() {
                               }
                               className="bg-[#15489b] hover:bg-[#132f63] text-white rounded-full py-1 px-3 text-sm" // ปรับขนาดปุ่มและตัวอักษร
                             >
-                              Select from the computer
+                              เลือกจากคอมพิวเตอร์ของคุณ
                             </button>
                           </div>
                           <p className="text-gray-500 text-xs">
-                            or drag photo here
+                            หรือวางรูปภาพของคุณตรงนี้
                           </p>{" "}
                           <p className="text-gray-500 text-xs mt-1">
-                            PNG, JPG, SVG
+                            รองรับเฉพาะ PNG, JPG, SVG
                           </p>{" "}
                         </div>
                       )}
@@ -165,7 +165,7 @@ export default function CreateLecturer() {
                     className="flex-1 pl-2 outline-none border-none"
                     type="text"
                     name="first_name"
-                    placeholder="First Name"
+                    placeholder="ชื่อจริง"
                     required
                   />
                 </div>
@@ -177,7 +177,7 @@ export default function CreateLecturer() {
                     className="flex-1 pl-2 outline-none border-none"
                     type="text"
                     name="last_name"
-                    placeholder="Last Name"
+                    placeholder="นามสกุล"
                     required
                   />
                 </div>
@@ -206,7 +206,7 @@ export default function CreateLecturer() {
                   className="pl-2 w-full outline-none border-none"
                   type="email"
                   name="email"
-                  placeholder="Email Address"
+                  placeholder="Email"
                   required
                 />
               </div>
@@ -235,7 +235,7 @@ export default function CreateLecturer() {
                   className="w-full pl-2 outline-none border-none"
                   type="text"
                   name="username"
-                  placeholder="Username"
+                  placeholder="ชื่อผู้ใช้งาน"
                   required
                 />
               </div>
@@ -261,7 +261,7 @@ export default function CreateLecturer() {
                   type="password"
                   name="password"
                   id="password"
-                  placeholder="Password"
+                  placeholder="รหัสผ่าน"
                   required
                 />
               </div>
@@ -287,7 +287,7 @@ export default function CreateLecturer() {
                   id="background"
                   name="background"
                   rows="3"
-                  placeholder="Background Lecturer"
+                  placeholder="ประวัติการศึกษาอาจารย์"
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   className="pl-3 pt-1 outline-none border-none w-full resize-none bg-transparent text-gray-700 placeholder-gray-400"
@@ -300,7 +300,7 @@ export default function CreateLecturer() {
                 className="block w-full bg-indigo-600 mt-5 py-2 rounded-2xl hover:bg-indigo-700 hover:-translate-y-1 transition-all duration-500 text-white font-semibold mb-2"
                 value="Sign-up"
               >
-                Create
+                สร้างบัญชีอาจารย์ผู้สอนใหม่
               </button>
             </form>
           </div>
